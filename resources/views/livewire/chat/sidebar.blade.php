@@ -1,110 +1,109 @@
-<div class="h-screen">
-    <flux:sidebar  stashable class="border-r h-full border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
-            <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
+<div class="flex h-full  flex-row gap-3" >
+    <div class=" border-r border-gray-300 pr-2 dark:border-gray-700">
 
-            <a href="{{ route('dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
-                <x-app-logo />
-            </a>
+        <div class="p-4"
+        x-init="$nextTick(() => $el.scrollTop = $el.scrollHeight)"
+        @scroll-bottom.window="$nextTick(() => {
+            $el.scrollTop = $el.scrollHeight;
+        })"
+        >
+            <div class="flex flex-row w-full items-center justify-center space-x-5 ">
+                <flux:modal.trigger name="contacts">
+                    <flux:button icon="message-square">Contacts</flux:button>
+                </flux:modal.trigger>
 
+                @livewire('chat.partials.group-modal')
 
-            <flux:separator />
-            <flux:spacer />
+                @livewire('chat.partials.contacts-model')
+                <flux:modal.trigger name="group">
+                    <flux:button icon="user">Groupe</flux:button>
+                </flux:modal.trigger>
 
-
-            <!-- Desktop User Menu -->
-            <flux:dropdown position="bottom" align="start">
-                <flux:profile
-                    :name="auth()->user()->name"
-                    :initials="auth()->user()->initials()"
-                    icon-trailing="chevrons-up-down"
-                />
-
-                <flux:menu class="w-[220px]">
-                    <flux:menu.radio.group>
-                        <div class="p-0 text-sm font-normal">
-                            <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                                <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-                                    <span
-                                        class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white"
-                                    >
-                                        {{ auth()->user()->initials() }}
-                                    </span>
-                                </span>
-
-                                <div class="grid flex-1 text-start text-sm leading-tight">
-                                    <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
-                                    <span class="truncate text-xs">{{ auth()->user()->email }}</span>
-                                </div>
-                            </div>
+            </div>
+        </div>
+        <flux:separator />
+        <flux:navlist class="w-full" class="overflow-y-auto h-[calc(100vh-200px)]">
+            <flux:navlist.group heading="Groupes" expandable :expanded="false">
+                @foreach ($conversations as $convo)
+                @if ($convo->isGroup())
+                <flux:navlist.item icon="users"   badge-color="green" >
+                    <div class="flex items-center space-x-3 cursor-pointer" wire:click="setConversation({{ $convo->id }})">
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-foreground">{{$convo->name}}</h3>
+                            <p class="text-xs text-muted-foreground truncate font-thin">
+                                {{ $convo->lastMessage->body ?? 'No messages yet' }}
+                            </p>
                         </div>
-                    </flux:menu.radio.group>
+                        <span class="text-xs text-muted-foreground">
+                            {{ optional($convo->lastMessage)->created_at ?
+                            $convo->lastMessage->created_at->diffForHumans() : '' }}
+                        </span>
 
-                    <flux:menu.separator />
+                    </div>
+                </flux:navlist.item>
+                @endif
 
-                    <flux:menu.radio.group>
-                        <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
-                    </flux:menu.radio.group>
+                @endforeach
 
-                    <flux:menu.separator />
+            </flux:navlist.group>
+            <flux:navlist.group heading="Contacts" expandable>
+                @foreach ($conversations as $convo)
+                @if (!$convo->isGroup())
+                <flux:navlist.item icon="user" iconDot="success"  badge-color="green" >
 
-                    <form method="POST" action="{{ route('logout') }}" class="w-full">
-                        @csrf
-                        <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
-                            {{ __('Log Out') }}
-                        </flux:menu.item>
-                    </form>
-                </flux:menu>
-            </flux:dropdown>
-        </flux:sidebar>
+                {{$convo->participants->except(auth()->user()->id)->first()->is_online ? 'Online' : 'Offline'}}
 
-        <!-- Mobile User Menu -->
-        <flux:header class="lg:hidden">
-            <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
-
-            <flux:spacer />
-
-            <flux:dropdown position="top" align="end">
-                <flux:profile
-                    :initials="auth()->user()->initials()"
-                    icon-trailing="chevron-down"
-                />
-
-                <flux:menu>
-                    <flux:menu.radio.group>
-                        <div class="p-0 text-sm font-normal">
-                            <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                                <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-                                    <span
-                                        class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white"
-                                    >
-                                        {{ auth()->user()->initials() }}
-                                    </span>
-                                </span>
-
-                                <div class="grid flex-1 text-start text-sm leading-tight">
-                                    <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
-                                    <span class="truncate text-xs">{{ auth()->user()->email }}</span>
-                                </div>
-                            </div>
+                    <div class="flex items-center space-x-3 cursor-pointer" wire:click="setConversation({{ $convo->id }})">
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-foreground">{{$convo->participants()->where('user_id','!=',auth()->id())->first()->name}}</h3>
+                            <p class="text-sm text-muted-foreground truncate font-thin">
+                                {{ $convo->lastMessage->body ?? 'No messages yet' }}
+                            </p>
                         </div>
-                    </flux:menu.radio.group>
+                        <span class="text-xs text-muted-foreground font-thin">
+                            {{ optional($convo->lastMessage)->created_at ?
+                            $convo->lastMessage->created_at->diffForHumans() : '' }}
+                        </span>
 
-                    <flux:menu.separator />
+                    </div>
+                </flux:navlist.item>
+                @endif
+                @endforeach
+            </flux:navlist.group>
 
-                    <flux:menu.radio.group>
-                        <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
-                    </flux:menu.radio.group>
+        </flux:navlist>
+        <flux:separator />
 
-                    <flux:menu.separator />
 
-                    <form method="POST" action="{{ route('logout') }}" class="w-full">
-                        @csrf
-                        <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
-                            {{ __('Log Out') }}
-                        </flux:menu.item>
-                    </form>
-                </flux:menu>
-            </flux:dropdown>
-        </flux:header>
+
+        <div class="p-4 ">
+            <div class="flex space-x-2.5 flex-wrap space-y-2">
+
+
+
+                <flux:button icon="settings" href="{{ route('settings.appearance') }}">
+
+                </flux:button>
+
+
+                    <flux:button 
+                    variant="danger" 
+                    icon="log-out" 
+                    href="{{ route('logout') }}"
+                    wire:click="logout"
+                    onclick="event.preventDefault(); 
+                            setTimeout(function() { 
+                                document.getElementById('logout-form').submit(); 
+                            }, 300);"
+                >
+                </flux:button>
+                
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                    @csrf
+                </form>
+            </div>
+        </div>
+    </div>
+
 
 </div>
