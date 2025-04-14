@@ -9,6 +9,13 @@
 
             <flux:separator />
             <flux:spacer />
+            <div class="flex flex-row">
+
+                <flux:button>Button</flux:button>
+                <flux:button>Button2</flux:button>
+
+            </div>
+            <flux:spacer />
 
 
             <!-- Desktop User Menu -->

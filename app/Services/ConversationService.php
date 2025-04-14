@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Conversation;
 use App\Models\ConversationParticipant;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 
 class ConversationService
 {
@@ -50,7 +51,7 @@ class ConversationService
         }
         return $conversation;
     }
-    public function getConversationsForUser(User $user,$includeArchived = false):Conversation
+    public function getConversationsForUser(User $user,$includeArchived = false): Collection
     {
         $query = Conversation::whereHas('participants', function ($query) use ($user) {
             $query->where('user_id', $user->id);
@@ -61,8 +62,9 @@ class ConversationService
             });
         }
         $conversations = $query->with(['participants', 'messages'])->get();
+
         return $conversations;
-        
+
     }
     public function getConversationWithMessages(Conversation $conversation,$int):Conversation
     {
@@ -71,7 +73,7 @@ class ConversationService
         }])->find($conversation->id);
 
         return $conversation;
-        
+
     }
     public function archiveConversation(User $user,Conversation $conversation):Conversation
     {
