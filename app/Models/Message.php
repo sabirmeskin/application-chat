@@ -11,13 +11,14 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Message extends Model implements HasMedia
 {
-    use InteractsWithMedia,SoftDeletes;
+    use SoftDeletes;
+    use InteractsWithMedia;
 
     public function registerMediaConversions(?Media $media = null): void
     {
         $this
             ->addMediaConversion('preview')
-            ->fit(Fit::Contain, 200, 200)
+            ->fit(Fit::Contain, 300, 300)
             ->nonQueued();
     }
     protected $guarded = [];
@@ -42,11 +43,11 @@ class Message extends Model implements HasMedia
     }
 
     public function markAsRead(User $user){
-        $this->update('status', 'read');
+        $this->update(['status' => 'read']);
     }
 
     public function markAsUnread(User $user){
-        $this->update('status', 'unread');
+        $this->update(['status'=>'unread']);
     }
 
     public function markAsDelivered(User $user){

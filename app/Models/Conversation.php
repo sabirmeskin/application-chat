@@ -34,6 +34,7 @@ class Conversation extends Model
     }
 
     public function isParticipant(User $user){
+<<<<<<< HEAD
         return $this->participants->contains($user);
     }
 
@@ -41,13 +42,25 @@ class Conversation extends Model
     // {
     //     return $this->participants->where('is_online', true)->get();
     // }
+=======
+        return $user;
+    }
+
+    public function activeParticipants()
+    {
+        return $this->participants->where('is_online', true)->get();
+    }
+>>>>>>> origin/main
 
     public function isGroup()
     {
         return $this->type === 'group';
     }
+<<<<<<< HEAD
     public function getOtherParticipant(User $user)
     {
         return $this->participants->where('id', '!=', $user->id)->first();
     }
+=======
+>>>>>>> origin/main
 }
