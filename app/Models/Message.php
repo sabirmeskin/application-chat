@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -10,6 +11,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Message extends Model implements HasMedia
 {
+    use SoftDeletes;
     use InteractsWithMedia;
 
     public function registerMediaConversions(?Media $media = null): void
@@ -41,11 +43,11 @@ class Message extends Model implements HasMedia
     }
 
     public function markAsRead(User $user){
-        $this->update('status', 'read');
+        $this->update(['status' => 'read']);
     }
 
     public function markAsUnread(User $user){
-        $this->update('status', 'unread');
+        $this->update(['status'=>'unread']);
     }
 
     public function markAsDelivered(User $user){
