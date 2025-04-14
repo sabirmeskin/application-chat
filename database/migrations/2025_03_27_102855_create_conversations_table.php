@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->enum('type', ['private', 'group'])->default('private');
-            $table->timestamp('archived_at')->nullable();
             $table->boolean('encrypted')->default(false);
+            $table->timestamp('archived_at')->nullable();
             $table->timestamps();
         });
     }
