@@ -1,23 +1,21 @@
 <div class="flex h-full  flex-row gap-3" >
     <div class=" border-r border-gray-300 pr-2 dark:border-gray-700">
 
-        <div class="p-4"
-        x-init="$nextTick(() => $el.scrollTop = $el.scrollHeight)"
-        @scroll-bottom.window="$nextTick(() => {
-            $el.scrollTop = $el.scrollHeight;
-        })"
-        >
-            <div class="flex flex-row w-full items-center justify-center space-x-5 ">
-                <flux:modal.trigger name="contacts">
-                    <flux:button icon="message-square">Contacts</flux:button>
-                </flux:modal.trigger>
+            <div  class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
+                <x-app-logo />
+            </div>
 
                 @livewire('chat.partials.group-modal')
 
-                @livewire('chat.partials.contacts-model')
-                <flux:modal.trigger name="group">
-                    <flux:button icon="user">Groupe</flux:button>
-                </flux:modal.trigger>
+            <flux:separator />
+            <flux:spacer />
+            <div class="flex flex-row">
+
+                <flux:button>Button</flux:button>
+                <flux:button>Button2</flux:button>
+
+            </div>
+            <flux:spacer />
 
             </div>
         </div>

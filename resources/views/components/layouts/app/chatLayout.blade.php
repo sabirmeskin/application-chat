@@ -15,7 +15,7 @@
 
         <div class="flex flex-row gap-1.5">
 
-            <livewire:chat.sidebar />
+            <livewire:chat.sidebar  />
             <livewire:chat.chatbox />
         </div>
 
