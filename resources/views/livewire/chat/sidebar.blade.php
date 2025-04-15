@@ -2,10 +2,31 @@
     <flux:sidebar  stashable class="border-r h-full border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
-            <div  class="me-5 flex items-center space-x-2 rtl:space-x-reverse flex-row" wire:navigate>
+            <div  class=" flex items-center space-x-2 rtl:space-x-reverse flex-row" wire:navigate>
                 <x-app-logo />
-            </div>
 
+                <flux:dropdown position="bottom" align="end">
+                    <flux:button
+                        size="sm"
+                        icon="ellipsis-vertical"
+                        variant="ghost"
+
+                    />
+
+                    <flux:menu class="w-[220px]">
+
+
+
+                        <flux:menu.item icon="users" x-on:click="$flux.modal('edit-profile').show()" icon-trailing="chevron-right">
+                            {{ __('Créer Un Groupe') }}
+                    </flux:menu.item>
+                        <flux:menu.separator />
+                        <flux:menu.item icon="user" x-on:click="$flux.modal('edit-profile').show()" icon-trailing="chevron-right">{{ __('Liste des Contacts') }}</flux:menu.item>
+
+
+                    </flux:menu>
+                </flux:dropdown>
+            </div>
 
             <flux:separator />
             <flux:spacer />
@@ -17,8 +38,8 @@
             <flux:dropdown position="bottom" align="start">
                 <flux:profile
                     :name="auth()->user()->name"
-                    :initials="auth()->user()->initials()"
-                    icon-trailing="chevrons-up-down"
+                    :initials="strtoupper(auth()->user()->initials())"
+                    icon-trailing="chevrons-up"
                 />
 
                 <flux:menu class="w-[220px]">
@@ -108,5 +129,7 @@
                 </flux:menu>
             </flux:dropdown>
         </flux:header>
+
+<livewire:chat.modals.contacts-modal />
 
 </div>
