@@ -6,12 +6,40 @@ use App\Models\Conversation;
 use App\Models\ConversationParticipant;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\App;
 
 class ConversationService
 {
+    /**
+     * Get the instance of the ConversationService.
+     * hadi singleton
+     * @return self
+     */
+    public static function getInstance(): self
+    {
+        return App::make(self::class);
+    }
+
+    public function __construct()
+    {
+        // Initialize any dependencies or properties here
+    }
+
     public function createPrivateConversation(User $sender,User $receiver,$encrypted = false):Conversation
     {
-        // Business logic for creating a conversation
+        // Check if a private conversation already exists between the sender and receiver
+        $existingConversation = Conversation::where('type', 'private')
+            ->whereHas('participants', function ($query) use ($sender) {
+            $query->where('user_id', $sender->id);
+            })
+            ->whereHas('participants', function ($query) use ($receiver) {
+            $query->where('user_id', $receiver->id);
+            })
+            ->first();
+
+        if ($existingConversation) {
+            return $existingConversation;
+        }
 
         $conversation =  Conversation::create([
             'name' => $sender->name . ' & ' . $receiver->name,

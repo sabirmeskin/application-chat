@@ -11,18 +11,17 @@
                 <flux:spacer />
 
                 <span>
-                    <flux:input placeholder="Rechercher des utilisateurs" class="w-full mt-2" icon-trailing="magnifying-glass" clearable  />
+                    <flux:input placeholder="Rechercher des utilisateurs" class="w-full mt-2" icon-trailing="magnifying-glass" clearable   />
                 </span>
             </div>
             <flux:separator class="mt-2 mb-4" variant="subtle" />
             <ul class="flex flex-col gap-3 h-[calc(100vh-300px)] overflow-y-scroll">
-                @for ($i = 0; $i < 22; $i++)
-                <li class="flex items-center gap-2 cursor-pointer py-2 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-lg">
+                @foreach ($contacts as $contact)
+                    <li class="flex items-center gap-2 cursor-pointer py-2 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-lg" wire:click='selectContact({{ $contact->id }})' x-on:click="$flux.modal('contact-modal').close()">
                     <flux:avatar size="sm" name="Caleb Porzio" color="auto" class="ml-3" />
-                    <flux:heading>Caleb Porzio</flux:heading>
+                    <flux:heading>{{$contact->name}}</flux:heading>
                 </li>
-                @endfor
-
+                @endforeach
             </ul>
         </div>
 
