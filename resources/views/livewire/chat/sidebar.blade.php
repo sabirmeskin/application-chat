@@ -13,12 +13,12 @@
 
 
 
-                    <flux:menu.item icon="users" class="cursor-pointer"
+                    <flux:menu.item icon="user" class="cursor-pointer"
                         x-on:click="$flux.modal('contact-modal').show()">
                         {{ __('Créer une nouvelle conversation') }}
                     </flux:menu.item>
                     <flux:menu.separator />
-                    <flux:menu.item icon="user" class="cursor-pointer" x-on:click="$flux.modal('groups-modal').show()">
+                    <flux:menu.item icon="users" class="cursor-pointer" x-on:click="$flux.modal('groups-modal').show()">
                         {{ __('Créer Un Groupe') }}</flux:menu.item>
 
 
