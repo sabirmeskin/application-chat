@@ -13,7 +13,7 @@ class MessageController extends Controller
         // Fetch all messages for the conversation
         $messages = $conversation->messages()->with('sender')->get();
 
-        return response()->json($messages);
+        return $messages;
     }
 
     public function store(Conversation $conversation, Request $request)

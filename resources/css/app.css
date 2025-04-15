@@ -7,6 +7,7 @@
 @source '../../vendor/livewire/flux/stubs/**/*.blade.php';
 
 @custom-variant dark (&:where(.dark, .dark *));
+
 @font-face {
     font-family: 'Inter';
     src: url('/public/fonts/Instrument_Sans/InstrumentSans-VariableFont_wdth\,wght.ttf') format('woff2');

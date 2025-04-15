@@ -22,9 +22,8 @@ class Sidebar extends Component
 
     public function loadConversations()
     {
-        // Load conversations for the authenticated user
         $this->conversations = $this->conversationService->getConversationsForUser(Auth::user(), false);
-        dd($this->conversations);
+        // dd($this->conversations);
     }
 
 
