@@ -1,5 +1,6 @@
 <div class="h-screen">
-    <flux:sidebar stashable class="border-r h-screen border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 w-80">
+    <flux:sidebar stashable
+        class="border-r h-screen border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 w-80">
         <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
         <div class=" flex items-center space-x-2 rtl:space-x-reverse flex-row" wire:navigate>
@@ -12,12 +13,13 @@
 
 
 
-                    <flux:menu.item icon="users" x-on:click="$flux.modal('edit-profile').show()">
-                        {{ __('Créer Un Groupe') }}
+                    <flux:menu.item icon="users" class="cursor-pointer"
+                        x-on:click="$flux.modal('contact-modal').show()">
+                        {{ __('Créer une nouvelle conversation') }}
                     </flux:menu.item>
                     <flux:menu.separator />
-                    <flux:menu.item icon="user" x-on:click="$flux.modal('edit-profile').show()">
-                        {{ __('Liste des Contacts') }}</flux:menu.item>
+                    <flux:menu.item icon="user" class="cursor-pointer" x-on:click="$flux.modal('groups-modal').show()">
+                        {{ __('Créer Un Groupe') }}</flux:menu.item>
 
 
                 </flux:menu>
@@ -25,28 +27,33 @@
         </div>
 
         <flux:separator />
-        <flux:navlist variant="outline" class="overflow-y-auto " >
-            <flux:navlist.group :heading="__('Conversations Actifs')" class="grid overflow-y-auto  overflow-x-hidden" style="scrollbar-width: thin;">
-                @for ($i = 0; $i < 12; $i++)
-                <flux:navlist.item class="cursor-pointer" :current="false" wire:navigate>
+        <flux:spacer />
+
+        <flux:navlist variant="outline" class="overflow-y-auto h-800">
+            <flux:navlist.group :heading="__('Conversations Actifs')" class="grid overflow-y-auto overflow-x-hidden"
+                style="scrollbar-width: thin;">
+
+
+
+                @for ($i = 0; $i < 12; $i++) <flux:navlist.item class="cursor-pointer" :current="false" wire:navigate>
                     <livewire:chat.components.convo />
-                </flux:navlist.item>
-                @endfor
+                    </flux:navlist.item>
+                    @endfor
             </flux:navlist.group>
         </flux:navlist>
 
         <flux:separator />
-
-        <flux:navlist variant="outline"  class="overflow-y-auto h-full" heading="Account">
-            <flux:navlist.group  expandable :heading="__('Conversations Archivées')" class="grid overflow-y-auto overflow-x-hidden" style="scrollbar-width: thin;">
-                @for ($i = 0; $i < 12; $i++)
-                <flux:navlist.item class="cursor-pointer" :current="false" wire:navigate>
+        <flux:spacer />
+        <flux:navlist variant="outline" class="overflow-y-auto h-full">
+            <flux:navlist.group expandable :expanded="false" :heading="__('Conversations Archivées')"
+                class="grid overflow-y-auto h-[calc(30vh-100px)] overflow-x-hidden" style="scrollbar-width: thin;">
+                @for ($i = 0; $i < 12; $i++) <flux:navlist.item class="cursor-pointer" :current="false" wire:navigate>
                     <livewire:chat.components.convo />
-                </flux:navlist.item>
-                @endfor
+                    </flux:navlist.item>
+                    @endfor
             </flux:navlist.group>
         </flux:navlist>
-        <flux:spacer />
+
 
 
         <!-- Desktop User Menu -->
@@ -140,5 +147,6 @@
     </flux:header>
 
     <livewire:chat.modals.contacts-modal />
+    <livewire:chat.modals.groups-modal />
 
 </div>

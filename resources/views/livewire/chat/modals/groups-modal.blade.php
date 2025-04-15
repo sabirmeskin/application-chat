@@ -1,8 +1,8 @@
 <div>
-    <flux:modal name="contact-modal" variant="flyout">
+    <flux:modal name="groups-modal" variant="flyout">
     <div class="space-y-6">
         <div>
-            <flux:heading size="lg">Update profile</flux:heading>
+            <flux:heading size="lg">group</flux:heading>
             <flux:text class="mt-2">Make changes to your personal details.</flux:text>
         </div>
         <flux:input label="Name" placeholder="Your name" />
