@@ -17,7 +17,6 @@ class GroupsModal extends Component
     public function mount()
     {
         $this->contacts = User::where('id', '!=', Auth::user()->id)->get();
-
     }
 
     public function updateUsers()
