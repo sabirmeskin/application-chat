@@ -29,7 +29,7 @@
         <flux:separator />
         <flux:spacer />
 
-        <flux:navlist variant="outline" class="overflow-y-auto h-800">
+        <flux:navlist variant="outline" class="overflow-y-auto ">
             <flux:navlist.group :heading="__('Conversations Actifs')" class="grid overflow-y-auto overflow-x-hidden"
                 style="scrollbar-width: thin;">
 
@@ -44,9 +44,9 @@
 
         <flux:separator />
         <flux:spacer />
-        <flux:navlist variant="outline" class="overflow-y-auto h-full">
+        <flux:navlist variant="outline" class="overflow-y-auto ">
             <flux:navlist.group expandable :expanded="false" :heading="__('Conversations Archivées')"
-                class="grid overflow-y-auto h-[calc(30vh-100px)] overflow-x-hidden" style="scrollbar-width: thin;">
+                class="grid overflow-y-auto  overflow-x-hidden" style="scrollbar-width: thin;">
                 @for ($i = 0; $i < 12; $i++) <flux:navlist.item class="cursor-pointer" :current="false" wire:navigate>
                     <livewire:chat.components.convo />
                     </flux:navlist.item>

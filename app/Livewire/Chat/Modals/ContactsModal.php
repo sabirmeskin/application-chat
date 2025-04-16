@@ -13,14 +13,12 @@ class ContactsModal extends Component
     public $contacts = [] ;
     public $search = '';
 
-
     public function mount()
     {
         $this->contacts = User::where('id', '!=', auth()->user()->id)->get();
-
     }
 
-    public function updatedSearch()
+    public function updateUsers()
     {
         $this->contacts = User::where('name', 'like', '%' . $this->search . '%')
             ->get()
@@ -41,10 +39,8 @@ class ContactsModal extends Component
                 $user,
                 false
             );
-
         }
     }
-
 
     public function render()
     {
