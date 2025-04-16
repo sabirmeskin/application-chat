@@ -10,6 +10,7 @@ class Sidebar extends Component
 {
 
     public $conversations = [];
+    public $activeId ;
 
     protected $conversationService;
 
@@ -26,28 +27,10 @@ class Sidebar extends Component
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public function toggleActive($conversationId)
+    {
+        $this->activeId = $conversationId;
+    }
 
     public function render()
     {

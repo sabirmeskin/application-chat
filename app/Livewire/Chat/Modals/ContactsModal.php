@@ -28,7 +28,8 @@ class ContactsModal extends Component
     {
         $user = User::find($contactId);
         $conversation = $this->createConversation($user);
-        }
+
+    }
 
     public function createConversation(User $user)
     {

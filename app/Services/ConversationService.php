@@ -7,6 +7,7 @@ use App\Models\ConversationParticipant;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 
 class ConversationService
 {
@@ -60,6 +61,16 @@ class ConversationService
 
     public function createGroupConversation($name,User $admin, array $users,$encrypted = false):Conversation
     {
+
+
+        // Check if a group conversation already exists with the same name
+        $existingConversation = Conversation::where('type', 'group')
+            ->where('name', $name)
+            ->first();
+        if ($existingConversation) {
+            return $existingConversation;
+        }
+        // Create a new group conversation
         $conversation =  Conversation::create([
             'name' => $name ?? 'Group Chat',
             'type' => 'group',
@@ -71,6 +82,11 @@ class ConversationService
             'role' => 'admin',
         ]);
         foreach ($users as $user) {
+            $user = User::find($user);
+            if (!$user) {
+                continue; // Skip if user not found
+            }
+            // Check if the user is already a participant
             ConversationParticipant::create([
                 'conversation_id' => $conversation->id,
                 'user_id' => $user->id,
@@ -129,6 +145,45 @@ class ConversationService
                     ->orWhere('user_id', $receiver->id);
             })
             ->first();
+
+        return $conversation;
+    }
+    public function getGroupConversationsForUser(User $user): Collection
+    {
+        return Conversation::where('type', 'group')
+            ->whereHas('participants', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->with(['participants', 'messages'])
+            ->get();
+    }
+    public function getPrivateConversationsForUser(User $user): Collection
+    {
+        return Conversation::where('type', 'private')
+            ->whereHas('participants', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->with(['participants', 'messages'])
+            ->get();
+    }
+    public function updateGroupConversation(Conversation $conversation,string $name, array $newParticipants): Conversation
+    {
+        // Check if the conversation is a group conversation
+        if ($conversation->type !== 'group') {
+            throw new \Exception('This method is only applicable to group conversations.');
+        }
+        // Check if the user is an admin of the conversation
+        $adminParticipant = $conversation->participants()->where('user_id', Auth::id())->first();
+        if (!$adminParticipant || $adminParticipant->role !== 'admin') {
+            throw new \Exception('Only admins can edit group conversation participants.');
+        }
+
+        $conversation->update(['name' => $name]);
+
+        $conversation->participants()->syncWithoutDetaching(
+            $newParticipants
+        );
+
 
         return $conversation;
     }

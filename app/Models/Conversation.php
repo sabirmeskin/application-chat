@@ -46,4 +46,15 @@ class Conversation extends Model
     {
         return $this->type === 'group';
     }
+    public function isPrivate()
+    {
+        return $this->type === 'private';
+    }
+    public function receiver(){
+        return $this->participants()->where('user_id', '!=', auth()->id())->first();
+    }
+    public function isArchived()
+    {
+        return $this->archived_at !== null;
+    }
 }

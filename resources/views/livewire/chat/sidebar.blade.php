@@ -1,6 +1,6 @@
 <div class="h-screen">
     <flux:sidebar stashable
-        class="border-r h-screen border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 w-80">
+        class="border-r h-screen border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 w-90">
         <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
         <div class=" flex items-center space-x-2 rtl:space-x-reverse flex-row" wire:navigate>
@@ -13,8 +13,7 @@
 
 
 
-                    <flux:menu.item icon="user" class="cursor-pointer"
-                        x-on:click="$flux.modal('contact-modal').show()">
+                    <flux:menu.item icon="user" class="cursor-pointer" x-on:click="$flux.modal('contact-modal').show()">
                         {{ __('Créer une nouvelle conversation') }}
                     </flux:menu.item>
                     <flux:menu.separator />
@@ -25,39 +24,48 @@
                 </flux:menu>
             </flux:dropdown>
         </div>
-
         <flux:separator />
-        <flux:spacer />
 
-        <flux:navlist variant="outline" class="overflow-y-auto ">
+        <flux:navlist variant="outline" class="overflow-y-auto h-full">
             <flux:navlist.group :heading="__('Conversations Actifs')" class="grid overflow-y-auto overflow-x-hidden"
-                style="scrollbar-width: thin;">
+                style="scrollbar-width: thin;"  >
+                @foreach ($conversations as $conversation)
+                @if (!$conversation->isArchived())
+                <flux:navlist.item class="cursor-pointer"
 
-
-
-                @for ($i = 0; $i < 12; $i++) <flux:navlist.item class="cursor-pointer" :current="false" wire:navigate>
-                    <livewire:chat.components.convo />
-                    </flux:navlist.item>
-                    @endfor
+                    wire:click="toggleActive({{ $conversation->id }})"
+                    :current="$activeId == $conversation->id"
+                    :key="'convo'.-$conversation->id"
+                >
+                    <livewire:chat.components.convo :conversation="$conversation" :key="$conversation->id"/>
+                </flux:navlist.item>
+                @endif
+                @endforeach
             </flux:navlist.group>
         </flux:navlist>
 
         <flux:separator />
-        <flux:spacer />
         <flux:navlist variant="outline" class="overflow-y-auto ">
             <flux:navlist.group expandable :expanded="false" :heading="__('Conversations Archivées')"
                 class="grid overflow-y-auto  overflow-x-hidden" style="scrollbar-width: thin;">
-                @for ($i = 0; $i < 12; $i++) <flux:navlist.item class="cursor-pointer" :current="false" wire:navigate>
-                    <livewire:chat.components.convo />
-                    </flux:navlist.item>
-                    @endfor
+
+                @foreach ($conversations as $conversation)
+                @if ($conversation->isArchived())
+                <flux:navlist.item class="cursor-pointer" :current="false" >
+                    <livewire:chat.components.convo :conversation="$conversation" :key="$conversation->id" />
+                </flux:navlist.item>
+                @endif
+
+                @endforeach
+
+
             </flux:navlist.group>
         </flux:navlist>
 
 
 
         <!-- Desktop User Menu -->
-        <flux:dropdown position="bottom" align="start">
+        <flux:dropdown position="bottom" align="start" class="bottom-0 relative mt-auto">
             <flux:profile :name="auth()->user()->name" :initials="strtoupper(auth()->user()->initials())"
                 icon-trailing="chevrons-up" />
 
@@ -103,9 +111,8 @@
     <flux:header class="lg:hidden">
         <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
-        <flux:spacer />
 
-        <flux:dropdown position="top" align="end">
+        <flux:dropdown position="top" align="bottom" class="">
             <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
 
             <flux:menu>
@@ -148,5 +155,6 @@
 
     <livewire:chat.modals.contacts-modal />
     <livewire:chat.modals.groups-modal />
+
 
 </div>
