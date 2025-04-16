@@ -26,7 +26,6 @@ class GroupsModal extends Component
             ->get()
             ->except(Auth::user()->id);
     }
-
     public function createConversation()
     {
         $this->validate([
