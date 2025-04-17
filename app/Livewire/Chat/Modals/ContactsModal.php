@@ -24,11 +24,14 @@ class ContactsModal extends Component
             ->get()
             ->except(auth()->user()->id);
     }
+    
     public function selectContact($contactId)
     {
         $user = User::find($contactId);
         $conversation = $this->createConversation($user);
-
+        $this->dispatch('conversationCreated', conversationId: $conversation->id); 
+        $this->dispatch('closeModal');
+        return $conversation;
     }
 
     public function createConversation(User $user)

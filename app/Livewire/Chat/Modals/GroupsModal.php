@@ -14,6 +14,7 @@ class GroupsModal extends Component
     public $selectedUsers = [];
     public $nom = '';
 
+    
     public function mount()
     {
         $this->contacts = User::where('id', '!=', Auth::user()->id)->get();
@@ -26,6 +27,7 @@ class GroupsModal extends Component
             ->get()
             ->except(Auth::user()->id);
     }
+    
     public function createConversation()
     {
         $this->validate([
@@ -43,11 +45,12 @@ class GroupsModal extends Component
         // }
         $this->dispatch('closeModal');
         $conversationService = ConversationService::getInstance();
-
-        return $conversationService->createGroupConversation(
-                $this->nom, Auth::user(), $this->selectedUsers, false
+        $conversation =  $conversationService->createGroupConversation(
+            $this->nom, Auth::user(), $this->selectedUsers, false
         );
-
+        $this->dispatch('conversationCreated', conversationId: $conversation->id);
+        // dd($conversation);
+        return $conversation;
     }
 
     public function render()

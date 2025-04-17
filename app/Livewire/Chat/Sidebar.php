@@ -14,10 +14,15 @@ class Sidebar extends Component
 
     protected $conversationService;
 
-    public function mount(ConversationService $conversationService)
+    public function boot(ConversationService $conversationService)
     {
         $this->conversationService = $conversationService;
+    }
+
+    public function mount()
+    {
         $this->loadConversations();
+        
 
     }
 
@@ -26,10 +31,14 @@ class Sidebar extends Component
         $this->conversations = $this->conversationService->getConversationsForUser(Auth::user(), false);
 
     }
+    protected $listeners = [
+        'conversationCreated' => 'loadConversations'
+    ];
 
     public function toggleActive($conversationId)
     {
         $this->activeId = $conversationId;
+        $this->dispatch('conversationChanged', $conversationId);
     }
 
     public function render()

@@ -18,8 +18,11 @@
                         <li class="flex items-center gap-3 py-2 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-lg">
                             <flux:avatar size="sm" name="{{ $contact->name }}" color="auto" class="ml-2" />
                             <flux:heading>{{ $contact->name }}</flux:heading>
-                            <flux:checkbox wire:model="selectedUsers" value="{{ $contact->id }}"
-                                wire:key="{{ $contact->id }}" class="ml-auto mr-2" />
+                            <flux:checkbox 
+                            wire:model="selectedUsers" 
+                            value="{{ $contact->id }}"
+                            wire:key="{{ $contact->id }}" 
+                            class="ml-auto mr-2" />
                         </li>
                     @endforeach
                 </flux:checkbox.group>

@@ -17,7 +17,7 @@
 @else
 <div class="flex items-center gap-2 sm:gap-4 text-xs m-0">
 
-    <flux:avatar circle size="md" class="max-sm:size-8" name="red User" color="auto" badge badge:color="green" badge:circle />
+    <flux:avatar circle size="md" class="max-sm:size-8" name=" {{ $conversation->receiver()->name   }} " color="auto" badge badge:color="green" badge:circle />
 
     <div class="flex flex-col">
         <flux:heading class="text-sm">{{ Str::limit($conversation->name ?? 'nom invalide',10) }} </flux:heading>

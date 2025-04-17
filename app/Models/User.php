@@ -113,6 +113,24 @@ class User extends Authenticatable implements HasMedia
         $this->update(['last_seen_at' => now()]);
     }
 
+    public function inGroup(Conversation $conversation): bool
+    {
+        return $this->conversations()->where('conversation_id', $conversation->id)->exists();
+    }
+    public function isAdmin(Conversation $conversation): bool
+    {
+        return $this->conversations()
+            ->where('conversation_id', $conversation->id)
+            ->where('role', 'admin')
+            ->exists();
+    }
+    public function isMember(Conversation $conversation): bool
+    {
+        return $this->conversations()
+            ->where('conversation_id', $conversation->id)
+            ->where('role', 'member')
+            ->exists();
+    }
 
 
 }

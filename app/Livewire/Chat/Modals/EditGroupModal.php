@@ -26,7 +26,7 @@ class EditGroupModal extends Component
             ->toArray();
 
         $this->contacts = User::where('id', '!=', Auth::id())->get();
-    }
+    }   
 
     public function updateUsers()
     {
@@ -42,7 +42,7 @@ class EditGroupModal extends Component
             'selectedUsers' => 'required|array|min:2',
         ]);
         $this->dispatch('closeModal');
-
+        $this->dispatch('groupUpdated');
         $conversationService = ConversationService::getInstance();
         return $conversationService->updateGroupConversation(
             $this->conversation,
