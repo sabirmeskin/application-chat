@@ -2,15 +2,18 @@
 
 namespace App\Livewire\Chat;
 
+use App\Events\MessageSentEvent;
+use App\Events\TestEvent;
 use App\Models\Conversation;
-use App\Models\Message;
 use App\Services\ConversationService;
 use App\Services\MessageService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class Chatbox extends Component
 {
+    use WithFileUploads;
     public $conversation;
     public $messages = [];
     public $message = '';
@@ -19,11 +22,7 @@ class Chatbox extends Component
     public $typingUser = null;
     protected $conversationService;
     protected $messageService;
-    protected $listeners = [
-        'conversationChanged' => 'loadConversation',
-        'userTyping' => 'showTypingIndicator',
-        'userStoppedTyping' => 'hideTypingIndicator'
-    ];
+
 
 
     public function boot(ConversationService $conversationService, MessageService $messageService)
@@ -37,13 +36,18 @@ class Chatbox extends Component
             $this->loadConversation($conversation);
         }
     }
-
+    public function getListeners()
+    {
+        return [
+            'conversationChanged' => 'loadConversation',
+        ];
+    }
     public function loadConversation($data)
     {
 
         $conv = Conversation::find($data['conversationId']);
         $this->conversation = $this->conversationService->getConversationWithMessages($conv, 10);
-        return $this->conversation;
+        $this->conversation;
     }
 
     public function sendMessage()
@@ -63,12 +67,7 @@ class Chatbox extends Component
         // Handle file uploads if any
         if ($this->files) {
             foreach ($this->files as $file) {
-                $path = $file->store('message_attachments', 'public');
-                $message->attachments()->create([
-                    'file_path' => $path,
-                    'file_name' => $file->getClientOriginalName(),
-                    'mime_type' => $file->getMimeType(),
-                ]);
+                $message->addMedia($file)->toMediaCollection('chat');
             }
         }
 
@@ -76,41 +75,11 @@ class Chatbox extends Component
         $this->reset(['message', 'files']);
 
         // Broadcast the new message to other participants
-        $this->dispatch('messageSent', messageId: $message->id);
+        broadcast(new MessageSentEvent($message));
     }
 
-    // public function startTyping()
-    // {
-    //     $this->dispatch('userTyping', userId: Auth::id());
-    // }
 
-    // public function stopTyping()
-    // {
-    //     $this->dispatch('userStoppedTyping', userId: Auth::id());
-    // }
 
-    public function showTypingIndicator($userId)
-    {
-        if ($userId != Auth::id()) {
-            $this->isTyping = true;
-            $this->typingUser = User::find($userId);
-        }
-    }
-
-    public function hideTypingIndicator($userId)
-    {
-        if ($userId != Auth::id()) {
-            $this->isTyping = false;
-            $this->typingUser = null;
-        }
-    }
-
-    public function archiveConversation()
-    {
-        $service = app(ConversationService::class);
-        $service->archiveConversation(Auth::user(), $this->conversation);
-        $this->dispatch('conversationArchived');
-    }
 
     public function deleteConversation()
     {

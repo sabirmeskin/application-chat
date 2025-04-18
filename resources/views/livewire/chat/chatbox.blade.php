@@ -8,7 +8,7 @@
 
                         @foreach ($conversation->participants()->where('user_id', '!=', auth()->id())->get() as $participant)
 <flux:avatar 
-                        circle 
+                         circle 
                         badge badge:color="{{ $participant->is_activce_in_conversation ? 'green' : 'gray' }}"
                         badge:circle circle
                         src="https://unavatar.io/x/calebporzio"
@@ -59,22 +59,27 @@
     <div class="overflow-y-scroll p-4 space-y-4 bg-background h-[calc(100vh-200px)]"
     x-init="$nextTick(() => $el.scrollTop = $el.scrollHeight)"
     >
-    <!-- Sent Message -->
     @foreach ($conversation->messages as $msg)
 @if ($msg['sender_id'] == $this->conversation->sender()->first()->id)
 <!-- Sent Message -->
         <div class="flex items-start justify-end space-x-2">
             <div class="bg-blue-300 rounded-lg p-3 max-w-md">
+                <a href="{{ $msg->getFirstMediaUrl('chat') ?? '' }}"></a>
+                <img src="{{ $msg->getFirstMediaUrl('chat') ?? '' }}"  alt="Contact">
                 <p class="text-primary-foreground">{{ $msg['body'] }}</p>
                 <span class="text-xs text-primary-foreground/80 mt-1 block">{{ \Carbon\Carbon::parse($msg['created_at'])->format('h:i A') }}
                 </span>
             </div>
+            <flux:avatar circle src="https://unavatar.io/x/calebporzio" />
+
         </div>
 @else
 <!-- Received Message -->
         <div class="flex items-start space-x-2">
-            <img src="" class="w-8 h-8 rounded-full object-cover" alt="Contact">
+            <flux:avatar circle src="https://unavatar.io/x/calebporzio" />
             <div class="bg-gray-200 dark:bg-gray-500 rounded-lg p-3 max-w-md">
+                <a href="{{ $msg->getFirstMediaUrl('chat') ?? '' }}"></a>
+                <img src="{{ $msg->getFirstMediaUrl('chat') ?? '' }}"  alt="Contact">
                 <p class="text-foreground">{{ $msg['body'] }}</p>
                 <span class="text-xs text-muted-foreground mt-1 block">{{ \Carbon\Carbon::parse($msg['created_at'])->format('h:i A') }}</span>
             </div>
@@ -82,18 +87,8 @@
  @endif
                         @endforeach
 
-                        <!-- Received Message -->
-                        <div class="flex items-start space-x-2">
-                        <img src="" class="w-8 h-8 rounded-full object-cover" alt="Contact">
-                        <div class="bg-gray-200 dark:bg-gray-500 rounded-lg p-3 max-w-md">
-                        <p class="text-foreground">Lorem ipsum dolor sit amet consectetur
-                        adipisicing.</p>
-                        <a href="">
-                        <img src="" alt="Image" class="w-32 h-32 rounded-lg">
-                        </a>
-                        <span class="text-xs text-muted-foreground mt-1 block">il y 12 mins </span>
-                        </div>
-                        </div>
+
+
                         <!-- Typing Indicator -->
                         <div class="flex items-start space-x-2">
                         <img src="" class="w-8 h-8 rounded-full object-cover" alt="Contact">
@@ -122,8 +117,7 @@
                 </flux:button>
 
                 <input type="text" placeholder="Typer un message..." wire:model="message"
-                wire:keydown.enter="sendMessage()" wire:keydown="startTyping()"
-                wire:keydown.debounce.2000ms="stopTyping()"
+                wire:keydown.enter="sendMessage()"
                 class="flex-1 p-2 rounded-lg bg-muted text-foreground focus:outline-none focus:ring-2 dark:border-gray-700 border-gray-200 border focus:ring-primary">
                 <flux:button icon="send" class="" wire:click="sendMessage"></flux:button>
                 </div>

@@ -23,37 +23,42 @@ class Message extends Model implements HasMedia
     }
     protected $guarded = [];
 
-    public function sender(){
+    public function sender()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function receiver(){
+    public function receiver()
+    {
         return $this->belongsTo(User::class);
     }
-    public function conversation(){
+    public function conversation()
+    {
         return $this->belongsTo(Conversation::class);
     }
 
-    public function parent(){
+    public function parent()
+    {
         return $this->belongsTo(Message::class, 'parent_id');
     }
 
-    public function replies(){
+    public function replies()
+    {
         return $this->hasMany(Message::class, 'parent_id');
     }
 
-    public function markAsRead(User $user){
+    public function markAsRead(User $user)
+    {
         $this->update(['status' => 'read']);
     }
 
-    public function markAsUnread(User $user){
-        $this->update(['status'=>'unread']);
+    public function markAsUnread(User $user)
+    {
+        $this->update(['status' => 'unread']);
     }
 
-    public function markAsDelivered(User $user){
-        $this->update(['status' => 'delivered' , 'delivered_at' => now()]);
+    public function markAsDelivered(User $user)
+    {
+        $this->update(['status' => 'delivered', 'delivered_at' => now()]);
     }
-
-
-
 }
