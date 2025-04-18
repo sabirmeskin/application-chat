@@ -32,6 +32,7 @@ class Sidebar extends Component
         $this->activeId = $conversationId;
     }
 
+
     public function render()
     {
         return view('livewire.chat.sidebar');

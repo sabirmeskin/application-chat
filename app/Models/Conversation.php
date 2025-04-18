@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Conversation extends Model
 {
@@ -45,10 +46,6 @@ class Conversation extends Model
         return $this->participants->contains($user);
     }
 
-    public function activeParticipants()
-    {
-        return $this->participants->where('is_online', true)->get();
-    }
 
     public function isGroup()
     {
@@ -59,7 +56,7 @@ class Conversation extends Model
         return $this->type === 'private';
     }
     public function receiver(){
-        return $this->participants()->where('user_id', '!=', auth()->id())->first();
+        return $this->participants()->where('user_id', '!=', Auth::id())->first();
     }
     public function isArchived()
     {
