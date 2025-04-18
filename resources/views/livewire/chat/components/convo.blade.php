@@ -14,7 +14,11 @@
     </flux:avatar.group>
     <div class="flex flex-col">
         <flux:heading class="text-sm">{{ Str::limit($conversation->name  ?? 'nom invalide',10) }} </flux:heading>
+        <flux:text class="max-sm:hidden text-xs text-muted"> {{ Str::limit($conversation->lastMessage->body ?? 'No messages yet', 20) }}</flux:text>
+
     </div>
+    <flux:badge size="xs" color="blue" class="max-sm:hidden ml-auto ">{{optional($conversation->lastMessageTime)->diffForHumans() ?? '...'}}</flux:badge>
+
 </div>
 @else
 <div class="flex items-center gap-2 sm:gap-4 text-xs m-0">
