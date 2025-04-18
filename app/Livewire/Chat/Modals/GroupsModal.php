@@ -32,15 +32,7 @@ class GroupsModal extends Component
             'nom' => 'required|string|max:255',
             'selectedUsers' => 'required|array|min:2',
         ]);
-        // if (empty($this->nom)) {
-        //     $this->addError('nom', 'Le nom du groupe est requis.');
-        //         return;
-        // }
 
-        // if (count($this->selectedUsers) < 2) {
-        //     $this->addError('noUsers', 'Veuillez sélectionner au moins deux utilisateurs.');
-        //     return;
-        // }
         $this->dispatch('closeModal');
         $conversationService = ConversationService::getInstance();
 

@@ -22,6 +22,14 @@ class Conversation extends Model
     {
         return $this->hasOne(Message::class)->latest();
     }
+    public function lastMessageTime()
+    {
+        return $this->hasOne(Message::class)->latest()->select('created_at');
+    }
+    public function lastMessageSender()
+    {
+        return $this->hasOne(Message::class)->latest()->with('sender');
+    }
 
     public function archive()
     {
