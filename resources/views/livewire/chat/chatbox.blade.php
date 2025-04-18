@@ -1,47 +1,39 @@
 <div class="flex flex-col w-full">
-     <div class="p-4  bg-card flex items-center justify-between pb-3">
+    <div class="p-4  bg-card flex items-center justify-between pb-3">
 
         <div class="flex items-center space-x-5">
-            @if($conversation)
+            @if ($conversation)
                 @if ($conversation->isGroup())
+                    <flux:avatar.group class="**:ring-zinc-100 dark:**:ring-zinc-800">
 
-                <flux:avatar.group class="**:ring-zinc-100 dark:**:ring-zinc-800">
-
-                    @foreach ($conversation->participants()->where('user_id','!=',auth()->id())->get() as $participant)
-                    
-                        <flux:avatar 
+                        @foreach ($conversation->participants()->where('user_id', '!=', auth()->id())->get() as $participant)
+<flux:avatar 
                         circle 
-                        badge badge:color="{{ $participant->is_activce_in_conversation ? 'green' : 'gray'}}"
+                        badge badge:color="{{ $participant->is_activce_in_conversation ? 'green' : 'gray' }}"
                         badge:circle circle
                         src="https://unavatar.io/x/calebporzio"
                         />
-                        
-                        
-                    @endforeach
+@endforeach
 
-                        <flux:avatar circle> +{{$conversation->participants()->where('user_id','!=',auth()->id())->get()->count() - 3}} </flux:avatar>
+                        <flux:avatar circle> +{{ $conversation->participants()->where('user_id', '!=', auth()->id())->get()->count() - 3 }} </flux:avatar>
                 </flux:avatar.group>
             <div>
-                <h2 class="font-semibold text-foreground"> {{$conversation->name}} </h2>
+                <h2 class="font-semibold text-foreground"> {{ $conversation->name }} </h2>
             </div>
-
-                @else
-
-                <flux:avatar 
-                badge badge:color="{{ $conversation->participants()->where('user_id','!=',auth()->id())->first()->is_online ? 'green' : 'gray'}}"
+@else
+<flux:avatar 
+                badge badge:color="{{ $conversation->participants()->where('user_id', '!=', auth()->id())->first()->is_online? 'green': 'gray' }}"
                 badge:circle circle
                 src="https://unavatar.io/x/calebporzio"
                 />
 
             <div>
-                <h2 class="font-semibold text-foreground">{{$conversation->participants()->where('user_id','!=',
-                    auth()->id())->first()->name}} </h2>
+                <h2 class="font-semibold text-foreground">{{ $conversation->participants()->where('user_id', '!=', auth()->id())->first()->name }} </h2>
             </div>
             <div>
-                <p class="text-sm text-green">{{$conversation->participants()->where('user_id','!=',auth()->id())->first()->is_activce_in_conversation == true ? "is active" : "not active"}}  </p>
+                <p class="text-sm text-green">{{ $conversation->participants()->where('user_id', '!=', auth()->id())->first()->is_activce_in_conversation == true? 'is active': 'not active' }}  </p>
             </div>
-
-                @endif
+@endif
 
             @endif
         </div>
@@ -61,67 +53,79 @@
         </flux:dropdown>
     </div>
     <flux:separator />
+
     {{-- message area --}}
     @if ($conversation)
     <div class="overflow-y-scroll p-4 space-y-4 bg-background h-[calc(100vh-200px)]"
     x-init="$nextTick(() => $el.scrollTop = $el.scrollHeight)"
     >
     <!-- Sent Message -->
-    @foreach ($messages as $message)
-    <div class="flex items-start justify-end space-x-2">
-        <div class="bg-blue-300 rounded-lg p-3 max-w-md">
-            <p class="text-primary-foreground"> {{$message->body}} </p>
-            <a href="">
-                <img src="" alt="Image" class="w-32 h-32 rounded-lg">
-            </a>
-            <span class="text-xs text-primary-foreground/80 mt-1 block">12</span>
+    @foreach ($conversation->messages as $msg)
+@if ($msg['sender_id'] == $this->conversation->sender()->first()->id)
+<!-- Sent Message -->
+        <div class="flex items-start justify-end space-x-2">
+            <div class="bg-blue-300 rounded-lg p-3 max-w-md">
+                <p class="text-primary-foreground">{{ $msg['body'] }}</p>
+                <span class="text-xs text-primary-foreground/80 mt-1 block">{{ \Carbon\Carbon::parse($msg['created_at'])->format('h:i A') }}
+                </span>
+            </div>
         </div>
-    </div>
-    @endforeach
-      
-    <!-- Received Message -->
+@else
+<!-- Received Message -->
         <div class="flex items-start space-x-2">
             <img src="" class="w-8 h-8 rounded-full object-cover" alt="Contact">
             <div class="bg-gray-200 dark:bg-gray-500 rounded-lg p-3 max-w-md">
-                <p class="text-foreground">Lorem ipsum dolor sit amet consectetur adipisicing.</p>
-                <a href="">
-                    <img src="" alt="Image" class="w-32 h-32 rounded-lg">
-                </a>
-                <span class="text-xs text-muted-foreground mt-1 block">il y 12 mins </span>
+                <p class="text-foreground">{{ $msg['body'] }}</p>
+                <span class="text-xs text-muted-foreground mt-1 block">{{ \Carbon\Carbon::parse($msg['created_at'])->format('h:i A') }}</span>
             </div>
         </div>
-    <!-- Typing Indicator -->
-        <div class="flex items-start space-x-2">
-        <img src="" class="w-8 h-8 rounded-full object-cover" alt="Contact">
-            <div class="bg-gray-200 dark:bg-gray-500 rounded-lg p-3 max-w-md">
-                <p class="text-foreground italic">typing ...</p>
-            </div>
-        </div>
-    <livewire:chat.modals.edit-group-modal :conversation="$conversation" :key="$conversation->id">
+ @endif
+                        @endforeach
 
-    </div>
+                        <!-- Received Message -->
+                        <div class="flex items-start space-x-2">
+                        <img src="" class="w-8 h-8 rounded-full object-cover" alt="Contact">
+                        <div class="bg-gray-200 dark:bg-gray-500 rounded-lg p-3 max-w-md">
+                        <p class="text-foreground">Lorem ipsum dolor sit amet consectetur
+                        adipisicing.</p>
+                        <a href="">
+                        <img src="" alt="Image" class="w-32 h-32 rounded-lg">
+                        </a>
+                        <span class="text-xs text-muted-foreground mt-1 block">il y 12 mins </span>
+                        </div>
+                        </div>
+                        <!-- Typing Indicator -->
+                        <div class="flex items-start space-x-2">
+                        <img src="" class="w-8 h-8 rounded-full object-cover" alt="Contact">
+                        <div class="bg-gray-200 dark:bg-gray-500 rounded-lg p-3 max-w-md">
+                        <p class="text-foreground italic">typing ...</p>
+                        </div>
+                        </div>
+                        <livewire:chat.modals.edit-group-modal :conversation="$conversation" :key="$conversation->id">
 
-    @else
+                        </div>
+                    @else
+                        <div class="overflow-y-scroll p-4 space-y-4 bg-background h-[calc(100vh-200px)]"
+                        x-init="$nextTick(() => $el.scrollTop = $el.scrollHeight)"
+                        >
+                        click to start a conversation
+                        </div>
+                @endif
 
-    <div class="overflow-y-scroll p-4 space-y-4 bg-background h-[calc(100vh-200px)]"
-    x-init="$nextTick(() => $el.scrollTop = $el.scrollHeight)"
-    >
-        click to start a conversation 
-    </div>
-    @endif
-    
-    
-    <flux:separator />
-    <div class="p-4  bg-card">
-        <div class="flex items-center space-x-3">
 
-            <flux:button icon="paperclip" class="p-2">
+                <flux:separator />
+                <div class="p-4  bg-card">
+                <div class="flex items-center space-x-3">
+
+                <flux:button icon="paperclip" class="p-2">
                 <input wire:model="files" multiple type="file" class=""/>
-            </flux:button>
-            
-            <input type="text" placeholder="Typer un message..." wire:model="message" wire:keydown.enter="sendMessage()" wire:keydown="startTyping()"  wire:keydown.debounce.2000ms="stopTyping()"
+                </flux:button>
+
+                <input type="text" placeholder="Typer un message..." wire:model="message"
+                wire:keydown.enter="sendMessage()" wire:keydown="startTyping()"
+                wire:keydown.debounce.2000ms="stopTyping()"
                 class="flex-1 p-2 rounded-lg bg-muted text-foreground focus:outline-none focus:ring-2 dark:border-gray-700 border-gray-200 border focus:ring-primary">
-            <flux:button icon="send" class="" wire:click="sendMessage"></flux:button>
-        </div>
-    </div>
-</div>
+                <flux:button icon="send" class="" wire:click="sendMessage"></flux:button>
+                </div>
+                </div>
+                </div>)

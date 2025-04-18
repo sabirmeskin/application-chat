@@ -5,7 +5,8 @@ namespace App\Livewire\Chat;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Services\ConversationService;
-use Illuminate\Container\Attributes\Auth;
+use App\Services\MessageService;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Chatbox extends Component
@@ -17,7 +18,7 @@ class Chatbox extends Component
     public $isTyping = false;
     public $typingUser = null;
     protected $conversationService;
-
+    protected $messageService;
     protected $listeners = [
         'conversationChanged' => 'loadConversation',
         'userTyping' => 'showTypingIndicator',
@@ -25,24 +26,23 @@ class Chatbox extends Component
     ];
 
 
-    public function boot(ConversationService $conversationService)
+    public function boot(ConversationService $conversationService, MessageService $messageService)
     {
         $this->conversationService = $conversationService;
+        $this->messageService = $messageService;
     }
-    public function mount($conversation= null)
+    public function mount($conversation = null)
     {
         if ($conversation) {
             $this->loadConversation($conversation);
         }
     }
 
-    public function loadConversation($conversationId)
+    public function loadConversation($data)
     {
-        dd($conversationId);
-        $conversation = Conversation::findOrFail($conversationId);
-        $this->conversation = $this->conversationService->getConversationWithMessages($conversation,10);
 
-        $this->dispatch('conversationLoaded');
+        $conv = Conversation::find($data['conversationId']);
+        $this->conversation = $this->conversationService->getConversationWithMessages($conv, 10);
         return $this->conversation;
     }
 
@@ -53,11 +53,12 @@ class Chatbox extends Component
             'files.*' => 'nullable|file|max:10240', // 10MB max
         ]);
 
-        $message = Message::create([
-            'conversation_id' => $this->conversation->id,
-            'user_id' => Auth::id(),
-            'content' => $this->message,
-        ]);
+        $message = $this->messageService->sendTextMessage(
+            Auth::user(),
+            $this->conversation,
+            null,
+            $this->message
+        );
 
         // Handle file uploads if any
         if ($this->files) {
@@ -71,22 +72,22 @@ class Chatbox extends Component
             }
         }
 
-        $this->messages->push($message);
+        $this->messages[] = $message;
         $this->reset(['message', 'files']);
-        
+
         // Broadcast the new message to other participants
         $this->dispatch('messageSent', messageId: $message->id);
     }
 
-    public function startTyping()
-    {
-        $this->dispatch('userTyping', userId: Auth::id());
-    }
+    // public function startTyping()
+    // {
+    //     $this->dispatch('userTyping', userId: Auth::id());
+    // }
 
-    public function stopTyping()
-    {
-        $this->dispatch('userStoppedTyping', userId: Auth::id());
-    }
+    // public function stopTyping()
+    // {
+    //     $this->dispatch('userStoppedTyping', userId: Auth::id());
+    // }
 
     public function showTypingIndicator($userId)
     {

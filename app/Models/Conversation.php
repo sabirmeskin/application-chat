@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Conversation extends Model
 {
@@ -33,7 +34,8 @@ class Conversation extends Model
         $this->update(['archived_at' => null]);
     }
 
-    public function isParticipant(User $user){
+    public function isParticipant(User $user)
+    {
         return $this->participants->contains($user);
     }
 
@@ -50,8 +52,15 @@ class Conversation extends Model
     {
         return $this->type === 'private';
     }
-    public function receiver(){
-        return $this->participants()->where('user_id', '!=', auth()->id())->first();
+    public function receiver()
+    {
+        return $this->participants()->where('user_id', '!=', Auth::id())->first();
+    }
+    public function sender()
+    {
+        // This returns a query builder that can be used with eager loading
+        return $this->belongsToMany(User::class, 'conversation_participants')
+            ->where('user_id', Auth::id());
     }
     public function isArchived()
     {
