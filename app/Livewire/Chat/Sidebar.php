@@ -38,9 +38,15 @@ class Sidebar extends Component
         $this->activeId = $conversationId;
         $conv = Conversation::find($conversationId);
         $conversation = $this->conversationService->getConversationWithMessages($conv, 10);
+        $message = $conversation->messages()->latest()->first();
+        $user = $conversation->participants()->where('user_id', '!=', Auth::id())->first();
+        if ($message) {
+            $message->markAsRead($user);
+        }
         $this->dispatch('conversationChanged', [
             'conversationId' => $conversationId,
             'conversation' => $conversation,
+            'message' => $message,
         ]);
     }
 

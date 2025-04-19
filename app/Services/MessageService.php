@@ -64,6 +64,12 @@ class MessageService
         ]);
     }
 
+    // public function getMessageFromConversation(Conversation $conversation, int $messageId): ?Message
+    // {
+    //     return Message::where('conversation_id', $conversation->id)
+    //         ->where('id', $messageId)
+    //         ->first();
+    // }
     // public function addReaction(Message $message, string $reaction):Message
     // {
     //     $message->update([

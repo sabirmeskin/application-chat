@@ -2,9 +2,11 @@
 
 namespace App\Livewire\Chat;
 
+use App\Events\MessageDeliveredEvent;
 use App\Events\MessageSentEvent;
 use App\Events\TestEvent;
 use App\Models\Conversation;
+use App\Models\Message;
 use App\Services\ConversationService;
 use App\Services\MessageService;
 use Illuminate\Support\Facades\Auth;
@@ -40,14 +42,18 @@ class Chatbox extends Component
     {
         return [
             'conversationChanged' => 'loadConversation',
+            'echo-private:test,MessageDeliveredEvent' => 'handleMessageDelivered',
+            'echo-private:conversation,MessageSentEvent' => 'handleIncomingMessage',
         ];
     }
     public function loadConversation($data)
     {
 
         $conv = Conversation::find($data['conversationId']);
+        $msg = Message::find($data['message']['id']);
+        dd($msg);
         $this->conversation = $this->conversationService->getConversationWithMessages($conv, 10);
-        $this->conversation;
+        broadcast(new MessageDeliveredEvent($msg));
     }
 
     public function sendMessage()
@@ -78,6 +84,25 @@ class Chatbox extends Component
         broadcast(new MessageSentEvent($message));
     }
 
+    public function handleIncomingMessage($event)
+    {
+        $message = $event['message'];
+
+        // Check if the message is part of the current conversation
+        if ($this->conversation && $this->conversation->id === $message['conversation_id']) {
+            $this->messages[] = $message;
+        }
+    }
+    public function handleMessageDelivered($event)
+    {
+
+        // $message = $event['message'];
+        dd($event);
+        // Check if the message is part of the current conversation
+        if ($this->conversation && $this->conversation->id === $event['conversation_id']) {
+            $this->messages[] = $event;
+        }
+    }
 
 
 
