@@ -12,6 +12,22 @@ class Convo extends Component
     {
         $this->conversation = $conversation;
     }
+    public function getListeners()
+    {
+        return [
+            'messageSent' => 'updateConversations',
+            'echo-private:conversation,MessageSentEvent' => 'handleIncomingMessage',
+        ];
+    }
+    public function updateConversations($message)
+    {
+        if (!$message) {
+            return;
+        }
+        $this->dispatch('messageDelivered', [
+            'message' => $message,
+        ]);
+    }
     public function render()
     {
         return view('livewire.chat.components.convo');

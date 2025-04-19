@@ -33,7 +33,7 @@ class MessageDeliveredEvent implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('test'),
+            new PrivateChannel('conversation'),
         ];
     }
     public function broadcastWith()

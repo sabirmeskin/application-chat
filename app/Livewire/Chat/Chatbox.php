@@ -42,7 +42,6 @@ class Chatbox extends Component
     {
         return [
             'conversationChanged' => 'loadConversation',
-            'echo-private:test,MessageDeliveredEvent' => 'handleMessageDelivered',
             'echo-private:conversation,MessageSentEvent' => 'handleIncomingMessage',
         ];
     }
@@ -51,9 +50,9 @@ class Chatbox extends Component
 
         $conv = Conversation::find($data['conversationId']);
         $msg = Message::find($data['message']['id']);
-        dd($msg);
+        if ($msg->sender_id !== Auth::user()->id) {
+        }
         $this->conversation = $this->conversationService->getConversationWithMessages($conv, 10);
-        broadcast(new MessageDeliveredEvent($msg));
     }
 
     public function sendMessage()
@@ -79,7 +78,9 @@ class Chatbox extends Component
 
         $this->messages[] = $message;
         $this->reset(['message', 'files']);
-
+        $this->dispatch('messageSent', [
+            'message' => $message,
+        ]);
         // Broadcast the new message to other participants
         broadcast(new MessageSentEvent($message));
     }
@@ -93,16 +94,7 @@ class Chatbox extends Component
             $this->messages[] = $message;
         }
     }
-    public function handleMessageDelivered($event)
-    {
 
-        // $message = $event['message'];
-        dd($event);
-        // Check if the message is part of the current conversation
-        if ($this->conversation && $this->conversation->id === $event['conversation_id']) {
-            $this->messages[] = $event;
-        }
-    }
 
 
 
