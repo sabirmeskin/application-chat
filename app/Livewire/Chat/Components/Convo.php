@@ -16,7 +16,7 @@ class Convo extends Component
     {
         return [
             'messageSent' => 'updateConversations',
-            'echo-private:conversation,MessageSentEvent' => 'handleIncomingMessage',
+
         ];
     }
     public function updateConversations($message)

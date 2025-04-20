@@ -42,7 +42,7 @@ class Chatbox extends Component
     {
         return [
             'conversationChanged' => 'loadConversation',
-            'echo-private:conversation,MessageSentEvent' => 'handleIncomingMessage',
+            "echo-private:conversation,MessageSentEvent' => 'handleIncomingMessage",
         ];
     }
     public function loadConversation($data)

@@ -113,7 +113,7 @@ class ConversationService
         $$conversation = Conversation::with([
             'sender',        // Load the sender relationship
             'messages' => function ($query) use ($int) {
-                $query->orderBy('created_at', 'desc')->take($int);
+                $query->orderBy('created_at', 'desc')->take($int)->get();
             },
         ])->find($conversation->id);
         return $conversation;

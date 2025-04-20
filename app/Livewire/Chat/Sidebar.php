@@ -31,14 +31,23 @@ class Sidebar extends Component
     {
         $this->conversations = $this->conversationService->getConversationsForUser(Auth::user(), false);
     }
-    protected $listeners = [];
+
     public function getListeners()
     {
-        return [
-            'echo-private:conversation,MessageDeliveredEvent' => 'handleMessageDelivered',
-            'conversationCreated' => 'loadConversations',
-            'messageDlivered' => 'updateSidebar',
-        ];
+        $listeners = [];
+        foreach ($this->conversations as $conversation) {
+            foreach ($conversation->participants as $key => $value) {
+                $listeners["echo-private:conversation,MessageDeliveredEvent'"] = 'handleMessageDelivered';
+            }
+        }
+        $listeners['conversationChanged'] = 'loadConversations';
+        $listeners['messageDelivered'] = 'updateSidebar';
+        return $listeners;
+        // return [
+        //     "echo-private:conversation,MessageDeliveredEvent' => 'handleMessageDelivered",
+        //     'conversationCreated' => 'loadConversations',
+        //     'messageDelivered' => 'updateSidebar',
+        // ];
     }
     public function toggleActive($conversationId)
     {
@@ -58,22 +67,20 @@ class Sidebar extends Component
         if (!$message) {
             return;
         }
-        $msg = Message::find($message['message']['id']);
-        broadcast(new MessageDeliveredEvent($msg));
+        $msg = Message::find($message['message']['message']['id']);
+        broadcast(new MessageDeliveredEvent($msg))->toOthers();
     }
     public function handleMessageDelivered($event)
     {
-
-        // $message = $event['message'];
-        // dd($event);
         $message = Message::find($event['message']['id']);
         $user = $message->receiver;
-        // dd($user);
-        // Check if the message is part of the current conversation
         if ($message->receiver_id === Auth::user()->id) {
             $message->markAsDelivered($user);
-            $this->loadConversations();
+            $this->dispatch('Delivered', [
+                'message' => $message,
+            ]);
         }
+        $this->loadConversations();
     }
     public function render()
     {
