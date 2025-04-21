@@ -55,6 +55,7 @@ class Sidebar extends Component
         $this->toggleActive($conversation['conversation']['id']);
     }
 
+
     public function render()
     {
         return view('livewire.chat.sidebar');

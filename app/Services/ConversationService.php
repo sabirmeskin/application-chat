@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use App\Events\ConversationCreatedEvent;
 
 class ConversationService
 {
@@ -39,6 +40,8 @@ class ConversationService
             ->first();
 
         if ($existingConversation) {
+            broadcast(new ConversationCreatedEvent($existingConversation));
+
             return $existingConversation;
         }
 
@@ -55,6 +58,9 @@ class ConversationService
             'conversation_id' => $conversation->id,
             'user_id' => $receiver->id,
         ]);
+
+        broadcast(new ConversationCreatedEvent($conversation));
+
         return $conversation;
 
     }
@@ -68,6 +74,7 @@ class ConversationService
             ->where('name', $name)
             ->first();
         if ($existingConversation) {
+            broadcast(new ConversationCreatedEvent($existingConversation));
             return $existingConversation;
         }
         // Create a new group conversation
@@ -93,6 +100,9 @@ class ConversationService
                 'role' => 'member',
             ]);
         }
+
+        broadcast(new ConversationCreatedEvent($conversation));
+
         return $conversation;
     }
     public function getConversationsForUser(User $user,$includeArchived = false): Collection

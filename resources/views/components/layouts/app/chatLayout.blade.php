@@ -13,7 +13,7 @@
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800">
 
-        <div class="flex flex-row gap-1.5">
+        <div class="flex flex-row">
 
             <livewire:chat.sidebar  />
 

@@ -4,8 +4,8 @@ namespace App\Livewire\Chat\Modals;
 
 use App\Models\User;
 use App\Services\ConversationService;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
-use Illuminate\Support\Facades\App;
 
 class ContactsModal extends Component
 {
@@ -15,14 +15,14 @@ class ContactsModal extends Component
 
     public function mount()
     {
-        $this->contacts = User::where('id', '!=', auth()->user()->id)->get();
+        $this->contacts = User::where('id', '!=', Auth::user()->id)->get();
     }
 
     public function updateUsers()
     {
         $this->contacts = User::where('name', 'like', '%' . $this->search . '%')
             ->get()
-            ->except(auth()->user()->id);
+            ->except(Auth::user()->id);
     }
     public function selectContact($contactId)
     {
@@ -40,7 +40,7 @@ class ContactsModal extends Component
         $conversationService = ConversationService::getInstance();
         if ($user) {
            return $conversationService->createPrivateConversation(
-                auth()->user(),
+                Auth::user(),
                 $user,
                 false
             );
