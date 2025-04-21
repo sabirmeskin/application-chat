@@ -29,8 +29,15 @@ class GroupsModal extends Component
     public function createConversation()
     {
         $this->validate([
-            'nom' => 'required|string|max:255',
+            'nom' => 'required|string|max:255|min:3',
             'selectedUsers' => 'required|array|min:2',
+        ], [
+            'nom.required' => 'Le nom du groupe est requis.',
+            'nom.string' => 'Le nom du groupe doit être une chaîne de caractères.',
+            'nom.max' => 'Le nom du groupe ne peut pas dépasser 255 caractères.',
+            'selectedUsers.required' => 'Vous devez sélectionner au moins deux utilisateurs.',
+            'selectedUsers.array' => 'Les utilisateurs sélectionnés doivent être sous forme de tableau.',
+            'selectedUsers.min' => 'Vous devez sélectionner au moins deux utilisateurs.',
         ]);
 
         $this->dispatch('closeModal');

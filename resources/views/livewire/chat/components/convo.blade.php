@@ -4,11 +4,15 @@
 
     <flux:avatar.group class="**:ring-zinc-100 dark:**:ring-zinc-800">
         @foreach ($conversation->participants->take(3) as $user)
+        <flux:tooltip content="{{ $user->name }}" placement="top">
             <flux:avatar circle size="xs" class="max-sm:size-8" name="{{ $user->name }}" color="auto" badge badge:color="{{ $user->is_online ? 'green' : 'gray' }}" badge:circle badge:position="top left" badge:variant="xs" />
+        </flux:tooltip>
         @endforeach
 
         @if ($conversation->participants->count() > 3)
+        <flux:tooltip content="{{ $conversation->participants->count() - 3 }} autres" placement="top" >
             <flux:avatar size="xs" circle>{{ $conversation->participants->count() - 3 }}+</flux:avatar>
+        </flux:tooltip>
         @endif
 
     </flux:avatar.group>

@@ -16,7 +16,7 @@
 
                 <flux:spacer />
                 <flux:input placeholder="Rechercher des utilisateurs" class="w-full mt-2" icon-trailing="magnifying-glass" clearable wire:model.defer='search' wire:keyup='updateUsers' autocomplete="off" />
-                <flux:error name="noUsers" />
+                {{-- <flux:error name="noUsers" /> --}}
             </div>
             <form action="">
             <ul class="flex flex-col gap-3 h-[calc(100vh-400px)] overflow-y-scroll mt-8 ">
