@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use App\Events\ConversationCreatedEvent;
 
 class ConversationService
 {
@@ -55,6 +56,9 @@ class ConversationService
             'conversation_id' => $conversation->id,
             'user_id' => $receiver->id,
         ]);
+
+        event(new ConversationCreatedEvent($conversation));
+
         return $conversation;
 
     }
@@ -93,6 +97,9 @@ class ConversationService
                 'role' => 'member',
             ]);
         }
+
+        event(new ConversationCreatedEvent($conversation));
+
         return $conversation;
     }
     public function getConversationsForUser(User $user,$includeArchived = false): Collection
