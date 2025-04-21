@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Chat;
 
+use App\Models\Conversation;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Services\ConversationService;
@@ -32,6 +33,20 @@ class Sidebar extends Component
         $this->activeId = $conversationId;
     }
 
+    public function getListeners()
+    {
+       return [
+        'echo:private-conversation,ConversationCreatedEvent' => 'UpdateConversations',
+       ];
+    }
+    public function UpdateConversations($event)
+    {
+        $newConversation = Conversation::find($event['conversation']['id']);
+        if ($newConversation->isParticipant(Auth::user()) &&
+            !collect($this->conversations)->contains('id', $newConversation->id)) {
+            $this->conversations[] = $newConversation;
+        }
+    }
 
     public function render()
     {
