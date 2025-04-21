@@ -15,3 +15,13 @@ Broadcast::channel('conversation', function () {
 // Broadcast::channel('conversation', function () {
 //     return true;
 // });
+Broadcast::channel('chat.{conversationId}', function ($user, $conversationId) {
+    $conversation = Conversation::find($conversationId);
+    if (!$conversation) {
+        return false;
+    }
+    $participant = ConversationParticipant::where('user_id', $user->id)
+        ->where('conversation_id', $conversationId)
+        ->first();
+    return $participant !== null;
+});

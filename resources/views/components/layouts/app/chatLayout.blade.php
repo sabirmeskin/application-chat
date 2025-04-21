@@ -17,7 +17,7 @@
 
             <livewire:chat.sidebar  />
 
-                <livewire:chat.chatbox />
+            <livewire:chat.chatbox />
 
         </div>
 

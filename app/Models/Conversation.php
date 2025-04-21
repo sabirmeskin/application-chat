@@ -21,6 +21,7 @@ class Conversation extends Model
 
     public function lastMessage()
     {
+
         return $this->hasOne(Message::class)->latest();
     }
     public function lastMessageTime()
@@ -61,5 +62,14 @@ class Conversation extends Model
     public function isArchived()
     {
         return $this->archived_at !== null;
+    }
+
+    public function ConversationName(){
+        if ($this->isGroup()) {
+            return $this->name;
+        } else {
+            $receiver = $this->receiver();
+            return $receiver ? $receiver->name : 'Unknown';
+        }
     }
 }

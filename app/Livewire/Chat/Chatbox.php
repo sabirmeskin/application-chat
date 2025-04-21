@@ -3,7 +3,11 @@
 namespace App\Livewire\Chat;
 
 use App\Models\Conversation;
+use App\Services\MessageService;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 use Livewire\Component;
+
 
 class Chatbox extends Component
 {
@@ -11,10 +15,33 @@ class Chatbox extends Component
     public $message = '';
     public $conversation;
 
+    #[On('conversationSelected')]
+    public function conversationSelected($conversationId)
+    {
+        $this->conversation = Conversation::find($conversationId);
+        $this->messages = $this->conversation->messages;
+    }
+
+    public function sendMessage(MessageService $messageService)
+    {
+        if (trim($this->message) === '') {
+            return;
+        }
+
+       $newMessage =  $messageService->sendTextMessage(
+            Auth::user(),
+            $this->conversation,
+            null,
+            $this->message
+        );
+        $this->messages [] = $newMessage;
+        $this->message = '';
+    }
+
+
     public function mount()
     {
-        $this->conversation = Conversation::find(13);
-        $this->messages = $this->conversation->messages()->with('user')->get();
+
     }
     public function render()
     {
