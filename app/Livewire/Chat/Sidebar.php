@@ -55,6 +55,20 @@ class Sidebar extends Component
         $this->toggleActive($conversation['conversation']['id']);
     }
 
+    public function getListeners()
+    {
+       return [
+        'echo:private-conversation,ConversationCreatedEvent' => 'UpdateConversations',
+       ];
+    }
+    public function UpdateConversations($event)
+    {
+        $newConversation = Conversation::find($event['conversation']['id']);
+        if ($newConversation->isParticipant(Auth::user()) &&
+            !collect($this->conversations)->contains('id', $newConversation->id)) {
+            $this->conversations[] = $newConversation;
+        }
+    }
 
     public function render()
     {
