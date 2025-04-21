@@ -28,6 +28,10 @@ class ContactsModal extends Component
     {
         $user = User::find($contactId);
         $conversation = $this->createConversation($user);
+        if ($conversation) {
+            $this->dispatch('openConversation', ['conversation'=>$conversation]);
+        }
+        $this->dispatch('closeModal');
 
     }
 
