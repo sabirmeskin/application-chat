@@ -40,6 +40,8 @@ class ConversationService
             ->first();
 
         if ($existingConversation) {
+            broadcast(new ConversationCreatedEvent($existingConversation));
+
             return $existingConversation;
         }
 
@@ -57,7 +59,7 @@ class ConversationService
             'user_id' => $receiver->id,
         ]);
 
-        event(new ConversationCreatedEvent($conversation));
+        broadcast(new ConversationCreatedEvent($conversation));
 
         return $conversation;
 
@@ -72,6 +74,7 @@ class ConversationService
             ->where('name', $name)
             ->first();
         if ($existingConversation) {
+            broadcast(new ConversationCreatedEvent($existingConversation));
             return $existingConversation;
         }
         // Create a new group conversation
@@ -98,7 +101,7 @@ class ConversationService
             ]);
         }
 
-        event(new ConversationCreatedEvent($conversation));
+        broadcast(new ConversationCreatedEvent($conversation));
 
         return $conversation;
     }

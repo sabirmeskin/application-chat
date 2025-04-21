@@ -26,12 +26,5 @@ class ConversationCreatedEvent implements ShouldBroadcast
         return new PrivateChannel('conversations.' . $this->conversation->id);
     }
 
-    public function broadcastWith()
-    {
-        return [
-            'id' => $this->conversation->id,
-            'name' => $this->conversation->name,
-            'type' => $this->conversation->type,
-        ];
-    }
+
 }
