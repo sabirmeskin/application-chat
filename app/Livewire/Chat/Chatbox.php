@@ -60,6 +60,8 @@ class Chatbox extends Component
         );
         $this->messages[] = $newMessage;
         $this->message = '';
+        // $this->dispatchBrowserEvent('scrollToBottom');
+        $this->dispatch('messageSent', $newMessage);
     }
     // if (!$this->conversation) {
     //     return [];
@@ -75,8 +77,10 @@ class Chatbox extends Component
     {
         return [
             "echo-private:chat,MessageSentEvent" => 'handleMessageSentEvent',
+
         ];
     }
+
     public function handleMessageSentEvent($event)
     {
         // dd($event['message']['id']);

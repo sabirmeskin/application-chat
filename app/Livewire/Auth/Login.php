@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Auth;
 
+use App\Events\UserStatusEvent;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -42,7 +43,6 @@ class Login extends Component
 
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
-
         $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
     }
 

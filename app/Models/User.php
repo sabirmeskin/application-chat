@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Events\UserStatusEvent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -101,11 +103,14 @@ class User extends Authenticatable implements HasMedia
     public function markAsOnline()
     {
         $this->update(['is_online' => true]);
+        broadcast(new UserStatusEvent($this, true))->toOthers();
     }
 
     public function markAsOffline()
     {
-        $this->update(['is_online' => false]);
+        $this->update(['is_online' => false, 'last_seen_at' => now()]);
+        broadcast(new UserStatusEvent($this, true))->toOthers();
+
     }
 
     public function updateLastSeen()

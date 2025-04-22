@@ -121,7 +121,7 @@ class ConversationService
     public function getConversationWithMessages($conversationId, $int): Conversation
     {
         $conversation = Conversation::with(['messages' => function ($query) use ($int) {
-            $query->orderBy('created_at', 'desc')->take($int);
+            $query->orderBy('created_at', 'asc')->take($int);
         }])->find($conversationId);
 
         return $conversation;
