@@ -11,7 +11,7 @@ class Sidebar extends Component
 {
 
     public $conversations = [];
-    public $activeId ;
+    public $activeId;
 
     protected $conversationService;
 
@@ -24,7 +24,6 @@ class Sidebar extends Component
     public function loadConversations()
     {
         $this->conversations = $this->conversationService->getConversationsForUser(Auth::user(), false);
-
     }
 
     public function toggleActive($conversationId)
@@ -35,17 +34,19 @@ class Sidebar extends Component
 
     public function getListeners()
     {
-       return [
-        'echo:private-conversation,ConversationCreatedEvent' => 'UpdateConversations',
-       ];
+        return [
+            'echo:private-conversation,ConversationCreatedEvent' => 'UpdateConversations',
+        ];
     }
 
 
     public function UpdateConversations($event)
     {
         $newConversation = Conversation::find($event['conversation']['id']);
-        if ($newConversation->isParticipant(Auth::user()) &&
-            !collect($this->conversations)->contains('id', $newConversation->id)) {
+        if (
+            $newConversation->isParticipant(Auth::user()) &&
+            !collect($this->conversations)->contains('id', $newConversation->id)
+        ) {
             $this->conversations[] = $newConversation;
         }
     }

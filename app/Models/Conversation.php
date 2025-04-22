@@ -43,7 +43,8 @@ class Conversation extends Model
         $this->update(['archived_at' => null]);
     }
 
-    public function isParticipant(User $user){
+    public function isParticipant(User $user)
+    {
         return $this->participants->contains($user);
     }
 
@@ -56,7 +57,8 @@ class Conversation extends Model
     {
         return $this->type === 'private';
     }
-    public function receiver(){
+    public function receiver()
+    {
         return $this->participants()->where('user_id', '!=', Auth::id())->first();
     }
     public function isArchived()
@@ -64,7 +66,8 @@ class Conversation extends Model
         return $this->archived_at !== null;
     }
 
-    public function ConversationName(){
+    public function ConversationName()
+    {
         if ($this->isGroup()) {
             return $this->name;
         } else {

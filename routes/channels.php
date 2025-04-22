@@ -9,7 +9,7 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 });
 
 Broadcast::channel('conversation', function () {
-   return true;
+    return true;
 });
 
 // Broadcast::channel('conversation', function () {
@@ -17,6 +17,7 @@ Broadcast::channel('conversation', function () {
 // });
 Broadcast::channel('chat.{conversationId}', function ($user, $conversationId) {
     $conversation = Conversation::find($conversationId);
+
     if (!$conversation) {
         return false;
     }
@@ -24,4 +25,8 @@ Broadcast::channel('chat.{conversationId}', function ($user, $conversationId) {
         ->where('conversation_id', $conversationId)
         ->first();
     return $participant !== null;
+});
+Broadcast::channel('chat', function () {
+
+    return true;
 });

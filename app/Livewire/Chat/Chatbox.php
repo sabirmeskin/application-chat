@@ -3,6 +3,8 @@
 namespace App\Livewire\Chat;
 
 use App\Models\Conversation;
+use App\Models\Message;
+use App\Services\ConversationService;
 use App\Services\MessageService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
@@ -13,13 +15,35 @@ class Chatbox extends Component
 {
     public $messages = [];
     public $message = '';
+    public $receiver_id;
+    public $sender_id;
     public $conversation;
+    protected $conversationService;
+    protected $messageService;
 
+    public function mount(ConversationService $conversationService, MessageService $messageService)
+    {
+        $this->conversationService = $conversationService;
+        $this->messageService = $messageService;
+    }
+
+    public function hydrate()
+    {
+        $this->conversationService = app(ConversationService::class);
+        $this->messageService = app(MessageService::class);
+    }
     #[On('conversationSelected')]
     public function conversationSelected($conversationId)
     {
-        $this->conversation = Conversation::find($conversationId);
-        $this->messages = $this->conversation->messages;
+        // $conversation = Conversation::find($conversationId);
+        $conversation = $this->conversationService->getConversationWithMessages($conversationId, 10);
+        $this->messages = $conversation->messages;
+        $receiver = $conversation->participants()
+            ->where('user_id', '!=', Auth::id())
+            ->first();
+        $this->sender_id = Auth::id();
+        $this->receiver_id = $receiver->id;
+        $this->conversation = $conversation;
     }
 
     public function sendMessage(MessageService $messageService)
@@ -28,34 +52,38 @@ class Chatbox extends Component
             return;
         }
 
-       $newMessage =  $messageService->sendTextMessage(
+        $newMessage =  $messageService->sendTextMessage(
             Auth::user(),
             $this->conversation,
             null,
             $this->message
         );
-        $this->messages [] = $newMessage;
+        $this->messages[] = $newMessage;
         $this->message = '';
     }
-
+    // if (!$this->conversation) {
+    //     return [];
+    // }
+    // return [
+    //     "echo-private:chat.{$this->conversation->id},MessageSentEvent" => 'test',
+    // ];
+    // $listeners = [];
+    // if ($this->conversation) {
+    //     $listeners["echo-private:chat.{$this->conversation->id},MessageSentEvent"] = 'test';
+    // }
     public function getListeners()
     {
-        if (!$this->conversation) {
-            return [];
-        }
         return [
-            "echo-private:chat.{$this->conversation->id},MessageSentEvent" => 'test',
+            "echo-private:chat,MessageSentEvent" => 'handleMessageSentEvent',
         ];
     }
-    public function test($event)
+    public function handleMessageSentEvent($event)
     {
-       dd($event) ;
+        // dd($event['message']['id']);
+        $msg = $this->messageService->getMessageById($event['message']['id']);
+        $this->messages[] = $msg;
     }
 
-    public function mount()
-    {
-
-    }
     public function render()
     {
         return view('livewire.chat.chatbox');

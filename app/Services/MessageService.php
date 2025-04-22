@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Events\MessageSentEvent;
@@ -18,7 +19,7 @@ class MessageService
      * @param string $body
      * @return Message
      */
-    public function sendTextMessage(User $sender, Conversation $conversation, Message $parent = null , string $body):Message
+    public function sendTextMessage(User $sender, Conversation $conversation, Message $parent = null, string $body): Message
     {
         $message = Message::create([
             'conversation_id' => $conversation->id,
@@ -29,11 +30,11 @@ class MessageService
             'body' => $body,
 
         ]);
-        broadcast(new MessageSentEvent($message));
+        broadcast(new MessageSentEvent($message))->toOthers();
         return $message;
     }
 
-    public function sendMediaMessage(User $sender, Conversation $conversation, Message $parent = null , string $body):Message
+    public function sendMediaMessage(User $sender, Conversation $conversation, Message $parent = null, string $body): Message
     {
         $message = Message::create([
             'conversation_id' => $conversation->id,
@@ -48,7 +49,7 @@ class MessageService
         return $message;
     }
 
-    public function editMessage(Message $message, string $body):Message
+    public function editMessage(Message $message, string $body): Message
     {
         $message->update([
             'body' => $body,
@@ -56,7 +57,7 @@ class MessageService
         return $message;
     }
 
-    public function deleteMessage(Message $message):void
+    public function deleteMessage(Message $message): void
 
     {
         $message->update([
@@ -64,6 +65,10 @@ class MessageService
         ]);
     }
 
+    public function getMessageById(int $id): ?Message
+    {
+        return Message::find($id);
+    }
     // public function addReaction(Message $message, string $reaction):Message
     // {
     //     $message->update([

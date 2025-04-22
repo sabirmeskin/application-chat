@@ -27,15 +27,15 @@ class ConversationService
         // Initialize any dependencies or properties here
     }
 
-    public function createPrivateConversation(User $sender,User $receiver,$encrypted = false):Conversation
+    public function createPrivateConversation(User $sender, User $receiver, $encrypted = false): Conversation
     {
         // Check if a private conversation already exists between the sender and receiver
         $existingConversation = Conversation::where('type', 'private')
             ->whereHas('participants', function ($query) use ($sender) {
-            $query->where('user_id', $sender->id);
+                $query->where('user_id', $sender->id);
             })
             ->whereHas('participants', function ($query) use ($receiver) {
-            $query->where('user_id', $receiver->id);
+                $query->where('user_id', $receiver->id);
             })
             ->first();
 
@@ -62,10 +62,9 @@ class ConversationService
         broadcast(new ConversationCreatedEvent($conversation));
 
         return $conversation;
-
     }
 
-    public function createGroupConversation($name,User $admin, array $users,$encrypted = false):Conversation
+    public function createGroupConversation($name, User $admin, array $users, $encrypted = false): Conversation
     {
 
 
@@ -105,7 +104,7 @@ class ConversationService
 
         return $conversation;
     }
-    public function getConversationsForUser(User $user,$includeArchived = false): Collection
+    public function getConversationsForUser(User $user, $includeArchived = false): Collection
     {
         $query = Conversation::whereHas('participants', function ($query) use ($user) {
             $query->where('user_id', $user->id);
@@ -118,18 +117,16 @@ class ConversationService
         $conversations = $query->with(['participants', 'messages'])->get();
 
         return $conversations;
-
     }
-    public function getConversationWithMessages(Conversation $conversation,$int):Conversation
+    public function getConversationWithMessages($conversationId, $int): Conversation
     {
         $conversation = Conversation::with(['messages' => function ($query) use ($int) {
             $query->orderBy('created_at', 'desc')->take($int);
-        }])->find($conversation->id);
+        }])->find($conversationId);
 
         return $conversation;
-
     }
-    public function archiveConversation(User $user,Conversation $conversation):Conversation
+    public function archiveConversation(User $user, Conversation $conversation): Conversation
     {
         $conversation->archive();
         ConversationParticipant::where('conversation_id', $conversation->id)
@@ -138,7 +135,7 @@ class ConversationService
 
         return $conversation;
     }
-    public function unarchiveConversation(User $user,Conversation $conversation):Conversation
+    public function unarchiveConversation(User $user, Conversation $conversation): Conversation
     {
         $conversation->unarchive();
         ConversationParticipant::where('conversation_id', $conversation->id)
@@ -147,7 +144,7 @@ class ConversationService
 
         return $conversation;
     }
-    public function getPrivateConversationBetween(User $sender,User $receiver):Conversation
+    public function getPrivateConversationBetween(User $sender, User $receiver): Conversation
     {
         $conversation = Conversation::where('type', 'private')
             ->whereHas('participants', function ($query) use ($sender, $receiver) {
@@ -176,7 +173,7 @@ class ConversationService
             ->with(['participants', 'messages'])
             ->get();
     }
-    public function updateGroupConversation(Conversation $conversation,string $name, array $newParticipants): Conversation
+    public function updateGroupConversation(Conversation $conversation, string $name, array $newParticipants): Conversation
     {
         // Check if the conversation is a group conversation
         if ($conversation->type !== 'group') {
