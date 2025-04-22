@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Chat;
 
+use App\Events\UserActiveInConversationEvent;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Services\ConversationService;
@@ -44,6 +45,7 @@ class Chatbox extends Component
         $this->sender_id = Auth::id();
         $this->receiver_id = $receiver->id;
         $this->conversation = $conversation;
+
     }
 
     public function sendMessage(MessageService $messageService)
@@ -77,10 +79,10 @@ class Chatbox extends Component
     {
         return [
             "echo-private:chat,MessageSentEvent" => 'handleMessageSentEvent',
-
         ];
     }
 
+   
     public function handleMessageSentEvent($event)
     {
         // dd($event['message']['id']);

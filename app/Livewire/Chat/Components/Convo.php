@@ -14,11 +14,17 @@ class Convo extends Component
         return [
             "echo-private:chat,MessageSentEvent" => 'updateconversationForReceiver',
             'messageSent' => 'updateconversationForSender',
+            'echo-private:user.active,user.active' => 'handleUserActive',
+
         ];
     }
     public function mount($conversation)
     {
         $this->conversation = $conversation;
+    }
+    public function handleUserActive($event)
+    {
+        dd($event);
     }
     public function updateconversationForSender($event)
     {

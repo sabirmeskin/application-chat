@@ -32,7 +32,6 @@
                 @foreach ($conversations as $conversation)
                 @if (!$conversation->isArchived())
                 <flux:navlist.item class="cursor-pointer"
-
                     wire:click="toggleActive({{ $conversation->id }})"
                     :current="$activeId == $conversation->id"
                     :key="'convo'.-$conversation->id"

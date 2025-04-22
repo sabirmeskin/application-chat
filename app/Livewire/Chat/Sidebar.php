@@ -35,8 +35,13 @@ class Sidebar extends Component
     public function toggleActive($conversationId)
     {
         $this->activeId = $conversationId;
-        broadcast(new UserActiveInConversationEvent(Auth::user(), $conversationId))->toOthers();
         $this->dispatch('conversationSelected', $conversationId);
+        broadcast(
+            new UserActiveInConversationEvent(
+                Auth::user(),
+                $conversationId
+            )
+        );
     }
 
     public function getListeners()
@@ -47,15 +52,13 @@ class Sidebar extends Component
             'echo-presence:users.online,joining' => 'handleUserJoining',
             'echo-presence:users.online,leaving' => 'handleUserLeaving',
             'echo:users.online,UserOnlineStatusChanged' => 'handleStatusChange',
-            "echo-private:user.active,user.active" => 'handleUserActive',
         ];
+        
+
+        // Add the listeners to the component
+
     }
-    
-    public function handleUserActive($event)
-    {
-        dd($event);
-    }
-  
+ 
     public function handleUsersHere($event)
     {
         $userIds = collect($event)->pluck('id');

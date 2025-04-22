@@ -40,6 +40,7 @@ class UserActiveInConversationEvent implements ShouldBroadcastNow
             new PrivateChannel('user.active'),
         ];
     }
+    
     public function broadcastWith()
     {
         return [
@@ -49,6 +50,10 @@ class UserActiveInConversationEvent implements ShouldBroadcastNow
             ],
             'conversationId' => $this->conversationId,
         ];
+    }
+    public function broadcastAs()
+    {
+        return 'user.active';
     }
 
 }

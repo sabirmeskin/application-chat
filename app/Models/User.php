@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Events\UserActiveInConversationEvent;
 use App\Events\UserStatusEvent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -79,7 +80,7 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->hasOne(Message::class, 'sender_id')->latest();
     }
-
+    
     public function conversations()
     {
         return $this->belongsToMany(Conversation::class,'conversation_participants')->withTimestamps();
@@ -118,6 +119,20 @@ class User extends Authenticatable implements HasMedia
         $this->update(['last_seen_at' => now()]);
     }
 
+    public function isActiveInConversation($conversationId)
+    {
+        return $this->conversations()->where('conversation_id', $conversationId)->exists();
+    }
+    public function markAsInactiveInConversation($conversationId)
+    {
+        $this->is_activce_in_conversation = false;
+        $this->conversations()->detach($conversationId);
+    }
+    public function markAsActiveInConversation($conversationId)
+    {
+        $this->is_activce_in_conversation = true;
+
+    }
 
 
 }
