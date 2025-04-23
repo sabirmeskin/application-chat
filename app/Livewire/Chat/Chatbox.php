@@ -2,9 +2,7 @@
 
 namespace App\Livewire\Chat;
 
-use App\Events\UserActiveInConversationEvent;
-use App\Models\Conversation;
-use App\Models\Message;
+
 use App\Services\ConversationService;
 use App\Services\MessageService;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +13,7 @@ use Livewire\Component;
 class Chatbox extends Component
 {
     public $messages = [];
-    public $message = '';
+    public $message ;
     public $receiver_id;
     public $sender_id;
     public $conversation;
@@ -62,30 +60,23 @@ class Chatbox extends Component
         );
         $this->messages[] = $newMessage;
         $this->message = '';
-        // $this->dispatchBrowserEvent('scrollToBottom');
         $this->dispatch('messageSent', $newMessage);
     }
-    // if (!$this->conversation) {
-    //     return [];
-    // }
-    // return [
-    //     "echo-private:chat.{$this->conversation->id},MessageSentEvent" => 'test',
-    // ];
-    // $listeners = [];
-    // if ($this->conversation) {
-    //     $listeners["echo-private:chat.{$this->conversation->id},MessageSentEvent"] = 'test';
-    // }
+
     public function getListeners()
     {
-        return [
-            "echo-private:chat,MessageSentEvent" => 'handleMessageSentEvent',
-        ];
+
+        {
+            return [
+                "echo-private:chat.*,MessageSentEvent" => 'handleMessageSentEvent',
+            ];
+        }
+        
     }
 
    
     public function handleMessageSentEvent($event)
     {
-        // dd($event['message']['id']);
         $msg = $this->messageService->getMessageById($event['message']['id']);
         $this->messages[] = $msg;
     }

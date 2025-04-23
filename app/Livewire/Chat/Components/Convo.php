@@ -11,12 +11,14 @@ class Convo extends Component
 
     public function getListeners()
     {
-        return [
-            "echo-private:chat,MessageSentEvent" => 'updateconversationForReceiver',
+        $listeners = [
             'messageSent' => 'updateconversationForSender',
             'echo-private:user.active,user.active' => 'handleUserActive',
-
         ];
+        if ($this->conversation) {
+            $listeners["echo-private:chat.{$this->conversation->id},MessageSentEvent"] = 'updateconversationForReceiver';
+        }
+        return $listeners;
     }
     public function mount($conversation)
     {
@@ -24,16 +26,14 @@ class Convo extends Component
     }
     public function handleUserActive($event)
     {
-        dd($event);
+        // dd($event);
     }
     public function updateconversationForSender($event)
     {
-        // dd($event);
-        $this->conversation = Conversation::find($event['conversation_id']);
+        $this->conversation->load('lastMessage');
     }
     public function updateconversationForReceiver($event)
     {
-        // dd($event['message']['conversation_id']);
         $this->conversation = Conversation::find($event['message']['conversation_id']);
     }
 

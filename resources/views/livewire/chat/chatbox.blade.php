@@ -57,12 +57,10 @@
         @endif
         @endforeach
         <!-- Typing Indicator -->
-        <div 
-             class="flex items-start space-x-2">
-            <img src="" class="w-8 h-8 rounded-full object-cover" alt="Contact">
-            <div class="bg-gray-200 dark:bg-gray-500 rounded-lg p-3 max-w-md">
-                <p class="text-foreground italic" >  </p>
-            </div>
+        <div class="flex items-end space-x-1">
+            <span class="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:0ms]"></span>
+            <span class="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:200ms]"></span>
+            <span class="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:400ms]"></span>
         </div>
 </div>
 <flux:header class="flex w-full items-center justify-center justify-between px-4 py-4 shadow-lg border-t border-zinc-800/5 dark:border-white/10 gap-5">

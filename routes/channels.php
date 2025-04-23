@@ -31,6 +31,14 @@ Broadcast::channel('chat.{conversationId}', function ($user, $conversationId) {
         ->first();
     return $participant !== null;
 });
+
+Broadcast::channel('presence.{conversationId}', function ($user, $conversationId) {
+    return Conversation::where('id', $conversationId)
+        ->whereHas('participants', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+        ->exists();
+});
 Broadcast::channel('chat', function () {
     return true;
 });
