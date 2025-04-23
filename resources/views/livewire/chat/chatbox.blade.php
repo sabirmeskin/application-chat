@@ -39,10 +39,15 @@
     </flux:dropdown>
 
 </flux:header>
-<div class=" h-full">
-    <livewire:chat.components.message-bubble />
 
-</div>
+    <div class="flex flex-col h-full overflow-y-scroll">
+        @foreach ($messages as $message)
+        <livewire:chat.components.message-bubble :message="$message" :key="$message->id" />
+        @endforeach
+    </div>
+
+
+
 <flux:header class="flex w-full items-center justify-center justify-between px-4 py-4 shadow-lg border-t border-zinc-800/5 dark:border-white/10 gap-5">
         <flux:button icon="paperclip" variant="primary"  class="px-2" />
         <flux:input placeholder="Type your message"  icon-trailing="send" clearable wire:model.defer='message' wire:keyup.enter='sendMessage' autocomplete="off"  />
