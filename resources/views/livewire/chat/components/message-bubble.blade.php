@@ -1,5 +1,5 @@
 <div class="">
-    @if ($userId == $message->sender_id)
+    @if ($userId !== $message->sender_id)
     <div class="flex items-start justify-start gap-2 px-4 py-2">
         <flux:avatar name="sqdqs sqdqs" color="auto" class="ml-2" circle src="https://unavatar.io/x/calebporzio" />
 
