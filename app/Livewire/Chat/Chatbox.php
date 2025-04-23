@@ -45,6 +45,7 @@ class Chatbox extends Component
         }
         return [
             "echo-private:chat.{$this->conversation->id},MessageSentEvent" => 'test',
+
         ];
     }
     public function test($event)
