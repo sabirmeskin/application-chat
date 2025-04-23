@@ -66,11 +66,16 @@ class Chatbox extends Component
     public function getListeners()
     {
 
-        {
-            return [
-                "echo-private:chat.*,MessageSentEvent" => 'handleMessageSentEvent',
-            ];
-        }
+            $listeners = [];
+            if($this->conversation)
+            {
+                $listeners["echo-private:chat.{$this->conversation->id},MessageSentEvent"] = 'handleMessageSentEvent';
+            }
+            return $listeners;
+            // return [
+            //     "echo-private:chat.*,MessageSentEvent" => 'handleMessageSentEvent',
+            // ];
+
         
     }
 
