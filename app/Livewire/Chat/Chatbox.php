@@ -18,7 +18,7 @@ class Chatbox extends Component
     #[On('conversationSelected')]
     public function conversationSelected($conversationId)
     {
-        $this->conversation = Conversation::find($conversationId)->with(["messages","participants"]);
+        $this->conversation = Conversation::find($conversationId);
         $this->messages = $this->conversation->messages;
     }
 
@@ -38,6 +38,7 @@ class Chatbox extends Component
         $this->dispatch('messageSent', $newMessage);
         $this->message = '';
     }
+
 
 
     public function mount()

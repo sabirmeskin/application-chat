@@ -9,11 +9,18 @@
     gap-5
     ">
         @if ($conversation->isGroup())
+        <flux:avatar.group class="**:ring-zinc-100 dark:**:ring-zinc-800">
         @foreach ($conversation->participants->take(3) as $user)
         <flux:tooltip content="{{ $user->name }}" placement="top">
             <flux:avatar circle size="xs" class="max-sm:size-8" name="{{ $user->name }}" color="auto" badge badge:color="{{ $user->is_online ? 'green' : 'gray' }}" badge:circle badge:position="top left" badge:variant="xs" />
         </flux:tooltip>
         @endforeach
+        @if ($conversation->participants->count() > 3)
+        <flux:tooltip content="{{ $conversation->participants->count() - 3 }} autres" placement="top" >
+            <flux:avatar size="xs" circle>{{ $conversation->participants->count() - 3 }}+</flux:avatar>
+        </flux:tooltip>
+        @endif
+    </flux:avatar.group>
         @else
         <flux:avatar name="{{ $conversation->ConversationName() }}" color="auto" class="ml-2"  />
         @endif
@@ -33,7 +40,8 @@
 
 </flux:header>
 <div class=" h-full">
-    aloha
+    <livewire:chat.components.message-bubble />
+
 </div>
 <flux:header class="flex w-full items-center justify-center justify-between px-4 py-4 shadow-lg border-t border-zinc-800/5 dark:border-white/10 gap-5">
         <flux:button icon="paperclip" variant="primary"  class="px-2" />
