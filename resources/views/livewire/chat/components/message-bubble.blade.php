@@ -6,7 +6,7 @@
         <div
             class="felx flex-col  max-w-[420px] leading-1.5 p-4 border-gray-100 bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-gray-800">
             <div class="flex items-center space-x-2 rtl:space-x-reverse">
-                <span class="text-sm font-semibold text-gray-900 dark:text-white">Bonnie Green</span>
+                <span class="text-sm font-semibold text-gray-900 dark:text-white">{{$message->sender->name}}</span>
                 <span class="text-sm font-normal text-gray-500 dark:text-gray-400">11:46</span>
             </div>
             <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">That's awesome. I think our users will sssssss dsfsdf sdfgsd sdfgsdf dsf sdf dsf sdf sdf sdf dsgf ds s dfsd fsssss ssssssssssssssss ssssssssss ssssssss
@@ -24,6 +24,7 @@
             </flux:menu>
         </flux:dropdown>
     </div>
+
     @else
     <div class="flex  justify-end gap-2 px-4 py-2 ">
         <flux:dropdown>

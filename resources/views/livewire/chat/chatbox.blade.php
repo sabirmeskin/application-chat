@@ -44,6 +44,12 @@
         @foreach ($messages as $message)
         <livewire:chat.components.message-bubble :message="$message" :key="$message->id" />
         @endforeach
+        <!-- Typing Indicator -->
+        <div class="flex items-end space-x-1 bg-gray-500 dark:bg-gray-800 p-2 rounded-lg m-2 w-fit ml-20">
+            <span class="w-2 h-2 bg-gray-500 rounded-lg animate-bounce [animation-delay:0ms]"></span>
+            <span class="w-2 h-2 bg-gray-500 rounded-lg animate-bounce [animation-delay:200ms]"></span>
+            <span class="w-2 h-2 bg-gray-500 rounded-lg animate-bounce [animation-delay:400ms]"></span>
+        </div>
     </div>
 
 
