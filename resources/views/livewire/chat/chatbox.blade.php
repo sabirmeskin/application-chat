@@ -8,7 +8,15 @@
     justify-between
     gap-5
     ">
-        <flux:avatar name="{{ $conversation->ConversationName() }}" color="auto" class="ml-2" />
+        @if ($conversation->isGroup())
+        @foreach ($conversation->participants->take(3) as $user)
+        <flux:tooltip content="{{ $user->name }}" placement="top">
+            <flux:avatar circle size="xs" class="max-sm:size-8" name="{{ $user->name }}" color="auto" badge badge:color="{{ $user->is_online ? 'green' : 'gray' }}" badge:circle badge:position="top left" badge:variant="xs" />
+        </flux:tooltip>
+        @endforeach
+        @else
+        <flux:avatar name="{{ $conversation->ConversationName() }}" color="auto" class="ml-2"  />
+        @endif
         <flux:heading size="lg">{{$conversation->ConversationName()}}</flux:heading>
     </div>
     <flux:dropdown>

@@ -18,7 +18,7 @@
     </flux:avatar.group>
     <div class="flex flex-col">
         <flux:heading class="text-sm">{{ Str::limit($conversation->name  ?? 'nom invalide',10) }} </flux:heading>
-        <flux:text class="max-sm:hidden text-xs text-muted"> {{ Str::limit($conversation->lastMessage->body ?? 'No messages yet', 20) }}</flux:text>
+        <flux:text class="max-sm:hidden text-xs text-muted" > {{ Str::limit($conversation->lastMessage->body ?? 'No messages yet', 20) }}</flux:text>
 
     </div>
     <flux:badge size="xs" color="blue" class="max-sm:hidden ml-auto ">
@@ -32,7 +32,9 @@
 
     <div class="flex flex-col">
         <flux:heading class="text-sm">{{ Str::limit($conversation->receiver()->name ?? 'nom invalide',10) }} </flux:heading>
-        <flux:text class="max-sm:hidden text-xs text-muted"> {{ Str::limit($conversation->lastMessage->body ?? 'No messages yet', 20) }}</flux:text>
+
+        <flux:text class="max-sm:hidden text-xs text-muted" > {{ Str::limit($conversation->lastMessage->body ?? 'No messages yet', 20) }}</flux:text>
+
     </div>
     <flux:badge size="xs" color="blue" class="max-sm:hidden ml-auto ">
         {{ optional(optional($conversation->lastMessage)->created_at)->diffForHumans() ?? '...' }}

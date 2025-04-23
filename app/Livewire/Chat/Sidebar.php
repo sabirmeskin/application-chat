@@ -6,12 +6,12 @@ use App\Models\Conversation;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Services\ConversationService;
-
 class Sidebar extends Component
 {
 
     public $conversations = [];
     public $activeId ;
+
 
     protected $conversationService;
 
@@ -39,6 +39,7 @@ class Sidebar extends Component
         'echo:private-conversation,ConversationCreatedEvent' => 'UpdateConversations',
        ];
     }
+
 
 
     public function UpdateConversations($event)

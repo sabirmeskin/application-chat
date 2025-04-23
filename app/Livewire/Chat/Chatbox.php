@@ -18,7 +18,7 @@ class Chatbox extends Component
     #[On('conversationSelected')]
     public function conversationSelected($conversationId)
     {
-        $this->conversation = Conversation::find($conversationId);
+        $this->conversation = Conversation::find($conversationId)->with(["messages","participants"]);
         $this->messages = $this->conversation->messages;
     }
 
@@ -35,23 +35,10 @@ class Chatbox extends Component
             $this->message
         );
         $this->messages [] = $newMessage;
+        $this->dispatch('messageSent', $newMessage);
         $this->message = '';
     }
 
-    public function getListeners()
-    {
-        if (!$this->conversation) {
-            return [];
-        }
-        return [
-            "echo-private:chat.{$this->conversation->id},MessageSentEvent" => 'test',
-
-        ];
-    }
-    public function test($event)
-    {
-       dd($event) ;
-    }
 
     public function mount()
     {

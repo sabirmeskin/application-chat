@@ -127,7 +127,6 @@ class ConversationService
         }])->find($conversation->id);
 
         return $conversation;
-
     }
     public function archiveConversation(User $user,Conversation $conversation):Conversation
     {
