@@ -22,7 +22,6 @@ Broadcast::channel('conversation.{conversationId}', function ($user, $conversati
 });
 Broadcast::channel('chat.{conversationId}', function ($user, $conversationId) {
     $conversation = Conversation::find($conversationId);
-
     if (!$conversation) {
         return false;
     }

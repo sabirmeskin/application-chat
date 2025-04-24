@@ -2,18 +2,16 @@
 
 namespace App\Livewire\Chat;
 
-
 use App\Services\ConversationService;
 use App\Services\MessageService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
-
 class Chatbox extends Component
 {
     public $messages = [];
-    public $message ;
+    public $message;
     public $receiver_id;
     public $sender_id;
     public $conversation;
@@ -31,10 +29,10 @@ class Chatbox extends Component
         $this->conversationService = app(ConversationService::class);
         $this->messageService = app(MessageService::class);
     }
+    
     #[On('conversationSelected')]
     public function conversationSelected($conversationId)
     {
-        // $conversation = Conversation::find($conversationId);
         $conversation = $this->conversationService->getConversationWithMessages($conversationId, 10);
         $this->messages = $conversation->messages;
         $receiver = $conversation->participants()
@@ -43,7 +41,6 @@ class Chatbox extends Component
         $this->sender_id = Auth::id();
         $this->receiver_id = $receiver->id;
         $this->conversation = $conversation;
-
     }
 
     public function sendMessage(MessageService $messageService)
@@ -52,7 +49,7 @@ class Chatbox extends Component
             return;
         }
 
-        $newMessage =  $messageService->sendTextMessage(
+        $newMessage = $messageService->sendTextMessage(
             Auth::user(),
             $this->conversation,
             null,
@@ -65,25 +62,28 @@ class Chatbox extends Component
 
     public function getListeners()
     {
-
-            $listeners = [];
-            if($this->conversation)
-            {
-                $listeners["echo-private:chat.{$this->conversation->id},MessageSentEvent"] = 'handleMessageSentEvent';
-            }
-            return $listeners;
-            // return [
-            //     "echo-private:chat.*,MessageSentEvent" => 'handleMessageSentEvent',
-            // ];
-
-        
+        $listeners = [];
+        if ($this->conversation) {
+            $listeners["echo-private:chat.{$this->conversation->id},MessageSentEvent"] = 'handleMessageSentEvent';
+        }
+        return $listeners;
     }
 
-   
     public function handleMessageSentEvent($event)
     {
         $msg = $this->messageService->getMessageById($event['message']['id']);
         $this->messages[] = $msg;
+    }
+
+    /**
+     * Get the previous message for a given message index
+     */
+    public function getPreviousMessage($index)
+    {
+        if ($index > 0) {
+            return $this->messages[$index - 1];
+        }
+        return null;
     }
 
     public function render()
