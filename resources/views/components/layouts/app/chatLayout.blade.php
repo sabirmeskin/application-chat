@@ -13,13 +13,10 @@
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800">
 
-        <div class="flex flex-row">
 
-            <livewire:chat.sidebar  />
 
-            <livewire:chat.chatbox />
+            <livewire:chat.layout />
 
-        </div>
 
         @fluxScripts
     </body>

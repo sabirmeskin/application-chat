@@ -1,6 +1,5 @@
 <div class="h-screen w-full flex flex-col" wire.loading.class="opacity-50">
 
-    @if ($conversation)
     <flux:header class="flex w-full items-center justify-between px-4 py-4 shadow-lg m-0 sticky border-b border-zinc-800/5 dark:border-white/10" >
         <div class="flex items-center justify-between gap-5">
             @if ($conversation->isGroup())
@@ -53,9 +52,5 @@
         <flux:button variant="primary" wire:click='sendMessage'> Envoyer </flux:button>
     </flux:header>
 
-    @else
-    <div class="flex items-center justify-center w-full h-full text-gray-500 dark:text-gray-300">
-        <p>Sélectionnez une conversation pour commencer à discuter.</p>
-    </div>
-    @endif
+
 </div>

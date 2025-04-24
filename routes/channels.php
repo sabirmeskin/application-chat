@@ -13,7 +13,8 @@ Broadcast::channel('conversation', function () {
 });
 
 Broadcast::channel('chat.{conversationId}',function($user , $conversationId) {
-    $conversation = Conversation::find($conversationId);
+
+        $conversation = Conversation::find($conversationId);
     if (!$conversation) {
         return false;
     }
@@ -21,6 +22,7 @@ Broadcast::channel('chat.{conversationId}',function($user , $conversationId) {
         ->where('conversation_id', $conversationId)
         ->first();
     return $participant !== null;
+
 });
 
 // Broadcast::channel('chat.{conversationId}', function ($user, $conversationId) {

@@ -29,6 +29,7 @@ class MessageService
             'body' => $body,
 
         ]);
+
         broadcast(new MessageSentEvent($message));
         return $message;
     }

@@ -21,6 +21,7 @@ class MessageSentEvent implements ShouldBroadcast
      * Create a new event instance.
      */
 
+
     public function __construct(public Message $message)
     {
         $this->message = $message;

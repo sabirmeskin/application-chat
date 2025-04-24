@@ -2,10 +2,12 @@
 
 namespace App\Livewire\Chat;
 
+use App\Events\MessageSentEvent;
 use App\Models\Conversation;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Services\ConversationService;
+
 class Sidebar extends Component
 {
 
@@ -31,6 +33,7 @@ class Sidebar extends Component
     {
         $this->activeId = $conversationId;
         $this->dispatch('conversationSelected', $conversationId);
+
     }
 
     public function getListeners()
@@ -50,6 +53,7 @@ class Sidebar extends Component
             $this->conversations[] = $newConversation;
         }
     }
+
 
     public function render()
     {

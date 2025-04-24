@@ -14,13 +14,9 @@ class Chatbox extends Component
     public $messages = [];
     public $message = '';
     public $conversation;
+    protected $messageService;
 
-    #[On('conversationSelected')]
-    public function conversationSelected($conversationId)
-    {
-        $this->conversation = Conversation::find($conversationId);
-        $this->messages = $this->conversation->messages;
-    }
+
 
     public function sendMessage(MessageService $messageService)
     {
@@ -37,13 +33,25 @@ class Chatbox extends Component
         $this->messages [] = $newMessage;
         $this->dispatch('messageSent', $newMessage);
         $this->message = '';
+
     }
 
+    public function getListeners()
+    {
+        return ["echo-private:chat.{$this->conversation->id},MessageSentEvent" => 'UpdateLastMessage'];
+    }
 
-
-    public function mount()
+    public function UpdateLastMessage(){
+        dd('test');
+    }
+    public function hydrate()
     {
 
+    }
+    public function mount($conversation)
+    {
+
+        $this->conversation = $conversation;
     }
 
     public function render()
