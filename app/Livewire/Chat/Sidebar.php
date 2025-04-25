@@ -7,6 +7,7 @@ use App\Models\Conversation;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Services\ConversationService;
+use Livewire\Attributes\On;
 
 class Sidebar extends Component
 {
@@ -22,10 +23,9 @@ class Sidebar extends Component
         $this->conversationService = $conversationService;
         $this->loadConversations();
     }
-
     public function loadConversations()
     {
-        $this->conversations = $this->conversationService->getConversationsForUser(Auth::user(), false);
+        $this->conversations = ConversationService::getInstance()->getConversationsForUser(Auth::user(), false);
     }
 
     public function toggleActive($conversationId)
@@ -46,7 +46,9 @@ class Sidebar extends Component
     // public function handleUpdateConversationEvent(){
     //     $this->conversations = ConversationService::getInstance()->getConversationsForUser(Auth::user(), false);
     // }
+    public function hydrate(){
 
+    }
 
     public function UpdateConversations($event)
     {

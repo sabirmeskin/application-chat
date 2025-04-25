@@ -66,7 +66,6 @@
     @script
     <script>
         $wire.on('scrollToBottom', () => {
-            console.log('hello')
             const scrollArea = document.querySelector('#scrollArea');
             if (scrollArea) {
                 setTimeout(() => {

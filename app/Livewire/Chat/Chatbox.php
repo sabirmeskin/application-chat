@@ -34,7 +34,7 @@ class Chatbox extends Component
         );
         $this->messages [] = $newMessage;
 
-        $this->dispatch('messageSent', $newMessage);
+        $this->dispatch('messageSent', [$this->conversation,$newMessage]);
         $this->dispatch('scrollToBottom');
         $this->message = '';
 
