@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use App\Events\ConversationCreatedEvent;
 use App\Events\ConversationUpdatedEvent;
+use App\Models\Message;
+use Illuminate\Support\Facades\DB;
 
 class ConversationService
 {
@@ -106,20 +108,33 @@ class ConversationService
 
         return $conversation;
     }
-    public function getConversationsForUser(User $user,$includeArchived = false): Collection
+    public function getConversationsForUser(User $user, $includeArchived = false): Collection
     {
-        $query = Conversation::whereHas('participants', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        });
+        $query = Conversation::query()
+            ->whereHas('participants', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            });
+
         if ($includeArchived) {
             $query->orWhereHas('archivedConversations', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             });
         }
-        $conversations = $query->with(['participants', 'messages'])->get();
+
+        $conversations = $query->with(['participants', 'messages'])
+            ->leftJoinSub(
+                Message::query()
+                    ->select('conversation_id', DB::raw('MAX(created_at) as last_message_at'))
+                    ->groupBy('conversation_id'),
+                'latest_messages',
+                'conversations.id',
+                '=',
+                'latest_messages.conversation_id'
+            )
+            ->orderByDesc('last_message_at')
+            ->get();
 
         return $conversations;
-
     }
     public function getConversationWithMessages(Conversation $conversation,$int):Conversation
     {

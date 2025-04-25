@@ -54,6 +54,7 @@ class Sidebar extends Component
         if ($newConversation->isParticipant(Auth::user()) &&
             !collect($this->conversations)->contains('id', $newConversation->id)) {
             $this->conversations[] = $newConversation;
+
         }
     }
 

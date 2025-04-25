@@ -27,8 +27,10 @@
             <flux:menu>
                 <flux:menu.item icon="plus">Ajouter Membre</flux:menu.item>
                 <flux:menu.separator />
-                <flux:menu.item :key="$conversation->id" x-on:click="$flux.modal('edit-group-modal').show()" icon="pencil">Modifier</flux:menu.item>
+                @if ($conversation->isGroup() && $conversation->ConversationAdmin()->id != Auth::id() )
+                <flux:menu.item :key="$conversation->id" x-on:click="$flux.modal('edit-group-modal').show()" icon="pencil">Modifier Groupe</flux:menu.item>
                 <flux:menu.separator />
+                @endif
                 <flux:menu.item variant="danger" icon="trash">Delete</flux:menu.item>
             </flux:menu>
         </flux:dropdown>
@@ -41,8 +43,11 @@
 
     >
         <div >
-            @foreach ($messages as $message)
-            <livewire:chat.components.message-bubble :message="$message" :key="$message->id" />
+            @foreach ($messages as $index => $message)
+            <livewire:chat.components.message-bubble
+            :avatarOn="$index === 0 || $messages[$index - 1]->sender_id !== $message->sender_id"
+
+            :message="$message" :key="$message->id" />
             @endforeach
         </div>
         <!-- Typing Indicator -->

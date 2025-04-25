@@ -9,9 +9,10 @@ class MessageBubble extends Component
 {
     public $message;
     public $userId;
-
-    public function mount($message)
+    public $avatarOn;
+    public function mount($message,$avatarOn)
     {
+        $this->avatarOn = $avatarOn;
         $this->message = $message;
         $this->userId = Auth::id();
     }

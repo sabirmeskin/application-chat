@@ -25,7 +25,6 @@ class Conversation extends Model
 
     public function lastMessage()
     {
-
         return $this->hasOne(Message::class)->latest();
     }
     public function lastMessageTime()
