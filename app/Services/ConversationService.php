@@ -182,8 +182,9 @@ class ConversationService
             throw new \Exception('This method is only applicable to group conversations.');
         }
         // Check if the user is an admin of the conversation
-        $adminParticipant = $conversation->participants()->where('user_id', Auth::id())->first();
-        if (!$adminParticipant || $adminParticipant->role !== 'admin') {
+        $adminParticipant = $conversation->ConversationAdmin();
+        // dd($adminParticipant);
+        if (!$adminParticipant || $adminParticipant->id != Auth::id()) {
             throw new \Exception('Only admins can edit group conversation participants.');
         }
 

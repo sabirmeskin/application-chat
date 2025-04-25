@@ -14,6 +14,10 @@ class Conversation extends Model
         return $this->belongsToMany(User::class, 'conversation_participants');
     }
 
+    public function ConversationAdmin(){
+        return $this->participants()->where("role","admin")->first();
+    }
+
     public function messages()
     {
         return $this->hasMany(Message::class);
@@ -58,6 +62,9 @@ class Conversation extends Model
     }
     public function receiver(){
         return $this->participants()->where('user_id', '!=', Auth::id())->first();
+    }
+    public function sender(){
+        return $this->participants()->where('user_id', Auth::id())->first();
     }
     public function isArchived()
     {

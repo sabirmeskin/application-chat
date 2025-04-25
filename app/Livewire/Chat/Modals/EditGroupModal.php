@@ -9,13 +9,13 @@ use Livewire\Component;
 
 class EditGroupModal extends Component
 {
-    public Conversation $conversation;
+    public $conversation;
     public $nom = '';
     public $selectedUsers = [];
     public $contacts = [];
     public $search = '';
 
-    public function mount(Conversation $conversation)
+    public function mount($conversation)
     {
         $this->conversation = $conversation;
         $this->nom = $conversation->name;
@@ -38,7 +38,7 @@ class EditGroupModal extends Component
     public function save()
     {
         $this->validate([
-            'nom' => 'required|string|max:2',
+            'nom' => 'required|string|min:2',
             'selectedUsers' => 'required|array|min:2',
         ]);
         $this->dispatch('closeModal');

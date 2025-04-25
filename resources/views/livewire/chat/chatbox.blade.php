@@ -16,7 +16,9 @@
                 @endif
             </flux:avatar.group>
             @else
-            <flux:avatar name="{{ $conversation->ConversationName() }}" color="auto" class="ml-2" />
+            <flux:avatar
+            badge badge:color="{{ $conversation->receiver()->is_online ? 'green' : 'gray' }}" badge:circle badge:position="top left" badge:variant="xs"
+            name="{{ $conversation->ConversationName() }}" color="auto" class="ml-2" ba />
             @endif
             <flux:heading size="lg">{{$conversation->ConversationName()}}</flux:heading>
         </div>
@@ -25,7 +27,7 @@
             <flux:menu>
                 <flux:menu.item icon="plus">Ajouter Membre</flux:menu.item>
                 <flux:menu.separator />
-                <flux:menu.item icon="pencil">Modifier</flux:menu.item>
+                <flux:menu.item x-on:click="$flux.modal('edit-group-modal').show()" icon="pencil">Modifier</flux:menu.item>
                 <flux:menu.separator />
                 <flux:menu.item variant="danger" icon="trash">Delete</flux:menu.item>
             </flux:menu>
@@ -73,4 +75,5 @@
         });
     </script>
     @endscript
+    <livewire:chat.modals.edit-group-modal :conversation="$conversation">
 </div>

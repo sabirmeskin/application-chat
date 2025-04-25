@@ -31,4 +31,8 @@ class ConversationParticipant extends Model
     {
         $this->update(['is_online' => $status]);
     }
+
+    public function isAdmin(){
+        return $this->role === 'admin';
+    }
 }

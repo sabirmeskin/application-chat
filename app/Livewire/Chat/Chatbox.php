@@ -54,8 +54,6 @@ class Chatbox extends Component
     }
 
     public function updateLastMessage($event){
-
-
     // Create a new Message model from the array
     $newMessage = Message::find($event['message']['id']);
 

@@ -29,7 +29,9 @@
                 @foreach ($contacts as $contact)
                     <li class="flex items-center gap-3 cursor-pointer py-2 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-lg"
                     x-on:click="" wire:loading.class="opacity-30">
-                    <flux:avatar size="sm" name="{{$contact->name}}" color="auto" class="ml-2" />
+                    <flux:avatar size="sm" name="{{$contact->name}}" color="auto" class="ml-2"
+                        badge badge:color="{{ $contact->is_online ? 'green' : 'gray' }}" badge:circle badge:position="top left" badge:variant="xs"
+                    />
                     <flux:heading>{{$contact->name}}</flux:heading>
                     <flux:checkbox value="{{ $contact->id }}" wire:key='{{ $contact->id }}' wire:model="selectedUsers"  class="ml-auto mr-2"/>
                 </li>
