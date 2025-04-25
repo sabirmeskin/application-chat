@@ -23,6 +23,7 @@ class UserPresenceEvent implements ShouldBroadcastNow
     public $user;
     public $conversation;
     public $isOnline;
+    
     public function __construct(User $user,Conversation $conversation, bool $isOnline)
     {   
         $this->conversation = $conversation;

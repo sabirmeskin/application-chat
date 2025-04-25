@@ -132,7 +132,6 @@ class ConversationService
         ConversationParticipant::where('conversation_id', $conversation->id)
             ->where('user_id', $user->id)
             ->update(['archived_at' => now()]);
-
         return $conversation;
     }
     public function unarchiveConversation(User $user, Conversation $conversation): Conversation

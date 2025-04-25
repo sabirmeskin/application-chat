@@ -33,7 +33,7 @@ class Chatbox extends Component
     #[On('conversationSelected')]
     public function conversationSelected($conversationId)
     {
-        $conversation = $this->conversationService->getConversationWithMessages($conversationId, 10);
+        $conversation = $this->conversationService->getConversationWithMessages($conversationId, 8);
         $this->messages = $conversation->messages;
         $receiver = $conversation->participants()
             ->where('user_id', '!=', Auth::id())
@@ -58,6 +58,7 @@ class Chatbox extends Component
         $this->messages[] = $newMessage;
         $this->message = '';
         $this->dispatch('messageSent', $newMessage);
+        dump($this->getListeners());
     }
 
     public function getListeners()
