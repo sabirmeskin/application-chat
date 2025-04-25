@@ -28,7 +28,7 @@ class MessageService
             'type' => 'text',
             'body' => $body,
         ]);
-        broadcast(new MessageSentEvent($message))->toOthers();
+        broadcast(new MessageSentEvent($message));
         return $message;
     }
 

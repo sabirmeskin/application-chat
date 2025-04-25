@@ -39,9 +39,13 @@ class Sidebar extends Component
     {
        return [
         'echo:private-conversation,ConversationCreatedEvent' => 'UpdateConversations',
+        // 'echo:private-conversation,ConversationUpdatedEvent' => 'handleUpdateConversationEvent',
        ];
     }
 
+    // public function handleUpdateConversationEvent(){
+    //     $this->conversations = ConversationService::getInstance()->getConversationsForUser(Auth::user(), false);
+    // }
 
 
     public function UpdateConversations($event)

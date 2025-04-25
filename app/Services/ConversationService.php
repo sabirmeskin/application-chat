@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use App\Events\ConversationCreatedEvent;
+use App\Events\ConversationUpdatedEvent;
 
 class ConversationService
 {
@@ -187,32 +188,12 @@ class ConversationService
         if (!$adminParticipant || $adminParticipant->id != Auth::id()) {
             throw new \Exception('Only admins can edit group conversation participants.');
         }
-
         $conversation->update(['name' => $name]);
-
         $conversation->participants()->syncWithoutDetaching(
             $newParticipants
         );
-
-
+        broadcast(new ConversationUpdatedEvent($conversation));
         return $conversation;
     }
-    // public function isUserInConversation(User $user, Conversation $conversation): bool
-    // {
-    //     return $conversation->participants->contains($user);
-    // }
-    // public function getActiveParticipants(Conversation $conversation): array
-    // {
-    //     return $conversation->activeParticipants()->get();
-    // }
-    // public function isGroupConversation(Conversation $conversation): bool
-    // {
-    //     return $conversation->isGroup();
-    // }
-    // public function getLastMessage(Conversation $conversation)
-    // {
-    //     return $conversation->lastMessage()->first();
-    // }
 
-    // Add other conversation-related methods
 }

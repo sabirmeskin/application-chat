@@ -1,5 +1,7 @@
 <div>
-    <flux:modal name="edit-group-modal" variant="flyout">
+    <flux:modal  name="edit-group-modal" variant="flyout"
+
+    >
         <div class="space-y-6">
             <flux:heading size="lg">Modifier le groupe</flux:heading>
             <flux:input type="text" label="Nom du groupe" wire:model='nom' badge="*" />
@@ -42,5 +44,18 @@
         $flux.modal('edit-group-modal').close();
     });
 </script>
+
+<script>
+    document.addEventListener("alpine:init", () => {
+        window.$flux.modal('edit-group-modal').onOpen(() => {
+            Livewire.dispatch('resetModal');
+        });
+
+        window.$flux.modal('edit-group-modal').onClose(() => {
+            Livewire.dispatch('resetModal');
+        });
+    });
+</script>
+
 @endscript
 </div>

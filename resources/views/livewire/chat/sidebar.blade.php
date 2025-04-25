@@ -43,7 +43,7 @@
                 @endforeach
             </flux:navlist.group>
         </flux:navlist>
-
+        <!-- archived -->
         <flux:separator />
         <flux:navlist variant="outline" class="overflow-y-auto ">
             <flux:navlist.group expandable :expanded="false" :heading="__('Conversations Archivées')"
