@@ -27,7 +27,7 @@
             <flux:menu>
                 <flux:menu.item icon="plus">Ajouter Membre</flux:menu.item>
                 <flux:menu.separator />
-                <flux:menu.item x-on:click="$flux.modal('edit-group-modal').show()" icon="pencil">Modifier</flux:menu.item>
+                <flux:menu.item :key="$conversation->id" x-on:click="$flux.modal('edit-group-modal').show()" icon="pencil">Modifier</flux:menu.item>
                 <flux:menu.separator />
                 <flux:menu.item variant="danger" icon="trash">Delete</flux:menu.item>
             </flux:menu>
@@ -75,5 +75,5 @@
         });
     </script>
     @endscript
-    <livewire:chat.modals.edit-group-modal :conversation="$conversation">
+    <livewire:chat.modals.edit-group-modal :conversation="$conversation" :key="$conversation->id">
 </div>
