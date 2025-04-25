@@ -3,6 +3,7 @@
 namespace App\Livewire\Chat;
 
 use App\Models\Conversation;
+use App\Models\Message;
 use App\Services\ConversationService;
 use App\Services\MessageService;
 use Illuminate\Support\Facades\Auth;
@@ -32,21 +33,35 @@ class Chatbox extends Component
             $this->message
         );
         $this->messages [] = $newMessage;
+
         $this->dispatch('messageSent', $newMessage);
+        $this->dispatch('scrollToBottom');
         $this->message = '';
 
     }
     public function loadMessages(){
-       $this->messages[] = $this->conversation->messages;
+        $this->messages = $this->conversation
+        ->messages()
+        ->oldest()
+        ->get();
+
+    $this->dispatch('scrollToBottom');
     }
 
     public function getListeners()
     {
-        return ["echo-private:chat.{$this->conversation->id},MessageSentEvent" => 'UpdateLastMessage'];
+        return ["echo:private-chat.{$this->conversation->id},MessageSentEvent" => 'updateLastMessage'];
     }
 
-    public function UpdateLastMessage(){
+    public function updateLastMessage($event){
 
+
+    // Create a new Message model from the array
+    $newMessage = Message::find($event['message']['id']);
+
+    // Add the new message to the messages array
+    $this->messages[] = $newMessage;
+    $this->dispatch('scrollToBottom');
     }
     public function hydrate()
     {

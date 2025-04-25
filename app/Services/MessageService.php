@@ -27,10 +27,8 @@ class MessageService
             'parent_id' => $parent ? $parent->id : null,
             'type' => 'text',
             'body' => $body,
-
         ]);
-
-        broadcast(new MessageSentEvent($message));
+        broadcast(new MessageSentEvent($message))->toOthers();
         return $message;
     }
 
@@ -65,9 +63,7 @@ class MessageService
         ]);
     }
 
-    public function getMessages(Conversation $conversation , $int){
 
-    }
 
     // public function addReaction(Message $message, string $reaction):Message
     // {

@@ -32,7 +32,12 @@
         </flux:dropdown>
     </flux:header>
 
-    <div class="flex flex-col h-full  overflow-y-scroll">
+    <div class="flex flex-col h-full  overflow-y-scroll "
+
+   id="scrollArea"
+     x-init="$nextTick(() => $el.scrollTop = $el.scrollHeight)" id="messages-container"
+
+    >
         <div >
             @foreach ($messages as $message)
             <livewire:chat.components.message-bubble :message="$message" :key="$message->id" />
@@ -51,6 +56,21 @@
         <flux:input placeholder="Type your message" icon-trailing="send" clearable wire:model.defer='message' wire:keyup.enter='sendMessage' autocomplete="off" />
         <flux:button variant="primary" wire:click='sendMessage'> Envoyer </flux:button>
     </flux:header>
+    @script
+    <script>
+        $wire.on('scrollToBottom', () => {
+            console.log('hello')
+            const scrollArea = document.querySelector('#scrollArea');
+            if (scrollArea) {
+                setTimeout(() => {
 
-
+                    scrollArea.scrollTo({
+                    top: scrollArea.scrollHeight,
+                    behavior: 'smooth'
+                });
+                }, 100);
+            }
+        });
+    </script>
+    @endscript
 </div>
