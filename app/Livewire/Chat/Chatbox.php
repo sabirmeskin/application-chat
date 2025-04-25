@@ -3,6 +3,7 @@
 namespace App\Livewire\Chat;
 
 use App\Models\Conversation;
+use App\Services\ConversationService;
 use App\Services\MessageService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
@@ -35,6 +36,9 @@ class Chatbox extends Component
         $this->message = '';
 
     }
+    public function loadMessages(){
+       $this->messages[] = $this->conversation->messages;
+    }
 
     public function getListeners()
     {
@@ -42,7 +46,7 @@ class Chatbox extends Component
     }
 
     public function UpdateLastMessage(){
-        dd('test');
+
     }
     public function hydrate()
     {
@@ -52,6 +56,7 @@ class Chatbox extends Component
     {
 
         $this->conversation = $conversation;
+        $this->loadMessages();
     }
 
     public function render()

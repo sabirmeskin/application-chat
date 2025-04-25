@@ -26,7 +26,6 @@ class Sidebar extends Component
     public function loadConversations()
     {
         $this->conversations = $this->conversationService->getConversationsForUser(Auth::user(), false);
-
     }
 
     public function toggleActive($conversationId)

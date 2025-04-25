@@ -65,6 +65,10 @@ class MessageService
         ]);
     }
 
+    public function getMessages(Conversation $conversation , $int){
+
+    }
+
     // public function addReaction(Message $message, string $reaction):Message
     // {
     //     $message->update([
