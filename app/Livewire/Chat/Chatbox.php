@@ -2,6 +2,10 @@
 
 namespace App\Livewire\Chat;
 
+<<<<<<< HEAD
+=======
+use App\Models\Conversation;
+>>>>>>> origin/sabir_branche_14-04-2025
 use App\Services\ConversationService;
 use App\Services\MessageService;
 use Illuminate\Support\Facades\Auth;
@@ -42,6 +46,9 @@ class Chatbox extends Component
         $this->receiver_id = $receiver->id;
         $this->conversation = $conversation;
     }
+    protected $messageService;
+
+
 
     public function sendMessage(MessageService $messageService)
     {
@@ -55,14 +62,25 @@ class Chatbox extends Component
             null,
             $this->message
         );
+<<<<<<< HEAD
         $this->messages[] = $newMessage;
         $this->message = '';
         $this->dispatch('messageSent', $newMessage);
         dump($this->getListeners());
+=======
+        $this->messages [] = $newMessage;
+        $this->dispatch('messageSent', $newMessage);
+        $this->message = '';
+
+    }
+    public function loadMessages(){
+       $this->messages[] = $this->conversation->messages;
+>>>>>>> origin/sabir_branche_14-04-2025
     }
 
     public function getListeners()
     {
+<<<<<<< HEAD
         $listeners = [];
         if ($this->conversation) {
             $listeners["echo-private:chat.{$this->conversation->id},MessageSentEvent"] = 'handleMessageSentEvent';
@@ -71,10 +89,20 @@ class Chatbox extends Component
     }
 
     public function handleMessageSentEvent($event)
+=======
+        return ["echo-private:chat.{$this->conversation->id},MessageSentEvent" => 'UpdateLastMessage'];
+    }
+
+    public function UpdateLastMessage(){
+
+    }
+    public function hydrate()
+>>>>>>> origin/sabir_branche_14-04-2025
     {
         $msg = $this->messageService->getMessageById($event['message']['id']);
         $this->messages[] = $msg;
     }
+<<<<<<< HEAD
 
     /**
      * Get the previous message for a given message index
@@ -85,6 +113,13 @@ class Chatbox extends Component
             return $this->messages[$index - 1];
         }
         return null;
+=======
+    public function mount($conversation)
+    {
+
+        $this->conversation = $conversation;
+        $this->loadMessages();
+>>>>>>> origin/sabir_branche_14-04-2025
     }
 
     public function render()

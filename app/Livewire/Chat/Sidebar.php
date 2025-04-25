@@ -2,7 +2,11 @@
 
 namespace App\Livewire\Chat;
 
+<<<<<<< HEAD
 use App\Events\UserActiveInConversationEvent;
+=======
+use App\Events\MessageSentEvent;
+>>>>>>> origin/sabir_branche_14-04-2025
 use App\Models\Conversation;
 use App\Models\User;
 use Livewire\Component;
@@ -14,8 +18,14 @@ class Sidebar extends Component
 {
 
     public $conversations = [];
+<<<<<<< HEAD
     public $users=[];
     public $activeId;
+=======
+    public $activeId ;
+
+
+>>>>>>> origin/sabir_branche_14-04-2025
     protected $conversationService;
     protected $userStatusService;
 
@@ -48,6 +58,7 @@ class Sidebar extends Component
                 $conversationId
             )
         );
+
     }
 
     public function getListeners()
@@ -89,6 +100,12 @@ class Sidebar extends Component
     {
         $this->users = User::where('is_online', true)->get();
     }
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> origin/sabir_branche_14-04-2025
     public function UpdateConversations($event)
     {
         $newConversation = Conversation::find($event['conversation']['id']);
@@ -99,6 +116,7 @@ class Sidebar extends Component
             $this->conversations[] = $newConversation;
         }
     }
+
 
     public function render()
     {

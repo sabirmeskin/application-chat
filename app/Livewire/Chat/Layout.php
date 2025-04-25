@@ -22,4 +22,5 @@ class Layout extends Component
     {
         return view('livewire.chat.layout');
     }
+
 }

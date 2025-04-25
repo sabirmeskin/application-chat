@@ -22,6 +22,9 @@ Broadcast::channel('conversation.{conversationId}', function ($user, $conversati
 });
 Broadcast::channel('chat.{conversationId}', function ($user, $conversationId) {
     $conversation = Conversation::find($conversationId);
+Broadcast::channel('chat.{conversationId}',function($user , $conversationId) {
+
+        $conversation = Conversation::find($conversationId);
     if (!$conversation) {
         return false;
     }
@@ -29,6 +32,7 @@ Broadcast::channel('chat.{conversationId}', function ($user, $conversationId) {
         ->where('conversation_id', $conversationId)
         ->first();
     return $participant !== null;
+
 });
 
 Broadcast::channel('presence.{conversationId}', function ($user, $conversationId) {
@@ -52,3 +56,13 @@ Broadcast::channel('user.active', function ($user) {
         return ['id' => $user->id, 'name' => $user->name];
     }
 });
+// Broadcast::channel('chat.{conversationId}', function ($user, $conversationId) {
+//     $conversation = Conversation::find($conversationId);
+//     if (!$conversation) {
+//         return false;
+//     }
+//     $participant = ConversationParticipant::where('user_id', $user->id)
+//         ->where('conversation_id', $conversationId)
+//         ->first();
+//     return $participant !== null;
+// });

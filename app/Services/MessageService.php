@@ -30,7 +30,7 @@ class MessageService
             'body' => $body,
 
         ]);
-        broadcast(new MessageSentEvent($message))->toOthers();
+        broadcast(new MessageSentEvent($message));
         return $message;
     }
 
@@ -65,10 +65,17 @@ class MessageService
         ]);
     }
 
+<<<<<<< HEAD
     public function getMessageById(int $id): ?Message
     {
         return Message::find($id);
     }
+=======
+    public function getMessages(Conversation $conversation , $int){
+
+    }
+
+>>>>>>> origin/sabir_branche_14-04-2025
     // public function addReaction(Message $message, string $reaction):Message
     // {
     //     $message->update([

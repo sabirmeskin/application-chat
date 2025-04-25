@@ -6,6 +6,8 @@
             @else
                 <div class="ml-2 w-[40px]"></div> {{-- placeholder for alignment --}}
             @endif
+        <flux:avatar name="sqdqs sqdqs" color="auto" class="ml-2" circle src="https://unavatar.io/x/calebporzio" />
+
         <div
             class="felx flex-col  max-w-[420px] leading-1.5 p-4 border-gray-100 bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-gray-800">
             <div class="flex items-center space-x-2 rtl:space-x-reverse">
@@ -54,6 +56,8 @@
             @else
                 <div class="ml-2 w-[40px]"></div> {{-- placeholder for alignment --}}
             @endif
+        <flux:avatar name="sqdqs sqdqs" color="auto" class="ml-2" circle src="https://unavatar.io/x/calebporzio" />
+
     </div>
     @endif
 
