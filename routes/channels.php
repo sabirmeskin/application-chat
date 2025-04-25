@@ -20,8 +20,7 @@ Broadcast::channel('conversation.{conversationId}', function ($user, $conversati
         })
         ->exists();
 });
-Broadcast::channel('chat.{conversationId}', function ($user, $conversationId) {
-    $conversation = Conversation::find($conversationId);
+
 Broadcast::channel('chat.{conversationId}',function($user , $conversationId) {
 
         $conversation = Conversation::find($conversationId);
