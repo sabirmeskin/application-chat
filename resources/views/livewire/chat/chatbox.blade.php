@@ -13,6 +13,7 @@
                         src="https://unavatar.io/x/calebporzio"
                         />
         <flux:heading size="lg">{{$conversation->ConversationName()}}</flux:heading>
+<<<<<<< HEAD
         <flux:heading size="lg">{{$conversation->ConversationName()}}</flux:heading>
     <flux:header class="flex w-full items-center justify-between px-4 py-4 shadow-lg m-0 sticky border-b border-zinc-800/5 dark:border-white/10" >
         <div class="flex items-center justify-between gap-5">
@@ -45,6 +46,15 @@
             </flux:menu>
         </flux:dropdown>
     </flux:header>
+=======
+    </div>
+    <flux:dropdown>
+        <flux:button icon="circle-chevron-down" variant="ghost" class="ml-auto mr-2"  />
+        <flux:menu>
+            <flux:menu.item icon="plus">Ajouter Membre</flux:menu.item>
+            <flux:menu.separator />
+            <flux:menu.item icon="pencil">Modifier</flux:menu.item>
+>>>>>>> parent of 65fda52 (feat: Refactor chat components and enhance message bubble rendering with improved user interface and functionality)
 
     <div class="flex flex-col h-full  overflow-y-scroll">
         <div >
@@ -68,11 +78,30 @@
 
 </flux:header>
 <div class="overflow-y-scroll p-4 space-y-4 bg-background h-[calc(100vh-200px)]">
-    @foreach ($messages as $message)
-    @php
-    
-    @endphp
-    <livewire:chat.components.message-bubble :message="$message" :key="$message->id" />
+    @foreach ($messages as $msg)
+    {{-- @dd($msg) --}}
+        @if ($msg['sender_id'] == $sender_id)
+        <!-- Sent Message -->
+        <div class="flex items-start justify-end space-x-2">
+            <flux:avatar  circle badge badge:color='green' badge:circle circle src="https://unavatar.io/x/calebporzio"/>
+            <div class="bg-blue-300 rounded-lg p-3 max-w-md">
+                <p class="text-primary-foreground">{{ $msg['body'] }}</p>
+                <span class="text-xs text-primary-foreground/80 mt-1 block">{{
+                    \Carbon\Carbon::parse($msg['created_at'])->format('h:i A') }}
+                </span>
+            </div>
+        </div>
+        @else
+        <!-- Received Message -->
+        <div class="flex items-start space-x-2">
+            <flux:avatar  circle badge badge:color='green' badge:circle circle src="https://unavatar.io/x/calebporzio"/>
+            <div class="bg-gray-200 dark:bg-gray-500 rounded-lg p-3 max-w-md">
+                <p class="text-foreground">{{ $msg['body'] }}</p>
+                <span class="text-xs text-muted-foreground mt-1 block">{{
+                    \Carbon\Carbon::parse($msg['created_at'])->format('h:i A') }}</span>
+            </div>
+        </div>
+        @endif
         @endforeach
         <!-- Typing Indicator -->
         <div class="flex items-end space-x-1">

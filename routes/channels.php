@@ -20,10 +20,16 @@ Broadcast::channel('conversation.{conversationId}', function ($user, $conversati
         })
         ->exists();
 });
+<<<<<<< HEAD
 
 Broadcast::channel('chat.{conversationId}',function($user , $conversationId) {
 
         $conversation = Conversation::find($conversationId);
+=======
+Broadcast::channel('chat.{conversationId}', function ($user, $conversationId) {
+    $conversation = Conversation::find($conversationId);
+
+>>>>>>> parent of 65fda52 (feat: Refactor chat components and enhance message bubble rendering with improved user interface and functionality)
     if (!$conversation) {
         return false;
     }

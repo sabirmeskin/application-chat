@@ -61,8 +61,4 @@ class Message extends Model implements HasMedia
     {
         $this->update(['status' => 'delivered', 'delivered_at' => now()]);
     }
-    public function timestamp(){
-        return $this->created_at->format('h:i');
-    }
-
 }
