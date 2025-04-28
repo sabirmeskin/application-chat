@@ -204,7 +204,8 @@ class ConversationService
             throw new \Exception('Only admins can edit group conversation participants.');
         }
         $conversation->update(['name' => $name]);
-        $conversation->participants()->syncWithoutDetaching(
+        $newParticipants[] = Auth::id();
+        $conversation->participants()->sync(
             $newParticipants
         );
         broadcast(new ConversationUpdatedEvent($conversation));

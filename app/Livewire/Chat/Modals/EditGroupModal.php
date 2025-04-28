@@ -30,10 +30,14 @@ class EditGroupModal extends Component
 
     public function save()
     {
-        $this->validate([
-            'nom' => 'required|string|min:2',
-            'selectedUsers' => 'required|array|min:2',
-        ]);
+            $this->validate([
+                'nom' => 'required|string|min:2',
+                'selectedUsers' => 'required|array|distinct|min:2',
+            ] ,
+            [
+                'selectedUsers.min' => "Veuillez sélectionner au moins deux utilisateurs"
+            ]
+    );
         $this->dispatch('closeModal');
 
 

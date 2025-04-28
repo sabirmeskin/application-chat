@@ -27,7 +27,7 @@
             <flux:menu>
                 <flux:menu.item icon="plus">Ajouter Membre</flux:menu.item>
                 <flux:menu.separator />
-                @if ($conversation->isGroup() && $conversation->ConversationAdmin()->id != Auth::id() )
+                @if ($conversation->isGroup() && $conversation->ConversationAdmin()->id == Auth::id() )
                 <flux:menu.item :key="$conversation->id" x-on:click="$flux.modal('edit-group-modal').show()" icon="pencil">Modifier Groupe</flux:menu.item>
                 <flux:menu.separator />
                 @endif
