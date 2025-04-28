@@ -52,7 +52,7 @@
                 <flux:icon icon="check-check" variant="micro" />
             </div>
         </div>
-        <flux:avatar name="sqdqs sqdqs" color="auto" class="ml-2 {{ !$avatarOn ? 'opacity-0' : '' }}" circle src="https://unavatar.io/x/calebporzio" />
+        <flux:avatar name="sqdqs sqdqs" color="auto" class="ml-2 {{ !$avatarOn ? 'opacity-0' : '' }}" circle  />
 
     </div>
     @endif

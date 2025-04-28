@@ -44,10 +44,14 @@
     >
         <div >
             @foreach ($messages as $index => $message)
-            <livewire:chat.components.message-bubble
-            :avatarOn="$index === 0 || $messages[$index - 1]->sender_id !== $message->sender_id"
+                @if ($message->type === 'media')
+                media
+                @else
+                <livewire:chat.components.message-bubble
+                :avatarOn="$index === 0 || $messages[$index - 1]->sender_id !== $message->sender_id"
+                :message="$message" :key="$message->id" />
+                @endif
 
-            :message="$message" :key="$message->id" />
             @endforeach
         </div>
         <!-- Typing Indicator -->
@@ -69,7 +73,6 @@
             const scrollArea = document.querySelector('#scrollArea');
             if (scrollArea) {
                 setTimeout(() => {
-
                     scrollArea.scrollTo({
                     top: scrollArea.scrollHeight,
                     behavior: 'smooth'
