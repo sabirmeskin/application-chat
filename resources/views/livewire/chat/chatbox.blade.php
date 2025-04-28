@@ -45,7 +45,10 @@
         <div >
             @foreach ($messages as $index => $message)
                 @if ($message->type === 'media')
-                media
+                <livewire:chat.components.media-message
+                :avatarOn="$index === 0 || $messages[$index - 1]->sender_id !== $message->sender_id"
+                :message="$message" :key="$message->id"
+                />
                 @else
                 <livewire:chat.components.message-bubble
                 :avatarOn="$index === 0 || $messages[$index - 1]->sender_id !== $message->sender_id"

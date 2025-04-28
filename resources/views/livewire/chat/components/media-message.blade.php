@@ -10,7 +10,9 @@
             <div class="flex items-center space-x-2 rtl:space-x-reverse">
                 <span class="text-sm font-semibold text-gray-900 dark:text-white {{ !$avatarOn ? 'hidden' : '' }}">{{$message->sender->name}}</span>
             </div>
-            <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{$message->body}}</p>
+
+
+
             <div class="w-full flex space-x-2 justify-end">
                 <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">{{$message->timestamp()}}</span>
             </div>
@@ -46,7 +48,9 @@
             <div class="flex items-center space-x-2 rtl:space-x-reverse">
                 <span class="text-sm font-semibold text-gray-900 dark:text-white {{ !$avatarOn ? 'hidden' : '' }}">{{$message->sender->name}}</span>
             </div>
-            <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{$message->body}}</p>
+
+            <volt:chat.components.mimes.document />
+
             <div class="w-full flex justify-between">
                 <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">{{$message->timestamp()}}</span>
                 <flux:icon icon="check-check" variant="micro" />
