@@ -11,7 +11,7 @@
                 <span class="text-sm font-semibold text-gray-900 dark:text-white {{ !$avatarOn ? 'hidden' : '' }}">{{$message->sender->name}}</span>
             </div>
 
-
+            <livewire:chat.components.mimes.document>
 
             <div class="w-full flex space-x-2 justify-end">
                 <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">{{$message->timestamp()}}</span>
@@ -19,7 +19,7 @@
 
         </div>
 
-        <flux:dropdown style="display: flex; align-items: center;" class="my-auto">
+        <flux:dropdown style="display: flex; align-items: center;" class="my-auto" position="top" align="start">
             <flux:button icon="ellipsis-vertical" variant="ghost" class="ml-auto mr-2" />
             <flux:menu>
                 <flux:menu.item icon="forward">Transférer</flux:menu.item>
@@ -33,7 +33,7 @@
 
     @else
     <div class="flex justify-end gap-2 px-4 py-2 ">
-        <flux:dropdown style="display: flex; align-items: center;" >
+        <flux:dropdown style="display: flex; align-items: center;" position="top" align="end" >
             <flux:button icon="ellipsis-vertical" variant="ghost" class="ml-auto mr-2" />
             <flux:menu>
                 <flux:menu.item icon="forward">Transférer</flux:menu.item>
@@ -49,11 +49,11 @@
                 <span class="text-sm font-semibold text-gray-900 dark:text-white {{ !$avatarOn ? 'hidden' : '' }}">{{$message->sender->name}}</span>
             </div>
 
-            <volt:chat.components.mimes.document />
+            <livewire:chat.components.mimes.document>
 
-            <div class="w-full flex justify-between">
+            <div class="w-full flex justify-between items-center">
                 <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">{{$message->timestamp()}}</span>
-                <flux:icon icon="check-check" variant="micro" />
+                <flux:button icon="check-check" variant="micro" variant="subtle" />
             </div>
         </div>
         <flux:avatar name="sqdqs sqdqs" color="auto" class="ml-2 {{ !$avatarOn ? 'opacity-0' : '' }}" circle  />
