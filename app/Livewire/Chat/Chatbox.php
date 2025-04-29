@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Chat;
 
+use App\Events\MessageReadEvent;
+use App\Events\MessageSentEvent;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Services\ConversationService;
@@ -17,7 +19,7 @@ class Chatbox extends Component
     public $message = '';
     public $conversation;
     protected $messageService;
-
+    public $isRead = false;
 
 
     public function sendMessage(MessageService $messageService)
@@ -36,23 +38,38 @@ class Chatbox extends Component
 
         $this->dispatch('messageSent', [$this->conversation,$newMessage]);
         $this->dispatch('scrollToBottom');
+        broadcast(new MessageReadEvent($newMessage , Auth::id()))->toOthers();
         $this->message = '';
 
     }
     public function loadMessages(){
-        $this->messages = $this->conversation
+      $message =  $this->messages = $this->conversation
         ->messages()
         ->oldest()
         ->get();
 
-    $this->dispatch('scrollToBottom');
+        $this->dispatch('scrollToBottom');
+        $lastmessage =   $message->last();
+        broadcast(new MessageReadEvent($lastmessage , Auth::id()))->toOthers();
+
     }
 
     public function getListeners()
     {
-        return ["echo:private-chat.{$this->conversation->id},MessageSentEvent" => 'updateLastMessage'];
+        return [
+            "echo:private-chat.{$this->conversation->id},MessageSentEvent" => 'updateLastMessage',
+            "echo:private-read.{$this->conversation->id},MessageReadEvent" => 'handleMessageRead'
+    ];
     }
 
+    public function handleMessageRead($event){
+        $msg = Message::findorFail($event['message_id']);
+        if($msg){
+            $msg->markAsRead(Auth::user());
+            $this->isRead = true;
+        }
+
+    }
     public function updateLastMessage($event){
     // Create a new Message model from the array
     $newMessage = Message::find($event['message']['id']);
@@ -60,6 +77,8 @@ class Chatbox extends Component
     // Add the new message to the messages array
     $this->messages[] = $newMessage;
     $this->dispatch('scrollToBottom');
+
+
     }
     public function hydrate()
     {
@@ -70,6 +89,7 @@ class Chatbox extends Component
 
         $this->conversation = $conversation;
         $this->loadMessages();
+
     }
 
     public function render()

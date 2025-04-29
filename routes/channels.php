@@ -19,13 +19,9 @@ Broadcast::channel('chat.{conversationId}',function($user , $conversationId) {
 
 });
 
-// Broadcast::channel('chat.{conversationId}', function ($user, $conversationId) {
-//     $conversation = Conversation::find($conversationId);
-//     if (!$conversation) {
-//         return false;
-//     }
-//     $participant = ConversationParticipant::where('user_id', $user->id)
-//         ->where('conversation_id', $conversationId)
-//         ->first();
-//     return $participant !== null;
-// });
+Broadcast::channel('read.{conversationId}',function($user , $conversationId) {
+    return $user->conversations()->whereHas('participants', function ($q) use ($conversationId) {
+        $q->where('conversation_id', $conversationId);
+    })->exists();
+    // return true;
+});

@@ -52,6 +52,7 @@
                 @else
                 <livewire:chat.components.message-bubble
                 :avatarOn="$index === 0 || $messages[$index - 1]->sender_id !== $message->sender_id"
+                {{-- :isRead = "$isRead" --}}
                 :message="$message" :key="$message->id" />
                 @endif
 

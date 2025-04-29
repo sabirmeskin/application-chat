@@ -2,20 +2,21 @@
     @if ($userId !== $message->sender_id)
     <div class="flex items-start justify-start gap-2 px-4 py-2">
 
-        <flux:avatar name="sqdqs sqdqs" color="auto" class="ml-2 {{ !$avatarOn ? 'opacity-0' : '' }}" circle  />
+        <flux:avatar name="sqdqs sqdqs" color="auto" class="ml-2 {{ !$avatarOn ? 'opacity-0' : '' }}" circle />
 
 
         <div
             class="felx flex-col  min-w-[100px] max-w-[420px] leading-1.5 px-4 py-2 border-gray-100 bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-gray-800">
             <div class="flex items-center space-x-2 rtl:space-x-reverse">
-                <span class="text-sm font-semibold text-gray-900 dark:text-white {{ !$avatarOn ? 'hidden' : '' }}">{{$message->sender->name}}</span>
+                <span
+                    class="text-sm font-semibold text-gray-900 dark:text-white {{ !$avatarOn ? 'hidden' : '' }}">{{$message->sender->name}}</span>
             </div>
+            <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{$message->body}}</p>
+            <livewire:chat.components.mimes.image>
 
-            <livewire:chat.components.mimes.document>
-
-            <div class="w-full flex space-x-2 justify-end">
-                <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">{{$message->timestamp()}}</span>
-            </div>
+                <div class="w-full flex space-x-2 justify-end">
+                    <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">{{$message->timestamp()}}</span>
+                </div>
 
         </div>
 
@@ -33,7 +34,7 @@
 
     @else
     <div class="flex justify-end gap-2 px-4 py-2 ">
-        <flux:dropdown style="display: flex; align-items: center;" position="top" align="end" >
+        <flux:dropdown style="display: flex; align-items: center;" position="top" align="end">
             <flux:button icon="ellipsis-vertical" variant="ghost" class="ml-auto mr-2" />
             <flux:menu>
                 <flux:menu.item icon="forward">Transférer</flux:menu.item>
@@ -46,17 +47,18 @@
         <div
             class="felx flex-col min-w-[100px]  max-w-[420px] leading-1.5 p-4 border-gray-200 bg-gray-200 rounded-s-xl rounded-es-xl rounded-br-xl dark:bg-gray-600">
             <div class="flex items-center space-x-2 rtl:space-x-reverse">
-                <span class="text-sm font-semibold text-gray-900 dark:text-white {{ !$avatarOn ? 'hidden' : '' }}">{{$message->sender->name}}</span>
+                <span
+                    class="text-sm font-semibold text-gray-900 dark:text-white {{ !$avatarOn ? 'hidden' : '' }}">{{$message->sender->name}}</span>
             </div>
+            <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{$message->body}}</p>
+            <livewire:chat.components.mimes.image>
 
-            <livewire:chat.components.mimes.document>
-
-            <div class="w-full flex justify-between items-center">
-                <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">{{$message->timestamp()}}</span>
-                <flux:button icon="check-check" variant="micro" variant="subtle" />
-            </div>
+                <div class="w-full flex justify-between items-center">
+                    <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">{{$message->timestamp()}}</span>
+                    <flux:icon name="check-check" variant="micro" />
+                </div>
         </div>
-        <flux:avatar name="sqdqs sqdqs" color="auto" class="ml-2 {{ !$avatarOn ? 'opacity-0' : '' }}" circle  />
+        <flux:avatar name="sqdqs sqdqs" color="auto" class="ml-2 {{ !$avatarOn ? 'opacity-0' : '' }}" circle />
 
     </div>
     @endif

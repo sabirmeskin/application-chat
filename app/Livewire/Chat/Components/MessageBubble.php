@@ -10,10 +10,12 @@ class MessageBubble extends Component
     public $message;
     public $userId;
     public $avatarOn;
+    // public $isRead;
     public function mount($message,$avatarOn)
     {
         $this->avatarOn = $avatarOn;
         $this->message = $message;
+        // $this->isRead = $isRead;
         $this->userId = Auth::id();
     }
     public function render()

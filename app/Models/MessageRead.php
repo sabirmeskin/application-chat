@@ -6,5 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class MessageRead extends Model
 {
-    //
+    protected $guarded = [];
+
 }

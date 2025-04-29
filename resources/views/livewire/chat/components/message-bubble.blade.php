@@ -49,7 +49,10 @@
             <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{$message->body}}</p>
             <div class="w-full flex justify-between">
                 <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">{{$message->timestamp()}}</span>
-                <flux:icon icon="check-check" variant="micro" />
+
+
+                <flux:icon icon="check" variant="micro" />
+
             </div>
         </div>
         <flux:avatar name="sqdqs sqdqs" color="auto" class="ml-2 {{ !$avatarOn ? 'opacity-0' : '' }}" circle  />
