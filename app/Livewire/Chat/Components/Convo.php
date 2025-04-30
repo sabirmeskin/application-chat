@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Livewire\Chat\Components;
+
 use Livewire\Attributes\On;
 use App\Models\Conversation;
 use App\Services\ConversationService;
@@ -15,24 +16,31 @@ class Convo extends Component
         $this->conversation = $conversation;
     }
 
-
-    public function getListeners()
+    #[On('refreshConvo')]
+    public function refreshConvo($conversationId, $message = null)
     {
-        return [
-            "echo-private:chat.{$this->conversation->id},MessageSentEvent" => 'UpdateLastMessage',
-            'echo:private-conversation,ConversationUpdatedEvent' => 'handleUpdateConversationEvent',
-
-         ];
+        if ($conversationId == $this->conversation->id) {
+            $this->conversation->refresh();
+            // Optionally use $message for preview updates
+        }
     }
-    public function handleUpdateConversationEvent(){
-        $this->conversation->load('participants');
-    }
+    // public function getListeners()
+    // {
+    //     return [
+    //         "echo-private:chat.{$this->conversation->id},MessageSentEvent" => 'UpdateLastMessage',
+    //         'echo:private-conversation,ConversationUpdatedEvent' => 'handleUpdateConversationEvent',
+
+    //      ];
+    // }
+    // public function handleUpdateConversationEvent(){
+    //     $this->conversation->load('participants');
+    // }
 
 
-    public function UpdateLastMessage()
-    {
-        $this->conversation->load('lastMessage');
-    }
+    // public function UpdateLastMessage()
+    // {
+    //     $this->conversation->load('lastMessage');
+    // }
 
     public function render()
     {

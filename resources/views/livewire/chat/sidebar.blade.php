@@ -28,7 +28,9 @@
 
         <flux:navlist variant="outline" class="overflow-y-auto h-full">
             <flux:navlist.group :heading="__('Conversations Actifs')" class="grid overflow-y-auto overflow-x-hidden"
-                style="scrollbar-width: thin;"  >
+                style="scrollbar-width: thin;"
+                x-data="chatSidebar({{ $conversations->pluck('id') }})"
+                              x-init="init()" >
                 @foreach ($conversations as $conversation)
                 @if (!$conversation->isArchived())
                 <flux:navlist.item class="cursor-pointer"
@@ -37,13 +39,13 @@
                     :current="$activeId == $conversation->id"
                     :key="'convo'.$conversation->id"
                 >
-                    <livewire:chat.components.convo :conversation="$conversation" :key="$conversation->id"/>
+                    <livewire:chat.components.convo :conversation="$conversation" :key="'convo-'.$conversation->id"/>
                 </flux:navlist.item>
                 @endif
                 @endforeach
             </flux:navlist.group>
         </flux:navlist>
-        <!-- archived -->
+
         <flux:separator />
         <flux:navlist variant="outline" class="overflow-y-auto ">
             <flux:navlist.group expandable :expanded="false" :heading="__('Conversations Archivées')"
@@ -52,7 +54,7 @@
                 @foreach ($conversations as $conversation)
                 @if ($conversation->isArchived())
                 <flux:navlist.item class="cursor-pointer" :current="false" >
-                    <livewire:chat.components.convo :conversation="$conversation" :key="$conversation->id" />
+                    <livewire:chat.components.convo :conversation="$conversation" :key="'convo-'.$conversation->id" />
                 </flux:navlist.item>
                 @endif
 
@@ -156,5 +158,24 @@
     <livewire:chat.modals.contacts-modal />
     <livewire:chat.modals.groups-modal />
 
+
+
+    <script>
+function chatSidebar(conversationIds) {
+    return {
+        init() {
+            // Loop through all conversation IDs
+            conversationIds.forEach(id => {
+                Echo.private(`chat.${id}`)
+                    .listen('MessageSentEvent', (e) => {
+                        // When a message is received, dispatch the event to Livewire
+                        Livewire.dispatch('refreshConvo', id, e.message);
+                    });
+            });
+        }
+    }
+}
+
+    </script>
 
 </div>

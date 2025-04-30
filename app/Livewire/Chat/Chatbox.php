@@ -35,7 +35,7 @@ class Chatbox extends Component
             null,
             $this->message
         );
-        $this->messages [] = $newMessage;
+        // $this->messages[] = $newMessage;
 
         $this->dispatch('messageSent', [$this->conversation,$newMessage]);
         $this->dispatch('scrollToBottom');
@@ -44,14 +44,14 @@ class Chatbox extends Component
 
     }
     public function loadMessages(){
-      $message =  $this->messages = $this->conversation
+     $this->messages = $this->conversation
         ->messages()
         ->latest()
         ->take(10)
         ->get()->reverse();
 
         $this->dispatch('scrollToBottom');
-        $lastmessage =   $message->last();
+
         // broadcast(new MessageReadEvent($lastmessage , Auth::id()))->toOthers();
 
     }
