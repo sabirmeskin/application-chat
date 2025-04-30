@@ -40,9 +40,21 @@ class Sidebar extends Component
        return [
         'echo:private-conversation,ConversationCreatedEvent' => 'UpdateConversations',
         // 'echo:private-conversation,ConversationUpdatedEvent' => 'handleUpdateConversationEvent',
+        "echo:private-chat,MessageSentEvent" => 'handleNewMessage',
        ];
     }
+    public function handleNewMessage($event)
+    {
+        dd('event');
+        $conversationId = $event['message']['conversation_id'];
 
+        // Transmet l'événement au composant Convo correspondant
+        $this->dispatchTo(
+            "chat.components.convo",
+            "refreshConvo",
+            conversationId: $conversationId
+        );
+    }
     // public function handleUpdateConversationEvent(){
     //     $this->conversations = ConversationService::getInstance()->getConversationsForUser(Auth::user(), false);
     // }

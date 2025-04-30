@@ -50,8 +50,11 @@
             <div class="w-full flex justify-between">
                 <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">{{$message->timestamp()}}</span>
 
-
+                @if ($message->status == 'read')
+                <flux:icon icon="check-check" variant="micro" />
+                @else
                 <flux:icon icon="check" variant="micro" />
+                @endif
 
             </div>
         </div>

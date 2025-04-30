@@ -40,20 +40,48 @@
 
    id="scrollArea"
      x-init="$nextTick(() => $el.scrollTop = $el.scrollHeight)" id="messages-container"
-
     >
         <div >
             @foreach ($messages as $index => $message)
+            @if ($loop->last)
+                    <div
+                    x-data="{ observer: null, messageId : {{ $message->id }} }"
+                    x-init="
+                        observer = new IntersectionObserver((entries) => {
+                            entries.forEach(entry => {
+                                if (entry.isIntersecting) {
+                                    @this.markLastMessageAsSeen(messageId);
+                                }
+                            });
+                        });
+                        observer.observe($el);
+                    "
+                    x-destroy="if (observer) observer.disconnect()"
+                >
+
+                    </div>
+            @endif
+
                 @if ($message->type === 'media')
-                <livewire:chat.components.media-message
-                :avatarOn="$index === 0 || $messages[$index - 1]->sender_id !== $message->sender_id"
-                :message="$message" :key="$message->id"
-                />
+
+
+
+                    <livewire:chat.components.media-message
+                        :avatarOn="$index === 0 || $messages[$index - 1]->sender_id !== $message->sender_id"
+                        :message="$message"
+                        :key="$message->id . '-' . $message->status"
+
+                    />
+
                 @else
-                <livewire:chat.components.message-bubble
-                :avatarOn="$index === 0 || $messages[$index - 1]->sender_id !== $message->sender_id"
-                {{-- :isRead = "$isRead" --}}
-                :message="$message" :key="$message->id" />
+
+                    <livewire:chat.components.message-bubble
+                        :avatarOn="$index === 0 || $messages[$index - 1]->sender_id !== $message->sender_id"
+                        :message="$message"
+                        {{-- :key="$message->id" --}}
+                        :key="$message->id . '-' . $message->status"
+                    />
+
                 @endif
 
             @endforeach

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Chat\Components;
 
+use App\Events\MessageReadEvent;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -17,6 +18,7 @@ class MessageBubble extends Component
         $this->message = $message;
         // $this->isRead = $isRead;
         $this->userId = Auth::id();
+        // broadcast(new MessageReadEvent($this->message,Auth::id()))->toOthers();
     }
     public function render()
     {
