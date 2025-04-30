@@ -18,7 +18,7 @@
             @else
             <flux:avatar
             badge badge:color="{{ $conversation->receiver()->is_online ? 'green' : 'gray' }}" badge:circle badge:position="top left" badge:variant="xs"
-            name="{{ $conversation->ConversationName() }}" color="auto" class="ml-2" ba />
+            name="{{ $conversation->ConversationName() }}" color="auto" class="ml-2"  />
             @endif
             <flux:heading size="lg">{{$conversation->ConversationName()}}</flux:heading>
         </div>
