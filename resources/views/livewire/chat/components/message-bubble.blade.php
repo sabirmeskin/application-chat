@@ -49,12 +49,14 @@
             <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{$message->body}}</p>
             <div class="w-full flex justify-between">
                 <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">{{$message->timestamp()}}</span>
-
-                @if ($message->status == 'read')
+                @if (!$message->conversation->isGroup())
+                  @if ($message->status == 'read')
                 <flux:icon icon="check-check" variant="micro" />
                 @else
                 <flux:icon icon="check" variant="micro" />
                 @endif
+                @endif
+
 
             </div>
         </div>

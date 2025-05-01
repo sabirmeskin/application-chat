@@ -22,11 +22,17 @@
             <flux:heading class="text-sm">{{ Str::limit($conversation->name ?? 'nom invalide',10) }} </flux:heading>
             <flux:text class="max-sm:hidden text-xs text-muted"> {{ Str::limit($conversation->lastMessage->body ?? 'No
                 messages yet', 20) }}</flux:text>
+        </div>
+        <div class="flex flex-col ml-auto">
+            <flux:text variant="subtle" class="text-xs"> {{
+                optional(optional($conversation->lastMessage)->created_at)->diffForHumans(null, true) ?? '...' }}
+            </flux:text>
+            {{-- <flux:badge size="xs" color="blue" class="max-sm:hidden   ml-auto">
+                1
+            </flux:badge> --}}
+
 
         </div>
-        <flux:badge size="xs" color="blue" class="max-sm:hidden ml-auto ">
-            {{ optional(optional($conversation->lastMessage)->created_at)->diffForHumans(null, true) ?? '...' }}
-        </flux:badge>
     </div>
     @else
     <div class="flex items-center gap-2 sm:gap-4 text-xs m-0">

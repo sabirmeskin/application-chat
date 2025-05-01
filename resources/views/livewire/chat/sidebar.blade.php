@@ -49,11 +49,20 @@
         <flux:separator />
         <flux:navlist variant="outline" class="overflow-y-auto ">
             <flux:navlist.group expandable :expanded="false" :heading="__('Conversations Archivées')"
-                class="grid overflow-y-auto  overflow-x-hidden" style="scrollbar-width: thin;">
+                class="grid overflow-y-auto  overflow-x-hidden" style="scrollbar-width: thin;"
+                 x-data="chatSidebar({{ $conversations->pluck('id') }})"
+                              x-init="init()"
+                >
 
                 @foreach ($conversations as $conversation)
                 @if ($conversation->isArchived())
-                <flux:navlist.item class="cursor-pointer" :current="false" >
+                <flux:navlist.item class="cursor-pointer" :current="false"
+                class="cursor-pointer"
+
+                wire:click="toggleActive({{ $conversation->id }})"
+                :current="$activeId == $conversation->id"
+                :key="'convo'.$conversation->id"
+                >
                     <livewire:chat.components.convo :conversation="$conversation" :key="'convo-'.$conversation->id" />
                 </flux:navlist.item>
                 @endif
@@ -164,12 +173,10 @@
 function chatSidebar(conversationIds) {
     return {
         init() {
-            // Loop through all conversation IDs
             conversationIds.forEach(id => {
                 Echo.private(`chat.${id}`)
                     .listen('MessageSentEvent', (e) => {
-                        // When a message is received, dispatch the event to Livewire
-                        Livewire.dispatch('refreshConvo', id, e.message);
+                        Livewire.dispatch('refreshConvo', [id, e.message]);
                     });
             });
         }
