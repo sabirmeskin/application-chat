@@ -8,6 +8,10 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use App\Events\ConversationCreatedEvent;
+use App\Events\ConversationUpdatedEvent;
+use App\Models\Message;
+use Illuminate\Support\Facades\DB;
 
 class ConversationService
 {
@@ -39,6 +43,8 @@ class ConversationService
             ->first();
 
         if ($existingConversation) {
+            broadcast(new ConversationCreatedEvent($existingConversation));
+
             return $existingConversation;
         }
 
@@ -55,6 +61,9 @@ class ConversationService
             'conversation_id' => $conversation->id,
             'user_id' => $receiver->id,
         ]);
+
+        broadcast(new ConversationCreatedEvent($conversation));
+
         return $conversation;
 
     }
@@ -68,6 +77,7 @@ class ConversationService
             ->where('name', $name)
             ->first();
         if ($existingConversation) {
+            broadcast(new ConversationCreatedEvent($existingConversation));
             return $existingConversation;
         }
         // Create a new group conversation
@@ -93,22 +103,38 @@ class ConversationService
                 'role' => 'member',
             ]);
         }
+
+        broadcast(new ConversationCreatedEvent($conversation));
+
         return $conversation;
     }
-    public function getConversationsForUser(User $user,$includeArchived = false): Collection
+    public function getConversationsForUser(User $user, $includeArchived = false): Collection
     {
-        $query = Conversation::whereHas('participants', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        });
+        $query = Conversation::query()
+            ->whereHas('participants', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            });
+
         if ($includeArchived) {
             $query->orWhereHas('archivedConversations', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             });
         }
-        $conversations = $query->with(['participants', 'messages'])->get();
+
+        $conversations = $query->with(['participants', 'messages'])
+            ->leftJoinSub(
+                Message::query()
+                    ->select('conversation_id', DB::raw('MAX(created_at) as last_message_at'))
+                    ->groupBy('conversation_id'),
+                'latest_messages',
+                'conversations.id',
+                '=',
+                'latest_messages.conversation_id'
+            )
+            ->orderByDesc('last_message_at')
+            ->get();
 
         return $conversations;
-
     }
     public function getConversationWithMessages(Conversation $conversation,$int):Conversation
     {
@@ -117,7 +143,6 @@ class ConversationService
         }])->find($conversation->id);
 
         return $conversation;
-
     }
     public function archiveConversation(User $user,Conversation $conversation):Conversation
     {
@@ -173,36 +198,18 @@ class ConversationService
             throw new \Exception('This method is only applicable to group conversations.');
         }
         // Check if the user is an admin of the conversation
-        $adminParticipant = $conversation->participants()->where('user_id', Auth::id())->first();
-        if (!$adminParticipant || $adminParticipant->role !== 'admin') {
+        $adminParticipant = $conversation->ConversationAdmin();
+        // dd($adminParticipant);
+        if (!$adminParticipant || $adminParticipant->id != Auth::id()) {
             throw new \Exception('Only admins can edit group conversation participants.');
         }
-
         $conversation->update(['name' => $name]);
-
-        $conversation->participants()->syncWithoutDetaching(
+        $newParticipants[] = Auth::id();
+        $conversation->participants()->sync(
             $newParticipants
         );
-
-
+        broadcast(new ConversationUpdatedEvent($conversation));
         return $conversation;
     }
-    // public function isUserInConversation(User $user, Conversation $conversation): bool
-    // {
-    //     return $conversation->participants->contains($user);
-    // }
-    // public function getActiveParticipants(Conversation $conversation): array
-    // {
-    //     return $conversation->activeParticipants()->get();
-    // }
-    // public function isGroupConversation(Conversation $conversation): bool
-    // {
-    //     return $conversation->isGroup();
-    // }
-    // public function getLastMessage(Conversation $conversation)
-    // {
-    //     return $conversation->lastMessage()->first();
-    // }
 
-    // Add other conversation-related methods
 }

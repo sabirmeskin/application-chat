@@ -44,6 +44,14 @@ class Message extends Model implements HasMedia
 
     public function markAsRead(User $user){
         $this->update(['status' => 'read']);
+
+        //feature for group read
+
+        MessageRead::create([
+            'user_id' => $user->id,
+            'message_id' => $this->id,
+            'read_at' => now()
+        ]);
     }
 
     public function markAsUnread(User $user){
@@ -54,6 +62,12 @@ class Message extends Model implements HasMedia
         $this->update(['status' => 'delivered' , 'delivered_at' => now()]);
     }
 
+    public function isRead(){
+        return $this->status === 'read';
+    }
+    public function timestamp(){
+        return $this->created_at->format('h:i');
+    }
 
 
 }

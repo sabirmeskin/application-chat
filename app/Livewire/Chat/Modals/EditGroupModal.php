@@ -1,31 +1,24 @@
 <?php
 namespace App\Livewire\Chat\Modals;
 
-use App\Models\Conversation;
-use App\Models\User;
+ use App\Models\User;
 use App\Services\ConversationService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class EditGroupModal extends Component
 {
-    public Conversation $conversation;
+    public $conversation;
     public $nom = '';
     public $selectedUsers = [];
     public $contacts = [];
     public $search = '';
-
-    public function mount(Conversation $conversation)
+    public function mount($conversation)
     {
         $this->conversation = $conversation;
-        $this->nom = $conversation->name;
+        $this->resetFields();
 
-        $this->selectedUsers = $conversation->participants()
-            ->where('user_id', '!=', Auth::id())
-            ->pluck('user_id')
-            ->toArray();
-
-        $this->contacts = User::where('id', '!=', Auth::id())->get();
     }
 
     public function updateUsers()
@@ -37,11 +30,16 @@ class EditGroupModal extends Component
 
     public function save()
     {
-        $this->validate([
-            'nom' => 'required|string|max:2',
-            'selectedUsers' => 'required|array|min:2',
-        ]);
+            $this->validate([
+                'nom' => 'required|string|min:2',
+                'selectedUsers' => 'required|array|distinct|min:2',
+            ] ,
+            [
+                'selectedUsers.min' => "Veuillez sélectionner au moins deux utilisateurs"
+            ]
+    );
         $this->dispatch('closeModal');
+
 
         $conversationService = ConversationService::getInstance();
         return $conversationService->updateGroupConversation(
@@ -50,6 +48,20 @@ class EditGroupModal extends Component
             $this->selectedUsers
         );
     }
+
+    #[On('resetModal')]
+    public function resetFields()
+    {
+    $this->nom = $this->conversation->name;
+
+    $this->selectedUsers = $this->conversation->participants()
+        ->where('user_id', '!=', Auth::id())
+        ->pluck('user_id')
+        ->toArray();
+
+    $this->contacts = \App\Models\User::where('id', '!=', Auth::id())->get();
+    $this->search = '';
+}
 
     public function render()
     {

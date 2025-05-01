@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Conversation extends Model
 {
@@ -13,6 +14,10 @@ class Conversation extends Model
         return $this->belongsToMany(User::class, 'conversation_participants');
     }
 
+    public function ConversationAdmin(){
+        return $this->participants()->where("role","admin")->first();
+    }
+
     public function messages()
     {
         return $this->hasMany(Message::class);
@@ -21,6 +26,14 @@ class Conversation extends Model
     public function lastMessage()
     {
         return $this->hasOne(Message::class)->latest();
+    }
+    public function lastMessageTime()
+    {
+        return $this->hasOne(Message::class)->latest()->select('created_at');
+    }
+    public function lastMessageSender()
+    {
+        return $this->hasOne(Message::class)->latest()->with('sender');
     }
 
     public function archive()
@@ -37,10 +50,6 @@ class Conversation extends Model
         return $this->participants->contains($user);
     }
 
-    public function activeParticipants()
-    {
-        return $this->participants->where('is_online', true)->get();
-    }
 
     public function isGroup()
     {
@@ -51,10 +60,22 @@ class Conversation extends Model
         return $this->type === 'private';
     }
     public function receiver(){
-        return $this->participants()->where('user_id', '!=', auth()->id())->first();
+        return $this->participants()->where('user_id', '!=', Auth::id())->first();
+    }
+    public function sender(){
+        return $this->participants()->where('user_id', Auth::id())->first();
     }
     public function isArchived()
     {
         return $this->archived_at !== null;
+    }
+
+    public function ConversationName(){
+        if ($this->isGroup()) {
+            return $this->name;
+        } else {
+            $receiver = $this->receiver();
+            return $receiver ? $receiver->name : 'Unknown';
+        }
     }
 }

@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 
+use App\Events\MessageSentEvent;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
@@ -22,13 +23,12 @@ class MessageService
         $message = Message::create([
             'conversation_id' => $conversation->id,
             'sender_id' => $sender->id,
-            'receiver_id' => $conversation->getOtherParticipant($sender)->id,
+            'receiver_id' => $conversation->receiver()->id,
             'parent_id' => $parent ? $parent->id : null,
             'type' => 'text',
             'body' => $body,
-
         ]);
-        //broadcast(new MessageSent($message));
+        broadcast(new MessageSentEvent($message));
         return $message;
     }
 
@@ -62,6 +62,8 @@ class MessageService
             'deleted_at' => now(),
         ]);
     }
+
+
 
     // public function addReaction(Message $message, string $reaction):Message
     // {
