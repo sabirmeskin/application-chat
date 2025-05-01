@@ -13,10 +13,7 @@
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800">
 
-
-
             <livewire:chat.layout />
-
 
         @fluxScripts
     </body>
