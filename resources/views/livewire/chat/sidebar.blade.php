@@ -36,7 +36,7 @@
         <flux:navlist variant="outline" class="overflow-y-auto ">
             <flux:navlist.group expandable :expanded="false" :heading="__('Conversations Archivées')"
                 class="grid overflow-y-auto  overflow-x-hidden" style="scrollbar-width: thin;"
-                x-data="chatSidebar({{ $conversations->pluck('id') }})" x-init="init()">
+               >
                 @foreach ($conversations as $conversation)
                 @if ($conversation->isArchived())
                 <flux:navlist.item class="cursor-pointer" :current="false" class="cursor-pointer"
@@ -117,9 +117,7 @@
                         </div>
                     </div>
                 </flux:menu.radio.group>
-
                 <flux:menu.separator />
-
                 <flux:menu.radio.group>
                     <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Settings') }}
                     </flux:menu.item>
