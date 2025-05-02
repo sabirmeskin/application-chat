@@ -1,7 +1,7 @@
 <div class="h-screen">
-    <flux:sidebar stashable
+    <flux:sidebar
         class="border-r h-screen border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 w-90">
-        <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
+        {{-- <flux:sidebar.toggle class="lg:hidden" icon="x-mark" /> --}}
         <div class=" flex items-center space-x-2 rtl:space-x-reverse flex-row" wire:navigate>
             <x-app-logo />
             <flux:dropdown position="bottom" align="end">
@@ -92,7 +92,7 @@
     </flux:sidebar>
 
     <!-- Mobile User Menu -->
-    <flux:header class="lg:hidden">
+    {{-- <flux:header class="lg:hidden">
         <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
 
@@ -133,7 +133,7 @@
                 </form>
             </flux:menu>
         </flux:dropdown>
-    </flux:header>
+    </flux:header> --}}
     <livewire:chat.modals.contacts-modal />
     <livewire:chat.modals.groups-modal />
 
