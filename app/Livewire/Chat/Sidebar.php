@@ -41,14 +41,12 @@ class Sidebar extends Component
        return [
         'echo:private-conversation,ConversationCreatedEvent' => 'UpdateConversations',
         // 'echo:private-conversation,ConversationUpdatedEvent' => 'handleUpdateConversationEvent',
-        "echo-private:chat.*,MessageSentEvent" => 'UpdateLastMessage',
+
 
        ];
     }
 
-    public function UpdateLastMessage(){
-        dd('it listened on sidebar');
-    }
+
     // public function handleUpdateConversationEvent(){
     //     $this->conversations = ConversationService::getInstance()->getConversationsForUser(Auth::user(), false);
     // }

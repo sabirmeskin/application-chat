@@ -12,9 +12,7 @@ class Layout extends Component
     #[On('conversationSelected')]
     public function conversationSelected($conversationId)
     {
-        // dd('chatLayout');
         $this->conversation = Conversation::find($conversationId);
-
     }
 
 
