@@ -80,42 +80,45 @@
         <!-- Typing Indicator -->
 
     </div>
-    <div
-    x-data="{
-        showTyping: $wire.entangle('typingIndicator'),
-    }"
-    x-init="
-        $watch('showTyping', (val) => {
-            if (val) {
-                setTimeout(() => {
-                    showTyping = false;
-                    $wire.set('typingIndicator', false); // sync with Livewire
-                }, 3000);
-            }
-        });
-    "
->
-    <template x-if="showTyping">
-        <div class="flex items-end space-x-1 p-2 rounded-lg m-2 w-fit ml-20">
-            <span class="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-lg animate-bounce [animation-delay:0ms]"></span>
-            <span class="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-lg animate-bounce [animation-delay:200ms]"></span>
-            <span class="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-lg animate-bounce [animation-delay:400ms]"></span>
+
+        <div
+        x-data="{
+            showTyping: $wire.entangle('typingIndicator'),
+        }"
+        x-init="
+            $watch('showTyping', (val) => {
+                if (val) {
+                    setTimeout(() => {
+                        showTyping = false;
+                        $wire.set('typingIndicator', false); // sync with Livewire
+                    }, 3000);
+                }
+            });
+        "
+    >
+        <template x-if="showTyping">
+            <div class="flex items-end space-x-1 p-2 rounded-lg m-2 w-fit ml-20">
+                <span class="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-lg animate-bounce [animation-delay:0ms]"></span>
+                <span class="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-lg animate-bounce [animation-delay:200ms]"></span>
+                <span class="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-lg animate-bounce [animation-delay:400ms]"></span>
+            </div>
+        </template>
         </div>
-    </template>
-</div>
 
 
 
-    <form wire:submit.prevent="sendMessage"
+
+    <form wire:submit.prevent="sendMessage"  x-on:submit.debounce.500ms
+
         class="flex w-full items-center justify-center justify-between px-4 py-4 shadow-lg border-t border-zinc-800/5 dark:border-white/10 gap-5">
 
         <flux:button icon="paperclip" variant="primary" class="px-2" />
-        <flux:input placeholder="Type your message" icon-trailing="send" clearable wire:model.defer="message"
+        <flux:input placeholder="Type your message" icon-trailing="send" clearable wire:model="message"
             autocomplete="off"
              {{-- wire:keydown.debounce.2000ms="stopTyping" --}}
              {{-- wire:keydown="startTyping" wire:keydown.debounce.3000ms="stopTyping" --}}
-            wire:keydown="startTyping"
-        />
+             wire:keyup.debounce.1000ms="startTyping"
+             />
         <flux:button type="submit" variant="primary">
             Envoyer
         </flux:button>

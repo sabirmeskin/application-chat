@@ -26,8 +26,10 @@ class Chatbox extends Component
 
     public function sendMessage(MessageService $messageService)
     {
+        $messageText = $this->message;
+        $this->message = '';
         $this->stopTyping();
-        if (trim($this->message) === '') {
+        if (trim($messageText) === '') {
             return;
         }
 
@@ -35,14 +37,13 @@ class Chatbox extends Component
             Auth::user(),
             $this->conversation,
             null,
-            $this->message
+            $messageText
         );
         // $this->messages[] = $newMessage;
 
         $this->dispatch('messageSent', [$this->conversation,$newMessage]);
         $this->dispatch('scrollToBottom');
         // broadcast(new MessageReadEvent($newMessage , Auth::id()))->toOthers();
-        $this->message = '';
 
     }
     public function loadMessages(){

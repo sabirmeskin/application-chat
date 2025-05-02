@@ -2,7 +2,7 @@
     @if ($userId !== $message->sender_id)
     <div class="flex items-start justify-start gap-2 px-4 py-2">
 
-        <flux:avatar name="sqdqs sqdqs" color="auto" class="ml-2 {{ !$avatarOn ? 'opacity-0' : '' }}" circle  />
+        <flux:avatar name="{{$message->sender->name}}" color="auto" class="ml-2 {{ !$avatarOn ? 'opacity-0' : '' }}" circle  />
 
 
         <div
