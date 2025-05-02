@@ -28,7 +28,7 @@ class ConversationUpdatedEvent implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('conversation'),
+            new PrivateChannel('conversation.'.$this->conversation->id),
         ];
     }
 }

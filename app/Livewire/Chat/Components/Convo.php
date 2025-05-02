@@ -24,23 +24,13 @@ class Convo extends Component
             // Optionally use $message for preview updates
         }
     }
-    // public function getListeners()
-    // {
-    //     return [
-    //         "echo-private:chat.{$this->conversation->id},MessageSentEvent" => 'UpdateLastMessage',
-    //         'echo:private-conversation,ConversationUpdatedEvent' => 'handleUpdateConversationEvent',
 
-    //      ];
-    // }
-    // public function handleUpdateConversationEvent(){
-    //     $this->conversation->load('participants');
-    // }
-
-
-    // public function UpdateLastMessage()
-    // {
-    //     $this->conversation->load('lastMessage');
-    // }
+    #[On('UpdateConvo')]
+    public function updateConvo($conversationId){
+        if ($conversationId == $this->conversation->id) {
+            $this->conversation->refresh();
+        }
+    }
 
     public function render()
     {

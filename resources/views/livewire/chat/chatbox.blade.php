@@ -24,20 +24,20 @@
                 class="ml-2" />
             @endif
             <flux:heading size="lg">{{$conversation->ConversationName()}}</flux:heading>
-        </div>
+        </div> @if ($conversation->isGroup() && $conversation->ConversationAdmin()->id == Auth::id() )
         <flux:dropdown>
             <flux:button icon="circle-chevron-down" variant="ghost" class="ml-auto mr-2" />
             <flux:menu>
                 <flux:menu.item icon="plus">Ajouter Membre</flux:menu.item>
                 <flux:menu.separator />
-                @if ($conversation->isGroup() && $conversation->ConversationAdmin()->id == Auth::id() )
+
                 <flux:menu.item :key="$conversation->id" x-on:click="$flux.modal('edit-group-modal').show()"
                     icon="pencil">Modifier Groupe</flux:menu.item>
                 <flux:menu.separator />
-                @endif
+
                 <flux:menu.item variant="danger" icon="trash">Delete</flux:menu.item>
             </flux:menu>
-        </flux:dropdown>
+        </flux:dropdown>@endif
     </flux:header>
 
     <div class="flex flex-col h-full  overflow-y-scroll " id="scrollArea"

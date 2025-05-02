@@ -148,6 +148,12 @@
                         Livewire.dispatch('refreshConvo', [id, e.message]);
                     });
             });
+            conversationIds.forEach(id => {
+                Echo.private(`conversation.${id}`)
+                    .listen('ConversationUpdatedEvent', (e) => {
+                        Livewire.dispatch('UpdateConvo',[id]);
+                    });
+            });
         }
     }
 }
