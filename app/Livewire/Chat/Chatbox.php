@@ -3,14 +3,15 @@
 namespace App\Livewire\Chat;
 
 use App\Events\MessageReadEvent;
-use App\Events\MessageSentEvent;
-use App\Models\Conversation;
+
+use App\Events\TypingEvent;
+
 use App\Models\Message;
 use App\Models\User;
-use App\Services\ConversationService;
+
 use App\Services\MessageService;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\On;
+
 use Livewire\Component;
 
 
@@ -21,10 +22,11 @@ class Chatbox extends Component
     public $conversation;
     protected $messageService;
     public $isRead = false;
-
+    public $typingIndicator = false;
 
     public function sendMessage(MessageService $messageService)
     {
+        $this->stopTyping();
         if (trim($this->message) === '') {
             return;
         }
@@ -60,20 +62,16 @@ class Chatbox extends Component
     {
         return [
             "echo:private-chat.{$this->conversation->id},MessageSentEvent" => 'updateLastMessage',
-            "echo:private-read.{$this->conversation->id},MessageReadEvent" => 'handleMessageRead'
+            "echo:private-read.{$this->conversation->id},MessageReadEvent" => 'handleMessageRead',
+            "echo:private-typing.{$this->conversation->id},TypingEvent" => 'handleTypingEvent',
     ];
     }
 
-    // public function handleMessageRead($event){
-    //     $msg = Message::findorFail($event['message_id']);
-    //     if($msg){
-    //         $msg->markAsRead(Auth::user());
-    //         // broadcast(new MessageReadEvent($msg,Auth::id()))->toOthers();
+    public function handleTypingEvent($event){
+        $this->typingIndicator = true;
+        $this->dispatch('hideTypingAfterDelay');
+    }
 
-
-    //     }
-
-    // }
     public function handleMessageRead($event)
     {
         $messageId = $event['message_id'];
@@ -100,23 +98,27 @@ class Chatbox extends Component
     // Add the new message to the messages array
     $this->messages[] = $newMessage;
     $this->dispatch('scrollToBottom');
-
-
     }
     public function markLastMessageAsSeen($messageId)
     {
         $message= Message::find($messageId);
         if($message && $message->sender_id !== Auth::id()){
             broadcast(new MessageReadEvent($message, Auth::id()))->toOthers();
-          }
+        }
+    }
 
+    public function startTyping(){
+
+        broadcast(new TypingEvent($this->conversation ))->toOthers();
+    }
+    public function stopTyping(){
+
+        $this->typingIndicator =  false;
     }
     public function mount($conversation)
     {
-
         $this->conversation = $conversation;
         $this->loadMessages();
-
     }
 
     public function render()

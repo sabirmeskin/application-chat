@@ -25,3 +25,9 @@ Broadcast::channel('read.{conversationId}',function($user , $conversationId) {
     })->exists();
     // return true;
 });
+Broadcast::channel('typing.{conversationId}', function ($user, $conversationId) {
+
+    $conversation = Conversation::find($conversationId);
+
+    return $conversation && $conversation->participants->contains($user->id);
+});
