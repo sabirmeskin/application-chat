@@ -20,7 +20,7 @@
 
         </div>
 
-        <flux:dropdown style="display: flex; align-items: center;" class="my-auto" position="top" align="start">
+        <flux:dropdown style="display: flex; align-items: center;" class="my-auto" >
             <flux:button icon="ellipsis-vertical" variant="ghost" class="ml-auto mr-2" />
             <flux:menu>
                 <flux:menu.item icon="forward">Transférer</flux:menu.item>
@@ -34,7 +34,7 @@
 
     @else
     <div class="flex justify-end gap-2 px-4 py-2 ">
-        <flux:dropdown style="display: flex; align-items: center;" position="top" align="end">
+        <flux:dropdown style="display: flex; align-items: center;" >
             <flux:button icon="ellipsis-vertical" variant="ghost" class="ml-auto mr-2" />
             <flux:menu>
                 <flux:menu.item icon="forward">Transférer</flux:menu.item>

@@ -17,7 +17,7 @@
 
         </div>
 
-        <flux:dropdown style="display: flex; align-items: center;" class="my-auto">
+        <flux:dropdown style="display: flex; align-items: center;" class="my-auto" position="top" align="end">
             <flux:button icon="ellipsis-vertical" variant="ghost" class="ml-auto mr-2" />
             <flux:menu>
                 <flux:menu.item icon="forward">Transférer</flux:menu.item>
