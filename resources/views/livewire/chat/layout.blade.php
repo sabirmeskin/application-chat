@@ -54,7 +54,8 @@
 
             <div class="h-screen">
                 @if($conversation)
-                    <livewire:chat.chatbox :conversation="$conversation" :key="$conversation->id" />
+                    <div wire.loading.flex></div>
+                    <livewire:chat.chatbox :conversation="$conversation" :key="$conversation->id" wire:remove />
                 @else
                     <div class="flex items-center justify-center w-full h-full text-gray-500 dark:text-gray-300">
                         <p>Sélectionnez une conversation pour commencer à discuter.</p>
