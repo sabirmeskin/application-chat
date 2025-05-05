@@ -39,7 +39,7 @@ class Sidebar extends Component
     public function getListeners()
     {
        return [
-        'echo:private-conversation,ConversationCreatedEvent' => 'UpdateConversations',
+        'echo:private-conversation,ConversationCreatedEvent' => 'updateConversations',
         // 'echo:private-conversation,ConversationUpdatedEvent' => 'handleUpdateConversationEvent',
        ];
     }
@@ -52,8 +52,9 @@ class Sidebar extends Component
 
     }
 
-    public function UpdateConversations($event)
+    public function updateConversations($event)
     {
+
         $newConversation = Conversation::find($event['conversation']['id']);
         if ($newConversation->isParticipant(Auth::user()) &&
             !collect($this->conversations)->contains('id', $newConversation->id)) {

@@ -1,5 +1,28 @@
-<div x-data="{ sidebarOpen: window.innerWidth >= 768 }" class="h-full">
-    <div class="flex h-full relative">
+<div x-data="{
+    sidebarOpen: window.innerWidth >= 768,
+    loading: true
+}"
+     x-init="setTimeout(() => loading = false, 6000)"
+     class="h-full">
+
+    <!-- Loading Screen -->
+    <div x-show="loading"
+         class="fixed inset-0 flex items-center justify-center bg-accent-foreground dark:bg-zinc-800 z-50">
+         <div class="text-center py-5">
+            <div class="flex flex-col gap-5 items-center justify-center my-10 animate-pulse ">
+                <x-app-logo />
+                {{-- <flux:icon.loading /> --}}
+            </div>
+            {{-- <div class=" flex flex-row gap-5">
+                <flux:icon.loading />
+                <p class="text-gray-700 dark:text-gray-300 text-xl font-semibold">Chargement...</p>
+            </div> --}}
+         </div>
+
+    </div>
+
+    <!-- Main Content (displayed after loading) -->
+    <div x-show="!loading" class="flex h-full relative " >
         <!-- Sidebar - hidden on small screens (md:), visible on medium+ -->
         <div id="sidebar"
              class="w-90 bg-white dark:bg-gray-800 shadow-md transform transition-transform duration-300 ease-in-out
@@ -29,8 +52,7 @@
                 </svg>
             </button>
 
-
-            <div class="h-screen"  >
+            <div class="h-screen">
                 @if($conversation)
                     <livewire:chat.chatbox :conversation="$conversation" :key="$conversation->id" />
                 @else
