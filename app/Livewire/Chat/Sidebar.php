@@ -41,8 +41,6 @@ class Sidebar extends Component
        return [
         'echo:private-conversation,ConversationCreatedEvent' => 'UpdateConversations',
         // 'echo:private-conversation,ConversationUpdatedEvent' => 'handleUpdateConversationEvent',
-
-
        ];
     }
 

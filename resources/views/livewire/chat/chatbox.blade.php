@@ -2,7 +2,7 @@
 
     <flux:header
         class="flex w-full items-center justify-between px-4 py-4 shadow-lg m-0 sticky border-b border-zinc-800/5 dark:border-white/10">
-        <div class="flex items-center justify-between gap-5">
+        <div class=" ml-5 flex items-center justify-between gap-5">
             @if ($conversation->isGroup())
             <flux:avatar.group class="**:ring-zinc-100 dark:**:ring-zinc-800">
                 @foreach ($conversation->participants->take(3) as $user)
