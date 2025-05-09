@@ -28,12 +28,12 @@
         <flux:dropdown>
             <flux:button icon="circle-chevron-down" variant="ghost" class="ml-auto mr-2" />
             <flux:menu>
-                <flux:menu.item icon="plus">Ajouter Membre</flux:menu.item>
-                <flux:menu.separator />
 
                 <flux:menu.item :key="$conversation->id" x-on:click="$flux.modal('edit-group-modal').show()"
                     icon="pencil">Modifier Groupe</flux:menu.item>
-                <flux:menu.separator />
+                    <flux:menu.separator />
+                    <flux:menu.item icon="user-x">Quitter la Conversation</flux:menu.item>
+                    <flux:menu.separator />
 
                 <flux:menu.item variant="danger" icon="trash">Delete</flux:menu.item>
             </flux:menu>

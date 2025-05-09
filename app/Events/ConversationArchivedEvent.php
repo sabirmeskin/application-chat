@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\Conversation;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -17,9 +18,9 @@ class ConversationArchivedEvent
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public function __construct(public Conversation $conversation)
     {
-        //
+        $this->conversation = $conversation;
     }
 
     /**
@@ -30,7 +31,7 @@ class ConversationArchivedEvent
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('channel-name'),
+            new PrivateChannel('conversation.'.$this->conversation),
         ];
     }
 }

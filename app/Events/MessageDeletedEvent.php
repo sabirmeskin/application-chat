@@ -2,6 +2,8 @@
 
 namespace App\Events;
 
+use App\Models\Conversation;
+use App\Models\Message;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -17,9 +19,9 @@ class MessageDeletedEvent
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public function __construct(public Message $message)
     {
-        //
+        $this->message = $message;
     }
 
     /**
@@ -30,7 +32,7 @@ class MessageDeletedEvent
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('channel-name'),
+            new PrivateChannel('message.'.$this->message),
         ];
     }
 }
