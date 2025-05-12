@@ -11,16 +11,9 @@
          <div class="text-center py-5">
             <div class="flex flex-col gap-5 items-center justify-center my-10 animate-pulse ">
                 <x-app-logo />
-                {{-- <flux:icon.loading /> --}}
             </div>
-            {{-- <div class=" flex flex-row gap-5">
-                <flux:icon.loading />
-                <p class="text-gray-700 dark:text-gray-300 text-xl font-semibold">Chargement...</p>
-            </div> --}}
          </div>
-
     </div>
-
     <!-- Main Content (displayed after loading) -->
     <div x-show="!loading" class="flex h-full relative " >
         <!-- Sidebar - hidden on small screens (md:), visible on medium+ -->
