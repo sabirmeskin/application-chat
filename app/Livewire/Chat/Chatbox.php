@@ -82,8 +82,7 @@ class Chatbox extends Component
         $index = $this->messages->search(fn($m) => $m->id == $messageId);
 
         if ($index !== false) {
-            // Mark the message as read for this user
-            // dd('eneteres');
+
 
             $message = Message::find($messageId);
 
