@@ -37,12 +37,6 @@ class Convo extends Component
         $this->conversation = Conversation::find($event['message']['conversation_id']);
     }
 
-    public function getListeners()
-    {
-        return [
-            // "echo-private:chat.{$this->conversation->id},MessageSentEvent" => 'UpdateLastMessage',
-         ];
-    }
     public function UpdateLastMessage()
     {
         $this->conversation->load('lastMessage');
