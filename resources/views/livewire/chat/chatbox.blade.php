@@ -110,7 +110,6 @@
 
     <form wire:submit.prevent="sendMessage" x-on:submit.debounce.500ms
         class="flex w-full items-center justify-center justify-between px-4 py-4 shadow-lg border-t border-zinc-800/5 dark:border-white/10 gap-5">
-
         {{--
         <flux:button icon="paperclip" variant="primary" class="px-2" /> --}}
         <div x-data="{ triggerFileInput() { $refs.fileInput.click(); } }" class="relative">
@@ -119,8 +118,7 @@
                 accept="image/*,application/pdf,application/msword,.doc,.docx" />
         </div>
         <flux:input placeholder="Type your message" icon-trailing="send" clearable wire:model="message"
-            autocomplete="off" {{-- wire:keydown.debounce.2000ms="stopTyping" --}} {{-- wire:keydown="startTyping"
-            wire:keydown.debounce.3000ms="stopTyping" --}} wire:keyup.debounce.1000ms="startTyping" />
+            autocomplete="off"  wire:keyup.debounce.1000ms="startTyping" />
         <flux:button type="submit" variant="primary">
             Envoyer
         </flux:button>
@@ -142,4 +140,5 @@
     </script>
     @endscript
     <livewire:chat.modals.edit-group-modal :conversation="$conversation" :key="$conversation->id">
+    <livewire:chat.modals.confirm-delete >
 </div>

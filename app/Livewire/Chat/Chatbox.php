@@ -13,16 +13,42 @@ use App\Services\MessageService;
 use Illuminate\Support\Facades\Auth;
 
 use Livewire\Component;
-
+use Livewire\WithFileUploads;
 
 class Chatbox extends Component
 {
+     use WithFileUploads;
+     public $file;
     public $messages = [];
     public $message = '';
     public $conversation;
     protected $messageService;
     public $isRead = false;
     public $typingIndicator = false;
+
+
+
+
+    public function updatedFile()
+    {
+        $this->sendFileMessage();
+    }
+
+    public function sendFileMessage(){
+        if (!$this->file) return;
+        $message = MessageService::getInstance()->sendMediaMessage(
+            Auth::user(),
+            $this->conversation,
+        );
+        $message->addMedia($this->file->getRealPath())
+            ->usingFileName($this->file->getClientOriginalName())
+            ->toMediaCollection('attachments');
+
+              $this->reset('file');
+
+        $this->dispatch('messageSent', [$this->conversation, $message]);
+        $this->dispatch('scrollToBottom');
+    }
 
     public function sendMessage(MessageService $messageService)
     {

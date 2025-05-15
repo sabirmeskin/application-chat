@@ -5,9 +5,26 @@ use App\Events\MessageSentEvent;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
+use Illuminate\Support\Facades\App;
 
 class MessageService
 {
+
+
+        /**
+     * Get the instance of the ConversationService.
+     * hadi singleton
+     * @return self
+     */
+    public static function getInstance(): self
+    {
+        return App::make(self::class);
+    }
+
+    public function __construct()
+    {
+        // Initialize any dependencies or properties here
+    }
 
     /**
      * Send a text message.
@@ -32,18 +49,18 @@ class MessageService
         return $message;
     }
 
-    public function sendMediaMessage(User $sender, Conversation $conversation, Message $parent = null , string $body):Message
+    public function sendMediaMessage(User $sender, Conversation $conversation, Message $parent = null ):Message
     {
         $message = Message::create([
             'conversation_id' => $conversation->id,
             'sender_id' => $sender->id,
-            'receiver_id' => $conversation->getOtherParticipant($sender)->id,
+            'receiver_id' => $conversation->receiver()->id,
             'parent_id' => $parent ? $parent->id : null,
             'type' => 'media',
-            'body' => $body,
+            'body' => '',
 
         ]);
-        //broadcast(new MessageSent($message));
+        broadcast(new MessageSentEvent($message));
         return $message;
     }
 
