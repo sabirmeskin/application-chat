@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Auth;
 
+use App\Events\UserStatusEvent;
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -42,7 +44,13 @@ class Login extends Component
 
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
-
+        $user = User::find(Auth::id());
+        $user->update([
+            'is_online' => true,
+            'last_seen_at' => now(),
+        ]);
+        broadcast(new UserStatusEvent($user,'online'))->toOthers();  
+        
         $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
     }
 

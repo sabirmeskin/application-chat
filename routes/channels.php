@@ -36,3 +36,26 @@ Broadcast::channel('typing.{conversationId}', function ($user, $conversationId) 
         $q->where('conversation_id', $conversationId);
     })->exists();
 });
+
+Broadcast::channel('user-status.{userId}', function ($user, $userId) {
+    if ((int) $user->id !== (int) $userId) {
+        return null; // unauthorized
+    }
+
+    // this array becomes each entry in your `here()` callback
+    return [
+        'id'   => $user->id,
+        'name' => $user->name,
+        'status' => $user->is_online ? 'online' : 'offline',
+    ];
+});
+Broadcast::channel('user-status', function ($user) {
+
+
+    // this array becomes each entry in your `here()` callback
+    return [
+        'id'   => $user->id,
+        'name' => $user->name,
+        'status' => $user->is_online ? 'online' : 'offline',
+    ];
+});

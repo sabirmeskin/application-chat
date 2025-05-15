@@ -14,6 +14,7 @@ class Sidebar extends Component
 
     public $conversations = [];
     public $activeId ;
+    public $user;
 
 
     protected $conversationService;
@@ -23,6 +24,7 @@ class Sidebar extends Component
 
         $this->conversationService = $conversationService;
         $this->loadConversations();
+        $this->user = Auth::user();
     }
     public function loadConversations()
     {
@@ -38,13 +40,20 @@ class Sidebar extends Component
 
     public function getListeners()
     {
+        $userId =  Auth::id();
        return [
         'echo:private-conversation,ConversationCreatedEvent' => 'updateConversations',
+        "userStatusOnLine" => 'userStatusOnLine',
         // 'echo:private-conversation,ConversationUpdatedEvent' => 'handleUpdateConversationEvent',
        ];
     }
-
-
+   
+    
+    public function userStatusOnLine($user)
+    {
+        dd($user);
+        $this->conversation->users()->updateExistingPivot($user['id'], ['is_online' => true]);
+    }
     // public function handleUpdateConversationEvent(){
     //     $this->conversations = ConversationService::getInstance()->getConversationsForUser(Auth::user(), false);
     // }
