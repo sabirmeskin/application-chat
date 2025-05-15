@@ -31,9 +31,9 @@
 
                 <flux:menu.item :key="$conversation->id" x-on:click="$flux.modal('edit-group-modal').show()"
                     icon="pencil">Modifier Groupe</flux:menu.item>
-                    <flux:menu.separator />
-                    <flux:menu.item icon="user-x">Quitter la Conversation</flux:menu.item>
-                    <flux:menu.separator />
+                <flux:menu.separator />
+                <flux:menu.item icon="user-x">Quitter la Conversation</flux:menu.item>
+                <flux:menu.separator />
 
                 <flux:menu.item variant="danger" icon="trash">Delete</flux:menu.item>
             </flux:menu>
@@ -81,11 +81,9 @@
 
     </div>
 
-        <div
-        x-data="{
+    <div x-data="{
             showTyping: $wire.entangle('typingIndicator'),
-        }"
-        x-init="
+        }" x-init="
             $watch('showTyping', (val) => {
                 if (val) {
                     setTimeout(() => {
@@ -94,31 +92,35 @@
                     }, 3000);
                 }
             });
-        "
-    >
+        ">
         <template x-if="showTyping">
             <div class="flex items-end space-x-1 p-2 rounded-lg m-2 w-fit ml-20">
-                <span class="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-lg animate-bounce [animation-delay:0ms]"></span>
-                <span class="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-lg animate-bounce [animation-delay:200ms]"></span>
-                <span class="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-lg animate-bounce [animation-delay:400ms]"></span>
+                <span
+                    class="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-lg animate-bounce [animation-delay:0ms]"></span>
+                <span
+                    class="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-lg animate-bounce [animation-delay:200ms]"></span>
+                <span
+                    class="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-lg animate-bounce [animation-delay:400ms]"></span>
             </div>
         </template>
-        </div>
+    </div>
 
 
 
 
-    <form wire:submit.prevent="sendMessage"  x-on:submit.debounce.500ms
-
+    <form wire:submit.prevent="sendMessage" x-on:submit.debounce.500ms
         class="flex w-full items-center justify-center justify-between px-4 py-4 shadow-lg border-t border-zinc-800/5 dark:border-white/10 gap-5">
 
-        <flux:button icon="paperclip" variant="primary" class="px-2" />
+        {{--
+        <flux:button icon="paperclip" variant="primary" class="px-2" /> --}}
+        <div x-data="{ triggerFileInput() { $refs.fileInput.click(); } }" class="relative">
+            <flux:button icon="paperclip" variant="primary" class="px-2" x-on:click="triggerFileInput()" />
+            <input type="file" x-ref="fileInput" wire:model="file" class="hidden"
+                accept="image/*,application/pdf,application/msword,.doc,.docx" />
+        </div>
         <flux:input placeholder="Type your message" icon-trailing="send" clearable wire:model="message"
-            autocomplete="off"
-             {{-- wire:keydown.debounce.2000ms="stopTyping" --}}
-             {{-- wire:keydown="startTyping" wire:keydown.debounce.3000ms="stopTyping" --}}
-             wire:keyup.debounce.1000ms="startTyping"
-             />
+            autocomplete="off" {{-- wire:keydown.debounce.2000ms="stopTyping" --}} {{-- wire:keydown="startTyping"
+            wire:keydown.debounce.3000ms="stopTyping" --}} wire:keyup.debounce.1000ms="startTyping" />
         <flux:button type="submit" variant="primary">
             Envoyer
         </flux:button>

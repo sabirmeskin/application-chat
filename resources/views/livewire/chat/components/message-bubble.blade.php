@@ -60,7 +60,7 @@
 
             </div>
         </div>
-        <flux:avatar name="sqdqs sqdqs" color="auto" class="ml-2 {{ !$avatarOn ? 'opacity-0' : '' }}" circle  />
+        <flux:avatar name="{{$message->sender->name}}" color="auto" class="ml-2 {{ !$avatarOn ? 'opacity-0' : '' }}" circle  />
 
     </div>
     @endif

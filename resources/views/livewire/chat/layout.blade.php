@@ -2,7 +2,7 @@
     sidebarOpen: window.innerWidth >= 768,
     loading: true
 }"
-     x-init="setTimeout(() => loading = false, 6000)"
+     x-init="setTimeout(() => loading = false, 1000)"
      class="h-full">
 
     <!-- Loading Screen -->

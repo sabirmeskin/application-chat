@@ -2,7 +2,7 @@
     @if ($userId !== $message->sender_id)
     <div class="flex items-start justify-start gap-2 px-4 py-2">
 
-        <flux:avatar name="sqdqs sqdqs" color="auto" class="ml-2 {{ !$avatarOn ? 'opacity-0' : '' }}" circle />
+        <flux:avatar name="{{$message->sender->name}}" color="auto" class="ml-2 {{ !$avatarOn ? 'opacity-0' : '' }}" circle  />
 
 
         <div
@@ -11,7 +11,7 @@
                 <span
                     class="text-sm font-semibold text-gray-900 dark:text-white {{ !$avatarOn ? 'hidden' : '' }}">{{$message->sender->name}}</span>
             </div>
-            <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{$message->body}}</p>
+            {{-- <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{$message->body}}</p> --}}
             <livewire:chat.components.mimes.image>
 
                 <div class="w-full flex space-x-2 justify-end">
@@ -55,10 +55,16 @@
 
                 <div class="w-full flex justify-between items-center">
                     <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">{{$message->timestamp()}}</span>
-                    <flux:icon name="check-check" variant="micro" />
+                @if (!$message->conversation->isGroup())
+                 @if ($message->status == 'read')
+                <flux:icon icon="check-check" variant="micro" />
+                @else
+                <flux:icon icon="check" variant="micro" />
+                @endif
+                @endif
                 </div>
         </div>
-        <flux:avatar name="sqdqs sqdqs" color="auto" class="ml-2 {{ !$avatarOn ? 'opacity-0' : '' }}" circle />
+        <flux:avatar name="{{$message->sender->name}}" color="auto" class="ml-2 {{ !$avatarOn ? 'opacity-0' : '' }}" circle />
 
     </div>
     @endif

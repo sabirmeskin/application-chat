@@ -1,6 +1,6 @@
 <div>
-    @if (false)
-    <div class="group relative my-2.5">
+    @if (true)
+    <div class="group relative my-2">
         <div
             class="absolute w-full h-full bg-gray-900/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg flex items-center justify-center">
             <button data-tooltip-target="download-image"
@@ -11,19 +11,19 @@
                         d="M8 1v11m0 0 4-4m-4 4L4 8m11 4v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3" />
                 </svg>
             </button>
-            <div id="download-image" role="tooltip"
-                class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
-                Download image
+            <div
+                id="download-image" role="tooltip"
+                class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium
+                text-white transition-opacity duration-300 bg-gray-900 rounded-lg
+                shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                Télécharger
                 <div class="tooltip-arrow" data-popper-arrow></div>
             </div>
         </div>
-        <img src="https://picsum.photos/200/300
-="
-            class="rounded-lg" />
+        <img src="https://picsum.photos/200" class="rounded-lg" />
     </div>
-
     @else
-    <div class="grid gap-4 grid-cols-2 my-2.5">
+    <div class="grid gap-4 grid-cols-2 my-2">
         <div class="group relative">
             <div
                 class="absolute w-full h-full bg-gray-900/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg flex items-center justify-center">
@@ -41,7 +41,7 @@
                     <div class="tooltip-arrow" data-popper-arrow></div>
                 </div>
             </div>
-            <img src="https://picsum.photos/200/200
+            <img src="https://picsum.photos/400
         " class="rounded-lg" />
         </div>
         <div class="group relative">
@@ -61,8 +61,7 @@
                     <div class="tooltip-arrow" data-popper-arrow></div>
                 </div>
             </div>
-            <img src="https://picsum.photos/200/200
-" class="rounded-lg" />
+            <img src="https://picsum.photos/200/200" class="rounded-lg" />
         </div>
         <div class="group relative">
             <div
