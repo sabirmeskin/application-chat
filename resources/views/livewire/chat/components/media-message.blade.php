@@ -37,9 +37,9 @@
                 <flux:menu.item icon="pencil">Modifier</flux:menu.item>
                 <flux:menu.item icon="reply">Répondre</flux:menu.item>
                 <flux:menu.item icon="copy">Copier</flux:menu.item>
-                <flux:modal.trigger name="delete-profile">
-                <flux:menu.item variant="danger" icon="trash">Delete</flux:menu.item>
-                </flux:modal.trigger>
+                {{-- <flux:modal.trigger name="delete-profile">
+                <flux:menu.item variant="danger" icon="trash">Supprimer</flux:menu.item>
+                </flux:modal.trigger> --}}
             </flux:menu>
         </flux:dropdown>
     </div>
@@ -54,7 +54,7 @@
                 <flux:menu.item icon="reply">Répondre</flux:menu.item>
                 <flux:menu.item icon="copy">Copier</flux:menu.item>
                 <flux:modal.trigger name="delete-profile">
-                <flux:menu.item variant="danger" icon="trash">Delete</flux:menu.item>
+                <flux:menu.item variant="danger" icon="trash">Supprimer</flux:menu.item>
                 </flux:modal.trigger>
             </flux:menu>
         </flux:dropdown>
