@@ -20,7 +20,7 @@
         <flux:dropdown style="display: flex; align-items: center;" class="my-auto" position="top" align="end">
             <flux:button icon="ellipsis-vertical" variant="ghost" class="ml-auto mr-2" />
             <flux:menu>
-                <flux:menu.item icon="forward">Transférer</flux:menu.item>
+                <flux:menu.item icon="forward" x-on:click="$flux.modal('edit-message').show()">Transférer</flux:menu.item>
                 <flux:menu.item icon="pencil">Modifier</flux:menu.item>
                 <flux:menu.item icon="reply">Répondre</flux:menu.item>
                 <flux:menu.item icon="copy">Copier</flux:menu.item>
@@ -36,7 +36,7 @@
         <flux:dropdown style="display: flex; align-items: center;" >
             <flux:button icon="ellipsis-vertical" variant="ghost" class="ml-auto mr-2" />
             <flux:menu>
-                <flux:menu.item icon="forward">Transférer</flux:menu.item>
+                <flux:menu.item icon="forward" x-on:click="$flux.modal('edit-message').show()">Transférer</flux:menu.item>
                 <flux:menu.item icon="pencil">Modifier</flux:menu.item>
                 <flux:menu.item icon="reply">Répondre</flux:menu.item>
                 <flux:menu.item icon="copy">Copier</flux:menu.item>
@@ -71,6 +71,7 @@
 
 
 
+    <livewire:chat.modals.edit-message />
 
 
 </div>
