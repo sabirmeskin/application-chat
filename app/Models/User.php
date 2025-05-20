@@ -112,7 +112,10 @@ class User extends Authenticatable implements HasMedia
     {
         $this->update(['last_seen_at' => now()]);
     }
-
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
 
 
 }

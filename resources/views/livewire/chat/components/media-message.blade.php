@@ -54,7 +54,7 @@
                 <flux:menu.item icon="reply">Répondre</flux:menu.item>
                 <flux:menu.item icon="copy">Copier</flux:menu.item>
                 <flux:modal.trigger name="delete-profile">
-                <flux:menu.item variant="danger" icon="trash">Supprimer</flux:menu.item>
+                <flux:menu.item variant="danger" icon="trash" x-on:click="$flux.modal('delete-message').show()">Supprimer</flux:menu.item>
                 </flux:modal.trigger>
             </flux:menu>
         </flux:dropdown>

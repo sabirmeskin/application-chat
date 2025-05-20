@@ -11,7 +11,7 @@ use App\Models\User;
 
 use App\Services\MessageService;
 use Illuminate\Support\Facades\Auth;
-
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -85,14 +85,7 @@ class Chatbox extends Component
 
     }
 
-    public function getListeners()
-    {
-        return [
-            "echo:private-chat.{$this->conversation->id},MessageSentEvent" => 'updateLastMessage',
-            "echo:private-read.{$this->conversation->id},MessageReadEvent" => 'handleMessageRead',
-            "echo:private-typing.{$this->conversation->id},TypingEvent" => 'handleTypingEvent',
-    ];
-    }
+
 
     public function handleTypingEvent($event){
         $this->typingIndicator = true;
@@ -150,5 +143,28 @@ class Chatbox extends Component
     public function render()
     {
         return view('livewire.chat.chatbox');
+    }
+
+    #[On('messageDeleted')]
+    public function onMessageDeleted($message)
+    {
+        $this->messages = $this->messages->filter(function ($msg) use ($message) {
+            return $msg->id !== $message['id'];
+        });
+        $message = Message::find($message['id']);
+        if ($message) {
+            $message->delete();
+        }
+        $this->dispatch('scrollToBottom');
+    }
+
+        public function getListeners()
+    {
+        return [
+            "echo:private-chat.{$this->conversation->id},MessageSentEvent" => 'updateLastMessage',
+            "echo:private-read.{$this->conversation->id},MessageReadEvent" => 'handleMessageRead',
+            "echo:private-typing.{$this->conversation->id},TypingEvent" => 'handleTypingEvent',
+            "echo:private-message,MessageDeletedEvent" => 'onMessageDeleted',
+    ];
     }
 }

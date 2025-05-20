@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Chat\Components;
 
+use App\Events\MessageDeletedEvent;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -10,6 +11,10 @@ class MediaMessage extends Component
     public $message;
     public $userId;
     public $avatarOn;
+    public function delete(){
+        $this->dispatch('messageDeleted', $this->message);
+        broadcast(new MessageDeletedEvent($this->message))->toOthers();
+    }
     public function mount($message,$avatarOn)
     {
         $this->avatarOn = $avatarOn;

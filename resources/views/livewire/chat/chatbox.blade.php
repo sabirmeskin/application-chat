@@ -140,5 +140,4 @@
     </script>
     @endscript
     <livewire:chat.modals.edit-group-modal :conversation="$conversation" :key="$conversation->id">
-    <livewire:chat.modals.confirm-delete :conversation="$conversation" :key="$conversation->id" />
 </div>

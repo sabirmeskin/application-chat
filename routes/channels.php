@@ -36,3 +36,6 @@ Broadcast::channel('typing.{conversationId}', function ($user, $conversationId) 
         $q->where('conversation_id', $conversationId);
     })->exists();
 });
+Broadcast::channel('message', function () {
+    return true;
+});
