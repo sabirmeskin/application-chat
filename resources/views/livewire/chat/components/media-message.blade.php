@@ -95,6 +95,7 @@
 
 
 
+    <livewire:chat.modals.confirm-delete :message="$message" :key="$message->id"  />
 
 
 </div>
