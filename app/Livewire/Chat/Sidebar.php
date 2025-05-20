@@ -43,17 +43,15 @@ class Sidebar extends Component
         $userId =  Auth::id();
        return [
         'echo:private-conversation,ConversationCreatedEvent' => 'updateConversations',
-        "userStatusOnLine" => 'userStatusOnLine',
-        // 'echo:private-conversation,ConversationUpdatedEvent' => 'handleUpdateConversationEvent',
        ];
     }
    
     
-    public function userStatusOnLine($user)
-    {
-        dd($user);
-        $this->conversation->users()->updateExistingPivot($user['id'], ['is_online' => true]);
-    }
+    // public function userStatusOnLine($user)
+    // {
+    //     dd($user);
+    //     $this->conversation->users()->updateExistingPivot($user['id'], ['is_online' => true]);
+    // }
     // public function handleUpdateConversationEvent(){
     //     $this->conversations = ConversationService::getInstance()->getConversationsForUser(Auth::user(), false);
     // }

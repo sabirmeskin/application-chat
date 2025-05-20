@@ -4,59 +4,70 @@
         class="flex w-full items-center justify-between px-4 py-4 shadow-lg m-0 sticky border-b border-zinc-800/5 dark:border-white/10">
         <div class=" ml-5 flex items-center justify-between gap-5">
             @if ($conversation->isGroup())
+
             <flux:avatar.group class="**:ring-zinc-100 dark:**:ring-zinc-800">
+
                 @foreach ($conversation->participants->take(3) as $user)
+                
                 <flux:tooltip content="{{ $user->name }}" placement="top">
                     <flux:avatar circle size="xs" class="max-sm:size-8" name="{{ $user->name }}" color="auto" badge
                         badge:color="{{ $user->is_online ? 'green' : 'gray' }}" badge:circle badge:position="top left"
                         badge:variant="xs" />
                 </flux:tooltip>
+
                 @endforeach
+
                 @if ($conversation->participants->count() > 3)
                 <flux:tooltip content="{{ $conversation->participants->count() - 3 }} autres" placement="top">
                     <flux:avatar size="xs" circle>{{ $conversation->participants->count() - 3 }}+</flux:avatar>
                 </flux:tooltip>
                 @endif
+
             </flux:avatar.group>
+
             @else
-            <flux:avatar badge badge:color="{{ $conversation->receiver()->is_online ? 'green' : 'gray' }}" badge:circle
-                badge:position="top left" badge:variant="xs" name="{{ $conversation->ConversationName() }}" color="auto"
-                class="ml-2" />
+
+            <livewire:Chat.Components.status :conversation="$conversation" />
+
             @endif
+
             <flux:heading size="lg">{{$conversation->ConversationName()}}</flux:heading>
-        </div> @if ($conversation->isGroup() && $conversation->ConversationAdmin()->id == Auth::id() )
+        </div>
+
+            @if ($conversation->isGroup() && $conversation->ConversationAdmin()->id == Auth::id() )
+
         <flux:dropdown>
             <flux:button icon="circle-chevron-down" variant="ghost" class="ml-auto mr-2" />
             <flux:menu>
-
                 <flux:menu.item :key="$conversation->id" x-on:click="$flux.modal('edit-group-modal').show()"
                     icon="pencil">Modifier Groupe</flux:menu.item>
                 <flux:menu.separator />
                 <flux:menu.item icon="user-x">Quitter la Conversation</flux:menu.item>
                 <flux:menu.separator />
-
                 <flux:menu.item variant="danger" icon="trash">Delete</flux:menu.item>
             </flux:menu>
-        </flux:dropdown>@endif
-    </flux:header>
+        </flux:dropdown>
+        
+        @endif
 
+    </flux:header>
     <div class="flex flex-col h-full  overflow-y-scroll " id="scrollArea"
         x-init="$nextTick(() => $el.scrollTop = $el.scrollHeight)" id="messages-container">
         <div>
             @foreach ($messages as $index => $message)
             @if ($loop->last)
-            <div x-data="{ observer: null, messageId : {{ $message->id }} }" x-init="
-                        observer = new IntersectionObserver((entries) => {
-                            entries.forEach(entry => {
-                                if (entry.isIntersecting) {
-                                    @this.markLastMessageAsSeen(messageId);
-                                }
+                <div x-data="{ observer: null, messageId : {{ $message->id }} }" x-init="
+                            observer = new IntersectionObserver((entries) => {
+                                entries.forEach(entry => {
+                                    if (entry.isIntersecting) {
+                                        @this.markLastMessageAsSeen(messageId);
+                                    }
+                                });
                             });
-                        });
-                        observer.observe($el);
-                    " x-destroy="if (observer) observer.disconnect()">
+                            observer.observe($el);
+                        " x-destroy="if (observer) observer.disconnect()">
 
-            </div>
+                </div>
             @endif
 
             @if ($message->type === 'media')
