@@ -10,6 +10,7 @@ use App\Models\Message;
 use App\Models\User;
 
 use App\Services\MessageService;
+use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -25,7 +26,7 @@ class Chatbox extends Component
     protected $messageService;
     public $isRead = false;
     public $typingIndicator = false;
-
+    public $messageToDelete = null;
 
 
 
@@ -145,18 +146,33 @@ class Chatbox extends Component
         return view('livewire.chat.chatbox');
     }
 
-    #[On('messageDeleted')]
-    public function onMessageDeleted($message)
+
+
+    // #[On('messageDeleted')]
+    public function onMessageDeleted($messageData)
     {
-        $this->messages = $this->messages->filter(function ($msg) use ($message) {
-            return $msg->id !== $message['id'];
-        });
-        $message = Message::find($message['id']);
+        $messageId = $messageData['message']['id'] ?? null;
+
+        if (! $messageId) {
+            return;
+        }
+
+        // Find and delete from DB
+        $message = Message::find($messageId);
+
         if ($message) {
             $message->delete();
+
+            // Remove it from the messages collection in memory
+            $this->messages = $this->messages
+                ->filter(fn ($msg) => $msg->id !== $message->id)
+                ->values(); // <- important to reindex after filtering
         }
+
         $this->dispatch('scrollToBottom');
     }
+
+
 
         public function getListeners()
     {

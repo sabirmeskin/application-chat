@@ -32,7 +32,7 @@
                 <flux:menu.item :key="$conversation->id" x-on:click="$flux.modal('edit-group-modal').show()"
                     icon="pencil">Modifier Groupe</flux:menu.item>
                 <flux:menu.separator />
-                <flux:menu.item icon="user-x">Quitter la Conversation</flux:menu.item>
+                <flux:menu.item wire:click="test" icon="user-x">Quitter la Conversation</flux:menu.item>
                 <flux:menu.separator />
 
                 <flux:menu.item variant="danger" icon="trash">Delete</flux:menu.item>
@@ -64,14 +64,18 @@
 
 
             <livewire:chat.components.media-message
-                :avatarOn="$index === 0 || $messages[$index - 1]->sender_id !== $message->sender_id" :message="$message"
-                :key="$message->id . '-' . $message->status" />
+                :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
+                 :message="$message"
+                :wire:key="'message-'.$message->id"
+ />
 
             @else
 
             <livewire:chat.components.message-bubble
-                :avatarOn="$index === 0 || $messages[$index - 1]->sender_id !== $message->sender_id" :message="$message"
-                :key="$message->id . '-' . $message->status" />
+                :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
+                 :message="$message"
+                :wire:key="'message-'.$message->id"
+ />
 
             @endif
 
@@ -137,7 +141,11 @@
                 }, 100);
             }
         });
+
     </script>
     @endscript
     <livewire:chat.modals.edit-group-modal :conversation="$conversation" :key="$conversation->id">
+
+                <livewire:chat.modals.confirm-delete />
+
 </div>
