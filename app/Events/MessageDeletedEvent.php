@@ -9,10 +9,11 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class MessageDeletedEvent
+class MessageDeletedEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -24,6 +25,7 @@ class MessageDeletedEvent
         $this->message = $message;
     }
 
+
     /**
      * Get the channels the event should broadcast on.
      *
@@ -32,7 +34,7 @@ class MessageDeletedEvent
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('message.'.$this->message),
+            new PrivateChannel('message'),
         ];
     }
 }

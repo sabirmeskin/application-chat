@@ -1,4 +1,4 @@
-<flux:modal name="delete-profile" class="min-w-[22rem]">
+<flux:modal name="delete-message"  class="min-w-[22rem]">
     <div class="space-y-6">
         <div>
             <flux:heading size="lg">Supprimer?</flux:heading>
