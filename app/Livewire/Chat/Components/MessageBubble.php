@@ -19,6 +19,15 @@ class MessageBubble extends Component
         $this->message = $message;
         $this->userId = Auth::id();
     }
+    public function deleteMessage()
+    {
+        if (!$this->message) {
+            return;
+        }
+        $this->message->delete();
+        $this->dispatch('messageDeleted', $this->message);
+        broadcast(new MessageDeletedEvent($this->message))->toOthers();
+    }
     public function render()
     {
         return view('livewire.chat.components.message-bubble');

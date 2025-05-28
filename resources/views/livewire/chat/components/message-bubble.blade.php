@@ -32,7 +32,7 @@
     </div>
 
     @else
-    <div class="flex justify-end gap-2 px-4 py-2 ">
+    <div class="flex justify-end gap-2 px-4 py-2 " >
         <flux:dropdown style="display: flex; align-items: center;" >
             <flux:button icon="ellipsis-vertical" variant="ghost" class="ml-auto mr-2" />
             <flux:menu>
@@ -44,8 +44,10 @@
                 <flux:menu.item variant="danger" icon="trash"
                     x-data="{ messageId: {{ $message->id }} }"
                     x-on:click="$wire.dispatch('confirmDelete', [messageId])"
-
                 >Supprimer</flux:menu.item>
+                <flux:menu.item variant="danger" icon="trash"
+                   wire:click="deleteMessage({{ $message->id }})"
+                >delete</flux:menu.item>
                 </flux:modal.trigger>
             </flux:menu>
         </flux:dropdown>
@@ -72,8 +74,6 @@
 
     </div>
     @endif
-
-
 
     <livewire:chat.modals.edit-message />
 

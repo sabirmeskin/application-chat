@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Conversation;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Broadcast;
 
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
@@ -58,4 +59,8 @@ Broadcast::channel('user-status', function ($user) {
         'name' => $user->name,
         'status' => $user->is_online ? 'online' : 'offline',
     ];
+});
+
+Broadcast::channel('message', function ($user) {
+    return $user->id === Auth::id();
 });

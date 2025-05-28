@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Crypt;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -14,6 +15,18 @@ class Message extends Model implements HasMedia
     use SoftDeletes;
     use InteractsWithMedia;
 
+    protected $guarded = [];
+
+
+    public function setBodyAttribute($value)
+    {
+        $this->attributes['body'] = Crypt::encrypt($value);
+    }
+
+    public function getBodyAttribute($value)
+    {
+        return Crypt::decrypt($value);
+    }
     public function registerMediaConversions(?Media $media = null): void
     {
         $this
@@ -21,7 +34,6 @@ class Message extends Model implements HasMedia
             ->fit(Fit::Contain, 300, 300)
             ->nonQueued();
     }
-    protected $guarded = [];
 
     public function sender(){
         return $this->belongsTo(User::class,'sender_id');
@@ -46,7 +58,6 @@ class Message extends Model implements HasMedia
         $this->update(['status' => 'read']);
 
         //feature for group read
-
         MessageRead::create([
             'user_id' => $user->id,
             'message_id' => $this->id,

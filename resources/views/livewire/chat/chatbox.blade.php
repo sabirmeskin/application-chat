@@ -81,18 +81,35 @@
  />
 
             @else
-
+{{-- 
             <livewire:chat.components.message-bubble
                 :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
                  :message="$message"
                 :wire:key="'message-'.$message->id"
- />
-
+ /> --}}
+            {{-- <livewire:chat.components.message-bubble
+            :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
+            :message="$message"
+            :wire:key="'message-'.$message->id"
+            @class(['hidden' => !is_null($message->deleted_at)])
+        /> --}}
+        {{-- <livewire:chat.components.message-bubble
+            :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
+            :message="$message"
+            :style="!is_null($message->deleted_at) ? 'visibility: hidden;' : ''"
+            :wire:key="'message-'.$message->id"
+        /> --}}
+        @unless($message->deleted_at)
+            <livewire:chat.components.message-bubble
+                :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
+                :message="$message"
+                :wire:key="'message-'.$message->id"
+            />
+        @endunless
             @endif
 
             @endforeach
         </div>
-        <!-- Typing Indicator -->
 
     </div>
 
@@ -155,8 +172,7 @@
 
     </script>
     @endscript
+
     <livewire:chat.modals.edit-group-modal :conversation="$conversation" :key="$conversation->id">
-
-                <livewire:chat.modals.confirm-delete />
-
-</div>
+        <livewire:chat.modals.confirm-delete />
+    </div>

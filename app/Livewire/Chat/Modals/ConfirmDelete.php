@@ -14,8 +14,12 @@ class ConfirmDelete extends Component
 
     public function delete()
     {
+        if (!$this->message) {
+            return;
+        }
+        $this->message->delete();
         $this->dispatch('messageDeleted', $this->message);
-        broadcast(new MessageDeletedEvent($this->message));
+        broadcast(new MessageDeletedEvent($this->message))->toOthers();
         $this->modal('delete-message')->close();
 
     }

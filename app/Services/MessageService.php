@@ -37,6 +37,7 @@ class MessageService
      */
     public function sendTextMessage(User $sender, Conversation $conversation, Message $parent = null , string $body):Message
     {
+        
         $message = Message::create([
             'conversation_id' => $conversation->id,
             'sender_id' => $sender->id,

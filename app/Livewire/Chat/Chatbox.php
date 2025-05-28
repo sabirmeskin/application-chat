@@ -146,33 +146,53 @@ class Chatbox extends Component
         return view('livewire.chat.chatbox');
     }
 
+    public function getVisibleMessagesProperty()
+    {
+        return collect($this->messages)
+            ->filter(fn($m) => is_null($m->deleted_at))
+            ->values();
+    }
 
 
     // #[On('messageDeleted')]
-    public function onMessageDeleted($messageData)
+  public function handleMessageDeleted($event)
     {
-        $messageId = $messageData['message']['id'] ?? null;
+        $messageId = $event['message']['id'] ?? null;
 
         if (! $messageId) {
             return;
         }
 
-        // Find and delete from DB
-        $message = Message::find($messageId);
+        // Set deleted_at on the matching message
+        // $this->messages = collect($this->messages)->map(function ($m) use ($messageId) {
+        //     if ($m->id === $messageId) {
+        //         $m->deleted_at = now(); // simulate deletion
+        //     }
+        //     return $m;
+        // })->values();
+       $this->messages
+            ->filter(fn ($msg) => $msg->id !== $messageId)
+            ->values();
 
-        if ($message) {
-            $message->delete();
 
-            // Remove it from the messages collection in memory
-            $this->messages = $this->messages
-                ->filter(fn ($msg) => $msg->id !== $message->id)
-                ->values(); // <- important to reindex after filtering
-        }
-
-        $this->dispatch('scrollToBottom');
+        $this->dispatch('messageDeleted', $messageId);
     }
 
+    public function messageDeleted($event)
+    {
+        $messageId = $event['id'] ?? null;
+        if (! $messageId) {
+            return;
+        }
+        // $message = Message::find($messageId);
+        $this->messages
+        ->filter(fn ($msg) => $msg->id !== $messageId)
+        ->values();
 
+        // dump(["localy : "=>$this->messages]);
+
+
+    }
 
         public function getListeners()
     {
@@ -180,7 +200,8 @@ class Chatbox extends Component
             "echo:private-chat.{$this->conversation->id},MessageSentEvent" => 'updateLastMessage',
             "echo:private-read.{$this->conversation->id},MessageReadEvent" => 'handleMessageRead',
             "echo:private-typing.{$this->conversation->id},TypingEvent" => 'handleTypingEvent',
-            "echo:private-message,MessageDeletedEvent" => 'onMessageDeleted',
+            "echo:private-message,MessageDeletedEvent" => 'handleMessageDeleted',
+            "messageDeleted" => 'messageDeleted',
     ];
     }
 }
