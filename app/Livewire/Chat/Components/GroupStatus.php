@@ -2,24 +2,18 @@
 
 namespace App\Livewire\Chat\Components;
 
-use Livewire\Attributes\On;
-use App\Models\Conversation;
-use App\Models\User;
-use App\Services\ConversationService;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
-class Convo extends Component
+class GroupStatus extends Component
 {
-    public $conversation;
+    public $user;
     public $onlineUsers = [];
 
-
-    public function mount($conversation)
+    public function mount($user)
     {
-        $this->conversation = $conversation;
+        $this->user = $user;
     }
- public function getListeners()
+    public function getListeners()
     {
         return [
             'echo-presence:user-status,here' => 'userListUpdated',
@@ -48,25 +42,8 @@ class Convo extends Component
             ->values()
             ->toArray();
     }
-    
-    #[On('refreshConvo')]
-    public function refreshConvo($conversationId, $message = null)
-    {
-        if ($conversationId == $this->conversation->id) {
-            $this->conversation->refresh();
-            // Optionally use $message for preview updates
-        }
-    }
-
-    #[On('UpdateConvo')]
-    public function updateConvo($conversationId){
-        if ($conversationId == $this->conversation->id) {
-            $this->conversation->refresh();
-        }
-    }
-
     public function render()
     {
-        return view('livewire.chat.components.convo');
+        return view('livewire.chat.components.group-status');
     }
 }

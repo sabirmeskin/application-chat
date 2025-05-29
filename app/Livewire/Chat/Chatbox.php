@@ -27,6 +27,7 @@ class Chatbox extends Component
     public $isRead = false;
     public $typingIndicator = false;
     public $messageToDelete = null;
+    public $onlineUsers = [];
 
 
 
@@ -184,24 +185,61 @@ class Chatbox extends Component
         if (! $messageId) {
             return;
         }
-        // $message = Message::find($messageId);
+
         $this->messages
         ->filter(fn ($msg) => $msg->id !== $messageId)
         ->values();
+    }
+    
+    public function editMessage($messageId)
+    {
+        if (! $messageId) {
+            return;
+        }
+        $message = Message::find($messageId);
+        $this->message = $message->body;
+        $message->update([
+            'edited_at' => now(),     
 
-        // dump(["localy : "=>$this->messages]);
-
-
+        ]);
+        //  dd($message->body);
     }
 
+  
+
+    public function userListUpdated(array $users)
+    {
+        $this->onlineUsers = $users;
+    }
+    
+    public function userJoined(array $user)
+    {
+        if (!collect($this->onlineUsers)->pluck('id')->contains($user['id'])) {
+            $this->onlineUsers[] = $user;
+        }
+        $this->dispatch('userStatusOnLine', $user);
+    }
+    
+    public function userLeft(array $user)
+    {
+        $this->onlineUsers = collect($this->onlineUsers)
+            ->reject(fn($u) => $u['id'] === $user['id'])
+            ->values()
+            ->toArray();
+    }
         public function getListeners()
     {
         return [
             "echo:private-chat.{$this->conversation->id},MessageSentEvent" => 'updateLastMessage',
             "echo:private-read.{$this->conversation->id},MessageReadEvent" => 'handleMessageRead',
             "echo:private-typing.{$this->conversation->id},TypingEvent" => 'handleTypingEvent',
-            "echo:private-message,MessageDeletedEvent" => 'handleMessageDeleted',
+            "echo:private-message,MessageDeletedEvent" => 'handleMessageEdited',
+            "echo:private-message,MessageEditedEvent" => 'handleMessageDeleted',
             "messageDeleted" => 'messageDeleted',
+            "editMessage" => 'editMessage',
+             'echo-presence:user-status,here' => 'userListUpdated',
+            'echo-presence:user-status,joining' => 'userJoined',
+            'echo-presence:user-status,leaving' => 'userLeft',
     ];
     }
 }

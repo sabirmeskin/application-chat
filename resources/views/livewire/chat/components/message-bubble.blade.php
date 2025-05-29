@@ -20,10 +20,23 @@
         <flux:dropdown style="display: flex; align-items: center;" class="my-auto" position="top" align="end">
             <flux:button icon="ellipsis-vertical" variant="ghost" class="ml-auto mr-2" />
             <flux:menu>
-                <flux:menu.item icon="forward" x-on:click="$flux.modal('edit-message').show()">Transférer</flux:menu.item>
+                <flux:menu.item 
+                icon="forward" 
+                x-data="{ messageId: {{ $message->id }} }"
+                x-on:click="$wire.dispatch('forwardMessage', [messageId])"
+                >Transférer</flux:menu.item>
                 <flux:menu.item icon="pencil">Modifier</flux:menu.item>
                 <flux:menu.item icon="reply">Répondre</flux:menu.item>
-                <flux:menu.item icon="copy">Copier</flux:menu.item>
+                {{-- <flux:menu.item icon="copy">Copier</flux:menu.item> --}}
+                <flux:menu.item 
+                    icon="copy" 
+                    x-data="{ messageId: {{ $message->id }} }"
+                    x-on:click="navigator.clipboard.writeText(`{{ str_replace(['`', '\\'], ['\`', '\\\\'], $message->body) }}`)
+                                $wire.dispatch('copiedMessage', [messageId])"
+                >
+                    Copier
+                </flux:menu.item>
+
                 {{-- <flux:modal.trigger name="delete-profile">
                 <flux:menu.item variant="danger" icon="trash">Delete</flux:menu.item>
                 </flux:modal.trigger> --}}
@@ -36,18 +49,27 @@
         <flux:dropdown style="display: flex; align-items: center;" >
             <flux:button icon="ellipsis-vertical" variant="ghost" class="ml-auto mr-2" />
             <flux:menu>
-                <flux:menu.item icon="forward" x-on:click="$flux.modal('edit-message').show()">Transférer</flux:menu.item>
-                <flux:menu.item icon="pencil">Modifier</flux:menu.item>
+                <flux:menu.item 
+                icon="forward"
+                x-data="{ messageId: {{ $message->id }} }"
+                x-on:click="$wire.dispatch('forwardMessage', [messageId])"
+                >Transférer</flux:menu.item>
+                <flux:menu.item icon="pencil"
+                    x-data="{ messageId: {{ $message->id }} }"
+                    x-on:click="$wire.dispatch('editMessage', [messageId])"
+                >Modifier</flux:menu.item>
                 <flux:menu.item icon="reply">Répondre</flux:menu.item>
-                <flux:menu.item icon="copy">Copier</flux:menu.item>
+                <flux:menu.item 
+                icon="copy"
+                x-data="{ messageId: {{ $message->id }} }"
+                x-on:click="navigator.clipboard.writeText(`{{ str_replace(['`', '\\'], ['\`', '\\\\'], $message->body) }}`)
+                                $wire.dispatch('copiedMessage', [messageId])"
+                >Copier</flux:menu.item>
                 <flux:modal.trigger name="delete-profile">
                 <flux:menu.item variant="danger" icon="trash"
                     x-data="{ messageId: {{ $message->id }} }"
                     x-on:click="$wire.dispatch('confirmDelete', [messageId])"
                 >Supprimer</flux:menu.item>
-                <flux:menu.item variant="danger" icon="trash"
-                   wire:click="deleteMessage({{ $message->id }})"
-                >delete</flux:menu.item>
                 </flux:modal.trigger>
             </flux:menu>
         </flux:dropdown>
@@ -75,7 +97,6 @@
     </div>
     @endif
 
-    <livewire:chat.modals.edit-message />
-
+    
 
 </div>

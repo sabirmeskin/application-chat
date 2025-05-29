@@ -1,61 +1,33 @@
-<div>
-<flux:modal name="edit-message" variant="flyout">
+<flux:modal name="edit-message"  class="min-w-[100rem]">
     <div class="space-y-6">
-        <div>
-            <flux:heading size="lg">Transférer un message</flux:heading>
+        {{-- <div>
+            <flux:heading size="lg">Supprimer?</flux:heading>
+            <flux:text class="mt-2">
+                <p>Vous êtes entraîn de supprimer.</p>
+                <p>Cette Action est irreversible.</p>
+            </flux:text>
+        </div> --}}
+           <form wire:submit.prevent="edit" x-on:submit.debounce.500ms
+        class="flex w-full items-center justify-center justify-between px-4 py-4 shadow-lg border-t border-zinc-800/5 dark:border-white/10 gap-5">
+        {{--
+        <flux:button icon="paperclip" variant="primary" class="px-2" /> --}}
+        <div x-data="{ triggerFileInput() { $refs.fileInput.click(); } }" class="relative">
+            <flux:button icon="paperclip" variant="primary" class="px-2" x-on:click="triggerFileInput()" />
+            <input type="file" x-ref="fileInput" wire:model="file" class="hidden"
+                accept="image/*,application/pdf,application/msword,.doc,.docx" />
         </div>
-
-        <div class="bg-gray-100 p-3 rounded">
-            <p class="text-sm text-gray-700">{{ $message->body ?? '—' }}</p>
-        </div>
-
-        <flux:input
-            placeholder="Rechercher des utilisateurs"
-            class="w-full"
-            icon-trailing="magnifying-glass"
-            clearable
-            wire:model.debounce.300ms="search"
-            wire:keyup="updateUsers"
-            autocomplete="off"
-        />
-
-        <flux:separator />
-
-        <ul class="h-[50vh] overflow-y-auto space-y-2">
-            @foreach($contacts as $contact)
-                <li
-                    class="cursor-pointer p-2 hover:bg-zinc-200 rounded flex items-center gap-2"
-                    wire:click="selectContact({{ $contact->id }})"
-                >
-                    <flux:avatar
-                        size="sm"
-                        name="{{ $contact->name }}"
-                        color="auto"
-                        badge
-                        badge:color="{{ $contact->is_online ? 'green' : 'gray' }}"
-                        badge:circle
-                        badge:variant="xs"
-                    />
-                    <span>{{ $contact->name }}</span>
-                </li>
-            @endforeach
-        </ul>
-
-        <div class="flex justify-end">
-            <flux:button
-                variant="ghost"
-                x-on:click="$flux.modal('edit-message').close()"
-            >
-                Fermer
-            </flux:button>
+        <flux:input placeholder="Type your message" icon-trailing="send" clearable wire:model="message"
+            autocomplete="off"   />
+        <flux:button type="submit" variant="primary">
+            modifer
+        </flux:button>
+    </form>
+        <div class="flex gap-2">
+            <flux:spacer />
+            <flux:modal.close>
+                <flux:button variant="ghost">retour</flux:button>
+            </flux:modal.close>
+            <flux:button wire:click='modifier' variant="danger">Modifier</flux:button>
         </div>
     </div>
 </flux:modal>
-{{-- <script>
-    window.addEventListener('message-transferred', e => {
-        alert('Message transféré vers la conversation #' + e.detail.conversationId);
-    });
-</script> --}}
-
-</div>
-

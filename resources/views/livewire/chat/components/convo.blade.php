@@ -1,14 +1,16 @@
 <div class="">
     @if ($conversation->isGroup())
     <div class="flex items-center gap-2 sm:gap-4 text-xs m-0">
-
         <flux:avatar.group class="**:ring-zinc-100 dark:**:ring-zinc-800">
+
             @foreach ($conversation->participants->take(3) as $user)
-            
+
             <flux:tooltip content="{{ $user->name }}" placement="top">
                 <flux:avatar circle size="xs" class="max-sm:size-8" name="{{ $user->name }}" color="auto" badge
                     badge:color="{{ $user->is_online ? 'green' : 'gray' }}" badge:circle badge:position="top left"
                     badge:variant="xs" />
+            {{-- <livewire:Chat.Components.group-status :user="$user" /> --}}
+
             </flux:tooltip>
 
             @endforeach
@@ -31,11 +33,6 @@
             <flux:text variant="subtle" class="text-xs"> {{
                 optional(optional($conversation->lastMessage)->created_at)->diffForHumans(null, true) ?? '...' }}
             </flux:text>
-            {{-- <flux:badge size="xs" color="blue" class="max-sm:hidden   ml-auto">
-                1
-            </flux:badge> --}}
-
-
         </div>
     </div>
 

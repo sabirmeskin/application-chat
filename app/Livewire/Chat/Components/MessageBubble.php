@@ -4,6 +4,8 @@ namespace App\Livewire\Chat\Components;
 
 use App\Events\MessageDeletedEvent;
 use App\Events\MessageReadEvent;
+use App\Models\Message;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -12,6 +14,14 @@ class MessageBubble extends Component
     public $message;
     public $userId;
     public $avatarOn;
+    protected $listeners = ['notify'];
+
+    public function notify($message)
+    {
+        session()->flash('message', $message);
+        // Or use your preferred notification system
+        // $this->dispatchBrowserEvent('show-toast', ['message' => $message]);
+    }
 
     public function mount($message,$avatarOn)
     {
@@ -19,6 +29,16 @@ class MessageBubble extends Component
         $this->message = $message;
         $this->userId = Auth::id();
     }
+    public function getMessageText($messageId)
+    {
+        try {
+            $message = Message::find($messageId);
+            return $message ? $message->content : '';
+        } catch (Exception $e) {
+            return '';
+        }
+    }
+
     public function deleteMessage()
     {
         if (!$this->message) {

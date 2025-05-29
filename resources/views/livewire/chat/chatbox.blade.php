@@ -13,6 +13,7 @@
                     <flux:avatar circle size="xs" class="max-sm:size-8" name="{{ $user->name }}" color="auto" badge
                         badge:color="{{ $user->is_online ? 'green' : 'gray' }}" badge:circle badge:position="top left"
                         badge:variant="xs" />
+                 {{-- <livewire:Chat.Components.group-status :user="$user" /> --}}
                 </flux:tooltip>
 
                 @endforeach
@@ -174,5 +175,10 @@
     @endscript
 
     <livewire:chat.modals.edit-group-modal :conversation="$conversation" :key="$conversation->id">
-        <livewire:chat.modals.confirm-delete />
+    <livewire:chat.modals.confirm-delete />
+    <livewire:chat.modals.edit-message />
+    <livewire:chat.modals.copied-message-modal />
+    <livewire:chat.modals.forward-message-modal />
+
+
     </div>
