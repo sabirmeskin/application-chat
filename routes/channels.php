@@ -64,3 +64,4 @@ Broadcast::channel('user-status', function ($user) {
 Broadcast::channel('message', function ($user) {
     return $user->id === Auth::id();
 });
+

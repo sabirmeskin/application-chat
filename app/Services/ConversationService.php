@@ -56,10 +56,14 @@ class ConversationService
         ConversationParticipant::create([
             'conversation_id' => $conversation->id,
             'user_id' => $sender->id,
+            'encrypted' => $encrypted,
+
         ]);
         ConversationParticipant::create([
             'conversation_id' => $conversation->id,
             'user_id' => $receiver->id,
+            'encrypted' => $encrypted,
+
         ]);
 
         broadcast(new ConversationCreatedEvent($conversation));

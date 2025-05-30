@@ -227,19 +227,47 @@ class Chatbox extends Component
             ->values()
             ->toArray();
     }
-        public function getListeners()
+    public function onMessageForwarded($payload)
     {
-        return [
-            "echo:private-chat.{$this->conversation->id},MessageSentEvent" => 'updateLastMessage',
-            "echo:private-read.{$this->conversation->id},MessageReadEvent" => 'handleMessageRead',
-            "echo:private-typing.{$this->conversation->id},TypingEvent" => 'handleTypingEvent',
-            "echo:private-message,MessageDeletedEvent" => 'handleMessageEdited',
-            "echo:private-message,MessageEditedEvent" => 'handleMessageDeleted',
-            "messageDeleted" => 'messageDeleted',
-            "editMessage" => 'editMessage',
-             'echo-presence:user-status,here' => 'userListUpdated',
-            'echo-presence:user-status,joining' => 'userJoined',
-            'echo-presence:user-status,leaving' => 'userLeft',
-    ];
+        // dd($payload['message']);
+        $message = Message::find($payload['message']['id']);
+
+        if ($message && $message->conversation_id === $this->conversation->id) {
+            // Only add the message if it belongs to the current conversation
+            $this->messages->push($message);
+        }
     }
+        public function getListeners()
+{
+        $userId = Auth::id();
+    return [
+        // New message sent in this conversation
+        "echo-private:chat.{$this->conversation->id},MessageSentEvent"        => 'updateLastMessage',
+
+        // Someone read a message in this conversation
+        "echo-private:chat.{$this->conversation->id},MessageReadEvent"        => 'handleMessageRead',
+
+        // Typing indicator in this conversation
+        "echo-private:chat.{$this->conversation->id},TypingEvent"             => 'handleTypingEvent',
+
+        // A message was deleted in this conversation
+        "echo-private:chat.{$this->conversation->id},MessageDeletedEvent"     => 'handleMessageDeleted',
+
+        // A message was edited in this conversation
+        "echo-private:chat.{$this->conversation->id},MessageEditedEvent"      => 'handleMessageEdited',
+
+        // Forwarded messages arrive on *your* user channel
+        "echo-private:message,MessageForwardedEvent"         => 'onMessageForwarded',
+
+        // Livewire-dispatched events (e.g. from modal)
+        'messageDeleted'                                                     => 'messageDeleted',
+        'editMessage'                                                        => 'editMessage',
+
+        // Presence (online users) — adjust channel name if yours differs
+        'echo-presence:user-status,here'                                     => 'userListUpdated',
+        'echo-presence:user-status,joining'                                  => 'userJoined',
+        'echo-presence:user-status,leaving'                                  => 'userLeft',
+    ];
+}
+
 }

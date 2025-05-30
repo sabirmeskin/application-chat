@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Chat\Modals;
 
+use App\Events\MessageForwardedEvent;
 use App\Models\Message;
 use App\Models\User;
 use App\Models\Conversation;
@@ -14,6 +15,7 @@ class ForwardMessageModal extends Component
 {
     public $contacts    = [];
     public $message;
+    public $messages = [];
     public $search      = '';
 
     public function mount()
@@ -61,23 +63,31 @@ class ForwardMessageModal extends Component
         ->createPrivateConversation(Auth::user(), $user, false);
 }
 
-    protected function forwardIntoConversation(Conversation $conversation)
+   protected function forwardIntoConversation(Conversation $conversation)
 {
-    // Find the other participant (receiver) in this conversation
+    // Identify the receiver
     $receiverId = $conversation->participants()
-                    ->where('user_id', '!=', Auth::id())
-                    ->pluck('user_id')
-                    ->first();
+        ->where('user_id', '!=', Auth::id())
+        ->pluck('user_id')
+        ->first();
 
-    Message::create([
+    // Create the forwarded message
+    $forwardedMessage = Message::create([
         'conversation_id' => $conversation->id,
         'sender_id'       => Auth::id(),
-        'receiver_id'     => $receiverId,  // Add this here
+        'receiver_id'     => $receiverId,
         'body'            => $this->message->body,
-        // …copy any other fields you want…
     ]);
-}
 
+    // Clone attached media (if any)
+    foreach ($this->message->getMedia('attachments') as $media) {
+        $media->copy($forwardedMessage, 'attachments');
+    }
+    broadcast(new MessageForwardedEvent($forwardedMessage))->toOthers();
+}
+  
+
+  
 
     #[On('forwardMessage')]
     public function forwardMessage(int $messageId)
