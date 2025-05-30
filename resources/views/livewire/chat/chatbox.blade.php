@@ -170,10 +170,27 @@
                 }, 100);
             }
         });
+        
+
+    </script>
+    <script>
+        // When session expires detected (e.g., 419)
+window.Echo.leave('user-status'); // Leave the presence channel
+
+fetch('/broadcast-offline', {
+  method: 'POST',
+  headers: {
+    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+    'Accept': 'application/json',
+  },
+}).finally(() => {
+  window.location.href = '/login';
+});
 
     </script>
     @endscript
 
+    
     <livewire:chat.modals.edit-group-modal :conversation="$conversation" :key="$conversation->id">
     <livewire:chat.modals.confirm-delete />
     <livewire:chat.modals.edit-message />
