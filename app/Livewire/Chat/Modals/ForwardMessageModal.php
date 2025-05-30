@@ -13,87 +13,128 @@ use Livewire\Component;
 
 class ForwardMessageModal extends Component
 {
-    public $contacts    = [];
-    public $message;
-    public $messages = [];
-    public $search      = '';
+    public array $items       = [];     // merged contacts + groups
+    public        $message;
+    public string $search      = '';
 
     public function mount()
     {
-        $this->contacts = User::where('id', '!=', Auth::id())->get();
+         $this->updateItems();
     }
-
-    public function updateUsers()
-    {
-        $this->contacts = User::where('name', 'like', "%{$this->search}%")
-            ->where('id', '!=', Auth::id())
-            ->get();
-    }
-
-    public function selectContact($contactId)
-    {
-        $user         = User::findOrFail($contactId);
-        $conversation = $this->getOrCreateConversation($user);
-
-        // now actually forward the message into $conversation:
-        $this->forwardIntoConversation($conversation);
-
-        // tell the parent or listener which conversation we ended up in
-        $this->dispatch('conversationSelected', $conversation->id);
-        $this->dispatch('messageForwarded', $conversation->id);
-        $this->modal('forward-message-modal')->close();
-    }
-
-   protected function getOrCreateConversation(User $user): Conversation
+public function updatedSearch($value)
 {
-    // 1) Try to find an existing 1:1 private conversation
-    $existing = Conversation::where('type', 'private')
-        ->whereHas('participants', fn($q) => $q->where('user_id', Auth::id()))
-        ->whereHas('participants', fn($q) => $q->where('user_id', $user->id))
-        ->withCount('participants')
-        ->having('participants_count', 2) // Ensure exactly two participants
-        ->first();
-
-    if ($existing) {
-        return $existing;
-    }
-
-    // 2) Otherwise create a new private conversation
-    return ConversationService::getInstance()
-        ->createPrivateConversation(Auth::user(), $user, false);
+    $this->updateItems();
 }
 
-   protected function forwardIntoConversation(Conversation $conversation)
+    public function updateItems()
 {
-    // Identify the receiver
-    $receiverId = $conversation->participants()
-        ->where('user_id', '!=', Auth::id())
-        ->pluck('user_id')
-        ->first();
+    $search = '%' . $this->search . '%';
 
-    // Create the forwarded message
-    $forwardedMessage = Message::create([
-        'conversation_id' => $conversation->id,
-        'sender_id'       => Auth::id(),
-        'receiver_id'     => $receiverId,
-        'body'            => $this->message->body,
-    ]);
+    // 1) Users
+    $users = User::where('id', '!=', Auth::id())
+        ->where('name', 'like', $search)
+        ->get()
+        ->each(fn($u) => $u->setAttribute('type', 'user'));
 
-    // Clone attached media (if any)
-    foreach ($this->message->getMedia('attachments') as $media) {
-        $media->copy($forwardedMessage, 'attachments');
-    }
-    broadcast(new MessageForwardedEvent($forwardedMessage))->toOthers();
+    // 2) Groups
+    $groups = Conversation::where('type', 'group')
+        ->where('name', 'like', $search)
+        ->get()
+        ->each(fn($g) => $g->setAttribute('type', 'group'));
+
+    // Merge them
+    $this->items = $users->concat($groups)->values()->all();
 }
-  
 
-  
+
+    protected function loadItems(): void
+    {
+        // 1) Fetch users (private contacts)
+        $users = User::where('id', '!=', Auth::id())
+            ->when($this->search, fn($q) => $q->where('name', 'like', "%{$this->search}%"))
+            ->get()
+            ->map(fn(User $u) => [
+                'type'  => 'user',
+                'id'    => $u->id,
+                'label' => $u->name,
+                'model' => $u,
+            ]);
+
+        // 2) Fetch groups
+        $groups = Conversation::where('type', 'group')
+            ->when($this->search, fn($q) => $q->where('name', 'like', "%{$this->search}%"))
+            ->get()
+            ->map(fn(Conversation $c) => [
+                'type'  => 'group',
+                'id'    => $c->id,
+                'label' => $c->name,
+                'model' => $c,
+            ]);
+
+        // 3) Merge into one array
+        $this->items = $users->concat($groups)->toArray();
+    }
+
 
     #[On('forwardMessage')]
     public function forwardMessage(int $messageId)
     {
         $this->message = Message::findOrFail($messageId);
         $this->modal('forward-message-modal')->show();
+    }
+
+    public function selectItem(int $id, string $type)
+    {
+        if ($type == null) {
+            $user         = User::findOrFail($id);
+            $conversation = $this->getOrCreateConversation($user);
+        } else {
+            $conversation = Conversation::findOrFail($id);
+            if (! $conversation->isParticipant(Auth::user())) {
+                $this->dispatch('error', 'You are not a participant in this group.');
+                return;
+            }
+        }
+
+        $this->forwardIntoConversation($conversation);
+
+        $this->dispatch('conversationSelected', $conversation->id);
+        $this->dispatch('messageForwarded',  $conversation->id);
+        $this->modal('forward-message-modal')->close();
+    }
+
+    protected function getOrCreateConversation(User $user): Conversation
+    {
+        $existing = Conversation::where('type', 'private')
+            ->whereHas('participants', fn($q) => $q->where('user_id', Auth::id()))
+            ->whereHas('participants', fn($q) => $q->where('user_id', $user->id))
+            ->withCount('participants')
+            ->having('participants_count', 2)
+            ->first();
+
+        return $existing
+            ?? ConversationService::getInstance()
+                   ->createPrivateConversation(Auth::user(), $user, false);
+    }
+
+    protected function forwardIntoConversation(Conversation $conversation)
+    {
+        $receiverId = $conversation->participants()
+            ->where('user_id', '!=', Auth::id())
+            ->value('user_id');
+
+        $forwardedMessage = Message::create([
+            'conversation_id' => $conversation->id,
+            'sender_id'       => Auth::id(),
+            'receiver_id'     => $receiverId,
+            'body'            => $this->message->body,
+        ]);
+
+        foreach ($this->message->getMedia('attachments') as $media) {
+            $media->copy($forwardedMessage, 'attachments');
+        }
+
+        broadcast(new MessageForwardedEvent($forwardedMessage))->toOthers();
     }
 
     public function render()
