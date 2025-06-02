@@ -74,7 +74,9 @@
             </div>
             <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{$message->body}}</p>
             @php
+            
             $mime = $message->getFirstMedia('attachments')?->mime_type;
+            // dd($mime);
             @endphp
 
             @if(Str::startsWith($mime, 'image/'))

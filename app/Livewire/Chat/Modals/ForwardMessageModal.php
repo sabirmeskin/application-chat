@@ -80,6 +80,7 @@ public function updatedSearch($value)
     public function forwardMessage(int $messageId)
     {
         $this->message = Message::findOrFail($messageId);
+        // dd($this->message->type);
         $this->modal('forward-message-modal')->show();
     }
 
@@ -119,6 +120,7 @@ public function updatedSearch($value)
 
     protected function forwardIntoConversation(Conversation $conversation)
     {
+        
         $receiverId = $conversation->participants()
             ->where('user_id', '!=', Auth::id())
             ->value('user_id');
@@ -128,9 +130,11 @@ public function updatedSearch($value)
             'sender_id'       => Auth::id(),
             'receiver_id'     => $receiverId,
             'body'            => $this->message->body,
+            'type'            => $this->message->type,
         ]);
 
         foreach ($this->message->getMedia('attachments') as $media) {
+
             $media->copy($forwardedMessage, 'attachments');
         }
 
