@@ -7,6 +7,7 @@ use App\Events\MessageReadEvent;
 use App\Models\Message;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class MessageBubble extends Component
@@ -51,5 +52,11 @@ class MessageBubble extends Component
     public function render()
     {
         return view('livewire.chat.components.message-bubble');
+    }
+    #[On('messageReadRefresh')]
+    public function handleMessageReadRefresh()
+    {
+
+       $this->message -> refresh();
     }
 }

@@ -103,12 +103,17 @@ class Chatbox extends Component
         $index = $this->messages->search(fn($m) => $m->id == $messageId);
 
         if ($index !== false) {
+            // If the message is found, mark it as read
+            // and update the message in the array
 
 
             $message = Message::find($messageId);
 
             $message->markAsRead(User::find($userId)); // Make sure you're passing the right user
-            $this->messages[$index] = $message->fresh(); //
+
+
+            $this->dispatch('messageReadRefresh');
+
         }
     }
 
@@ -120,6 +125,12 @@ class Chatbox extends Component
     $this->messages[] = $newMessage;
     $this->dispatch('scrollToBottom');
     }
+    /**
+     * Mark the last message as seen.
+     *
+     * @param int $messageId
+     * @return void
+     */
     public function markLastMessageAsSeen($messageId)
     {
         $message= Message::find($messageId);
@@ -164,13 +175,7 @@ class Chatbox extends Component
             return;
         }
 
-        // Set deleted_at on the matching message
-        // $this->messages = collect($this->messages)->map(function ($m) use ($messageId) {
-        //     if ($m->id === $messageId) {
-        //         $m->deleted_at = now(); // simulate deletion
-        //     }
-        //     return $m;
-        // })->values();
+
        $this->messages
             ->filter(fn ($msg) => $msg->id !== $messageId)
             ->values();
@@ -190,7 +195,7 @@ class Chatbox extends Component
         ->filter(fn ($msg) => $msg->id !== $messageId)
         ->values();
     }
-    
+
     public function editMessage($messageId)
     {
         if (! $messageId) {
@@ -199,19 +204,19 @@ class Chatbox extends Component
         $message = Message::find($messageId);
         $this->message = $message->body;
         $message->update([
-            'edited_at' => now(),     
+            'edited_at' => now(),
 
         ]);
         //  dd($message->body);
     }
 
-  
+
 
     public function userListUpdated(array $users)
     {
         $this->onlineUsers = $users;
     }
-    
+
     public function userJoined(array $user)
     {
         if (!collect($this->onlineUsers)->pluck('id')->contains($user['id'])) {
@@ -219,7 +224,7 @@ class Chatbox extends Component
         }
         $this->dispatch('userStatusOnLine', $user);
     }
-    
+
     public function userLeft(array $user)
     {
         $this->onlineUsers = collect($this->onlineUsers)
@@ -245,10 +250,10 @@ class Chatbox extends Component
         "echo-private:chat.{$this->conversation->id},MessageSentEvent"        => 'updateLastMessage',
 
         // Someone read a message in this conversation
-        "echo-private:chat.{$this->conversation->id},MessageReadEvent"        => 'handleMessageRead',
+        "echo-private:read.{$this->conversation->id},MessageReadEvent"        => 'handleMessageRead',
 
         // Typing indicator in this conversation
-        "echo-private:chat.{$this->conversation->id},TypingEvent"             => 'handleTypingEvent',
+        "echo-private:typing.{$this->conversation->id},TypingEvent"             => 'handleTypingEvent',
 
         // A message was deleted in this conversation
         "echo-private:chat.{$this->conversation->id},MessageDeletedEvent"     => 'handleMessageDeleted',
