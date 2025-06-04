@@ -139,6 +139,8 @@ public function updatedSearch($value)
         }
 
         broadcast(new MessageForwardedEvent($forwardedMessage))->toOthers();
+        $this->dispatch('scrollToBottom');
+
     }
 
     public function render()

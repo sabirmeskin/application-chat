@@ -26,12 +26,26 @@
                 icon="forward"
                 x-data="{ messageId: {{ $message->id }} }"
                 x-on:click="$wire.dispatch('forwardMessage', [messageId])"
+<<<<<<< HEAD
                 >Transférer</flux:menu.item>
                 <flux:menu.item icon="pencil">Modifier</flux:menu.item>
                 <flux:menu.item icon="reply">Répondre</flux:menu.item>
                 {{-- <flux:menu.item icon="copy">Copier</flux:menu.item> --}}
                 <flux:menu.item
                     icon="copy"
+=======
+                >Transférer
+               </flux:menu.item>
+
+                {{-- <flux:menu.item icon="pencil">Modifier</flux:menu.item> --}}
+                 <flux:menu.item icon="reply"
+                 x-data="{ messageId: {{ $message->id }} }"
+                    x-on:click="$wire.dispatch('replyMessage', [messageId])"
+                    >Répondre</flux:menu.item>
+
+                <flux:menu.item
+                    icon="copy"
+>>>>>>> origin/chat-app-opt-status
                     x-data="{ messageId: {{ $message->id }} }"
                     x-on:click="navigator.clipboard.writeText(`{{ str_replace(['`', '\\'], ['\`', '\\\\'], $message->body) }}`)
                                 $wire.dispatch('copiedMessage', [messageId])"
@@ -47,6 +61,7 @@
     </div>
 
     @else
+
     <div class="flex justify-end gap-2 px-4 py-2 " >
         <flux:dropdown style="display: flex; align-items: center;" >
             <flux:button icon="ellipsis-vertical" variant="ghost" class="ml-auto mr-2" />
@@ -60,7 +75,10 @@
                     x-data="{ messageId: {{ $message->id }} }"
                     x-on:click="$wire.dispatch('editMessage', [messageId])"
                 >Modifier</flux:menu.item>
-                <flux:menu.item icon="reply">Répondre</flux:menu.item>
+                <flux:menu.item icon="reply"
+                 x-data="{ messageId: {{ $message->id }} }"
+                    x-on:click="$wire.dispatch('replyMessage', [messageId])"
+                    >Répondre</flux:menu.item>
                 <flux:menu.item
                 icon="copy"
                 x-data="{ messageId: {{ $message->id }} }"
@@ -73,6 +91,7 @@
                     x-on:click="$wire.dispatch('confirmDelete', [messageId])"
                 >Supprimer</flux:menu.item>
                 </flux:modal.trigger>
+
             </flux:menu>
         </flux:dropdown>
         <div
@@ -101,5 +120,9 @@
     @endif
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/chat-app-opt-status
 
 </div>
