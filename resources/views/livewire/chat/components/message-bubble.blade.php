@@ -10,6 +10,8 @@
             <div class="flex items-center space-x-2 rtl:space-x-reverse">
                 <span class="text-sm font-semibold text-gray-900 dark:text-white {{ !$avatarOn ? 'hidden' : '' }}">{{$message->sender->name}}</span>
             </div>
+
+            {{-- <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{$message->body}}</p> --}}
             <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{$message->body}}</p>
             <div class="w-full flex space-x-2 justify-end">
                 <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">{{$message->timestamp()}}</span>
@@ -20,16 +22,16 @@
         <flux:dropdown style="display: flex; align-items: center;" class="my-auto" position="top" align="end">
             <flux:button icon="ellipsis-vertical" variant="ghost" class="ml-auto mr-2" />
             <flux:menu>
-                <flux:menu.item 
-                icon="forward" 
+                <flux:menu.item
+                icon="forward"
                 x-data="{ messageId: {{ $message->id }} }"
                 x-on:click="$wire.dispatch('forwardMessage', [messageId])"
                 >Transférer</flux:menu.item>
                 <flux:menu.item icon="pencil">Modifier</flux:menu.item>
                 <flux:menu.item icon="reply">Répondre</flux:menu.item>
                 {{-- <flux:menu.item icon="copy">Copier</flux:menu.item> --}}
-                <flux:menu.item 
-                    icon="copy" 
+                <flux:menu.item
+                    icon="copy"
                     x-data="{ messageId: {{ $message->id }} }"
                     x-on:click="navigator.clipboard.writeText(`{{ str_replace(['`', '\\'], ['\`', '\\\\'], $message->body) }}`)
                                 $wire.dispatch('copiedMessage', [messageId])"
@@ -49,7 +51,7 @@
         <flux:dropdown style="display: flex; align-items: center;" >
             <flux:button icon="ellipsis-vertical" variant="ghost" class="ml-auto mr-2" />
             <flux:menu>
-                <flux:menu.item 
+                <flux:menu.item
                 icon="forward"
                 x-data="{ messageId: {{ $message->id }} }"
                 x-on:click="$wire.dispatch('forwardMessage', [messageId])"
@@ -59,7 +61,7 @@
                     x-on:click="$wire.dispatch('editMessage', [messageId])"
                 >Modifier</flux:menu.item>
                 <flux:menu.item icon="reply">Répondre</flux:menu.item>
-                <flux:menu.item 
+                <flux:menu.item
                 icon="copy"
                 x-data="{ messageId: {{ $message->id }} }"
                 x-on:click="navigator.clipboard.writeText(`{{ str_replace(['`', '\\'], ['\`', '\\\\'], $message->body) }}`)
@@ -78,6 +80,7 @@
             <div class="flex items-center space-x-2 rtl:space-x-reverse">
                 <span class="text-sm font-semibold text-gray-900 dark:text-white {{ !$avatarOn ? 'hidden' : '' }}">{{$message->sender->name}}</span>
             </div>
+            <livewire:chat.components.features.reply  />
             <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{$message->body}}</p>
             <div class="w-full flex justify-between">
                 <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">{{$message->timestamp()}}</span>
@@ -97,6 +100,6 @@
     </div>
     @endif
 
-    
+
 
 </div>
