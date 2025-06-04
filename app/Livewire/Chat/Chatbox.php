@@ -245,13 +245,13 @@ class Chatbox extends Component
         "echo-private:chat.{$this->conversation->id},MessageSentEvent"        => 'updateLastMessage',
 
         // Someone read a message in this conversation
-        "echo-private:chat.{$this->conversation->id},MessageReadEvent"        => 'handleMessageRead',
+        "echo-private:read.{$this->conversation->id},MessageReadEvent"        => 'handleMessageRead',
 
         // Typing indicator in this conversation
-        "echo-private:chat.{$this->conversation->id},TypingEvent"             => 'handleTypingEvent',
+        "echo-private:typing.{$this->conversation->id},TypingEvent"             => 'handleTypingEvent',
 
         // A message was deleted in this conversation
-        "echo-private:chat.{$this->conversation->id},MessageDeletedEvent"     => 'handleMessageDeleted',
+        "echo-private:message,MessageDeletedEvent"     => 'handleMessageDeleted',
 
         // A message was edited in this conversation
         "echo-private:chat.{$this->conversation->id},MessageEditedEvent"      => 'handleMessageEdited',
