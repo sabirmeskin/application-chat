@@ -256,7 +256,7 @@ class Chatbox extends Component
         "echo-private:typing.{$this->conversation->id},TypingEvent"             => 'handleTypingEvent',
 
         // A message was deleted in this conversation
-        "echo-private:chat.{$this->conversation->id},MessageDeletedEvent"     => 'handleMessageDeleted',
+        "echo-private:message,MessageDeletedEvent"     => 'handleMessageDeleted',
 
         // A message was edited in this conversation
         "echo-private:chat.{$this->conversation->id},MessageEditedEvent"      => 'handleMessageEdited',
