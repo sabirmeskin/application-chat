@@ -8,7 +8,7 @@
             <flux:avatar.group class="**:ring-zinc-100 dark:**:ring-zinc-800">
 
                 @foreach ($conversation->participants->take(3) as $user)
-                
+
                 <flux:tooltip content="{{ $user->name }}" placement="top">
                     <flux:avatar circle size="xs" class="max-sm:size-8" name="{{ $user->name }}" color="auto" badge
                         badge:color="{{ $user->is_online ? 'green' : 'gray' }}" badge:circle badge:position="top left"
@@ -48,7 +48,7 @@
                 <flux:menu.item variant="danger" icon="trash">Delete</flux:menu.item>
             </flux:menu>
         </flux:dropdown>
-        
+
         @endif
 
     </flux:header>
@@ -82,7 +82,7 @@
  />
 
             @else
-{{-- 
+{{--
             <livewire:chat.components.message-bubble
                 :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
                  :message="$message"
@@ -150,8 +150,13 @@
             <input type="file" x-ref="fileInput" wire:model="file" class="hidden"
                 accept="image/*,application/pdf,application/msword,.doc,.docx" />
         </div>
-        <flux:input placeholder="Type your message" icon-trailing="send" clearable wire:model="message"
+        <div class="flex flex-col w-full relative">
+            <div class="my-2 w-1/2">
+                <livewire:chat.components.features.reply />
+            </div>
+        <flux:input placeholder="Taper votre message" icon-trailing="send" clearable wire:model="message"
             autocomplete="off"  wire:keyup.debounce.1000ms="startTyping" />
+        </div>
         <flux:button type="submit" variant="primary">
             Envoyer
         </flux:button>
@@ -170,7 +175,7 @@
                 }, 100);
             }
         });
-        
+
 
     </script>
     <script>
@@ -190,7 +195,7 @@ fetch('/broadcast-offline', {
     </script>
     @endscript
 
-    
+
     <livewire:chat.modals.edit-group-modal :conversation="$conversation" :key="$conversation->id">
     <livewire:chat.modals.confirm-delete />
     <livewire:chat.modals.edit-message />

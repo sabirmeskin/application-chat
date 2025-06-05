@@ -26,14 +26,6 @@
                 icon="forward"
                 x-data="{ messageId: {{ $message->id }} }"
                 x-on:click="$wire.dispatch('forwardMessage', [messageId])"
-<<<<<<< HEAD
-                >Transférer</flux:menu.item>
-                <flux:menu.item icon="pencil">Modifier</flux:menu.item>
-                <flux:menu.item icon="reply">Répondre</flux:menu.item>
-                {{-- <flux:menu.item icon="copy">Copier</flux:menu.item> --}}
-                <flux:menu.item
-                    icon="copy"
-=======
                 >Transférer
                </flux:menu.item>
 
@@ -45,7 +37,6 @@
 
                 <flux:menu.item
                     icon="copy"
->>>>>>> origin/chat-app-opt-status
                     x-data="{ messageId: {{ $message->id }} }"
                     x-on:click="navigator.clipboard.writeText(`{{ str_replace(['`', '\\'], ['\`', '\\\\'], $message->body) }}`)
                                 $wire.dispatch('copiedMessage', [messageId])"
@@ -120,9 +111,5 @@
     @endif
 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/chat-app-opt-status
 
 </div>
