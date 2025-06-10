@@ -13,6 +13,7 @@ class Reply extends Component
 
  public $message = null;  
  public $reply= false; 
+ public $url= null; 
 
     public string $content = ''; 
 
@@ -21,6 +22,9 @@ class Reply extends Component
     {
         $this->reply = true; 
         $this->message = Message::find($messageId);
+        if($this->message->type =='media'){
+            $this->url = $this->message->getFirstMediaUrl('attachments');
+        }
         $this->dispatch('replyToMessage', $messageId);
         $this->dispatch('scrollToBottom');
     }

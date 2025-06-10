@@ -7,6 +7,7 @@ use Livewire\Component;
 class RepliedMessage extends Component
 {
     public $message = null;  
+    public $url = null;  
 
     public function render()
     {
