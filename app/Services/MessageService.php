@@ -81,7 +81,25 @@ class MessageService
         ]);
     }
 
-
+    public function replyToMessage(Message $message, string $body):Message
+    {
+        // $reply = Message::create([
+        //     'conversation_id' => $message->conversation_id,
+        //     'sender_id' => $message->sender_id,
+        //     'receiver_id' => $message->receiver_id,
+        //     'parent_id' => $message->id,
+        //     'type' => 'reply',
+        //     'body' => $body,
+        // ]);
+       $reply =  $this->sendTextMessage(
+            $message->sender,
+            $message->conversation,
+            $message,
+            $body
+        );
+        broadcast(new MessageSentEvent($reply));
+        return $reply;
+    }
 
     // public function addReaction(Message $message, string $reaction):Message
     // {

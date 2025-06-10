@@ -67,7 +67,6 @@
                             });
                             observer.observe($el);
                         " x-destroy="if (observer) observer.disconnect()">
-
                 </div>
             @endif
 
@@ -79,34 +78,17 @@
                 :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
                  :message="$message"
                 :wire:key="'message-'.$message->id"
- />
-
-            @else
-{{--
-            <livewire:chat.components.message-bubble
-                :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
-                 :message="$message"
-                :wire:key="'message-'.$message->id"
- /> --}}
-            {{-- <livewire:chat.components.message-bubble
-            :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
-            :message="$message"
-            :wire:key="'message-'.$message->id"
-            @class(['hidden' => !is_null($message->deleted_at)])
-        /> --}}
-        {{-- <livewire:chat.components.message-bubble
-            :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
-            :message="$message"
-            :style="!is_null($message->deleted_at) ? 'visibility: hidden;' : ''"
-            :wire:key="'message-'.$message->id"
-        /> --}}
-        @unless($message->deleted_at)
-            <livewire:chat.components.message-bubble
-                :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
-                :message="$message"
-                :wire:key="'message-'.$message->id"
             />
-        @endunless
+            @else
+
+            @unless($message->deleted_at)
+                <livewire:chat.components.message-bubble
+                    :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
+                    :message="$message"
+                    :wire:key="'message-'.$message->id"
+                />
+            @endunless
+            
             @endif
 
             @endforeach
@@ -152,7 +134,10 @@
         </div>
         <div class="flex flex-col w-full relative">
             <div class="my-2 w-1/2">
-                <livewire:chat.components.features.reply />
+
+            
+                <livewire:chat.components.features.reply  />
+
             </div>
         <flux:input placeholder="Taper votre message" icon-trailing="send" clearable wire:model="message"
             autocomplete="off"  wire:keyup.debounce.1000ms="startTyping" />

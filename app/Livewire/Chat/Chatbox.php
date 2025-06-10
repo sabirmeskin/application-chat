@@ -3,7 +3,7 @@
 namespace App\Livewire\Chat;
 
 use App\Events\MessageReadEvent;
-
+use App\Events\MessageReplyEvent;
 use App\Events\TypingEvent;
 
 use App\Models\Message;
@@ -28,6 +28,9 @@ class Chatbox extends Component
     public $typingIndicator = false;
     public $messageToDelete = null;
     public $onlineUsers = [];
+    public $parent = null;
+    public $reply = false;
+
 
 
 
@@ -57,19 +60,26 @@ class Chatbox extends Component
         $messageText = $this->message;
         $this->message = '';
         $this->stopTyping();
+
         if (trim($messageText) === '') {
             return;
         }
-
+        
        $newMessage =  $messageService->sendTextMessage(
             Auth::user(),
             $this->conversation,
-            null,
+            $this->parent ? Message::find($this->parent) : null,
             $messageText
         );
+        // dd($newMessage);
         // $this->messages[] = $newMessage;
-
+        
         $this->dispatch('messageSent', [$this->conversation,$newMessage]);
+        if ($this->parent) {
+            broadcast(new MessageReplyEvent($newMessage, $this->parent))->toOthers();
+        }
+        $this->message = ''; // Clear the message input after sending
+        $this->parent ? $this->dispatch('sendReply') : ''; // Reset parent after sending the message
         $this->dispatch('scrollToBottom');
         // broadcast(new MessageReadEvent($newMessage , Auth::id()))->toOthers();
 
@@ -82,7 +92,7 @@ class Chatbox extends Component
         ->get()->reverse();
 
         $this->dispatch('scrollToBottom');
-
+        // dd($this->messages);
         // broadcast(new MessageReadEvent($lastmessage , Auth::id()))->toOthers();
 
     }
@@ -242,6 +252,15 @@ class Chatbox extends Component
             $this->messages->push($message);
         }
     }
+
+  public function replyToMessage($messageId)
+    {
+        $message = Message::find($messageId);
+        if ($message) {
+            $this->parent = $message->id;
+        }
+    }
+
         public function getListeners()
 {
         $userId = Auth::id();
@@ -272,6 +291,8 @@ class Chatbox extends Component
         'echo-presence:user-status,here'                                     => 'userListUpdated',
         'echo-presence:user-status,joining'                                  => 'userJoined',
         'echo-presence:user-status,leaving'                                  => 'userLeft',
+        'echo-presence:user-status,leaving'                                  => 'userLeft',
+        'replyToMessage'                                  => 'replyToMessage',
     ];
 }
 
