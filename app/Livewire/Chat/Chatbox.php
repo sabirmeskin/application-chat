@@ -207,7 +207,7 @@ class Chatbox extends Component
             'edited_at' => now(),
 
         ]);
-        //  dd($message->body);
+
     }
 
 
