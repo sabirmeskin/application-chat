@@ -10,16 +10,16 @@ use App\Models\Message;
 use App\Models\User;
 
 use App\Services\MessageService;
-use Flux\Flux;
+
 use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\On;
+
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
 class Chatbox extends Component
 {
-     use WithFileUploads;
-     public $file;
+    use WithFileUploads;
+    public $file;
     public $messages = [];
     public $message = '';
     public $conversation;
@@ -28,7 +28,8 @@ class Chatbox extends Component
     public $typingIndicator = false;
     public $messageToDelete = null;
     public $onlineUsers = [];
-
+    public $replyBox = false;
+    public $replyTo;
 
 
     public function updatedFile()
@@ -36,21 +37,26 @@ class Chatbox extends Component
         $this->sendFileMessage();
     }
 
-    public function sendFileMessage(){
+    public function sendFileMessage()
+    {
         if (!$this->file) return;
         $message = MessageService::getInstance()->sendMediaMessage(
             Auth::user(),
+
             $this->conversation,
+            $this->replyTo
         );
         $message->addMedia($this->file->getRealPath())
             ->usingFileName($this->file->getClientOriginalName())
             ->toMediaCollection('attachments');
 
-              $this->reset('file');
-
+        $this->reset('file');
+        $this->replyTo = null; // Reset reply after sending
+        $this->replyBox = false; // Hide reply box after sending
         $this->dispatch('messageSent', [$this->conversation, $message]);
         $this->dispatch('scrollToBottom');
     }
+
 
     public function sendMessage(MessageService $messageService)
     {
@@ -61,25 +67,28 @@ class Chatbox extends Component
             return;
         }
 
-       $newMessage =  $messageService->sendTextMessage(
+        $newMessage =  $messageService->sendTextMessage(
             Auth::user(),
             $this->conversation,
-            null,
+            $this->replyTo,
             $messageText
         );
         // $this->messages[] = $newMessage;
-
-        $this->dispatch('messageSent', [$this->conversation,$newMessage]);
+        $this->replyBox = false; // Hide reply box after sending
+        $this->message = ''; // Clear the message input
+        $this->replyTo = null; // Reset reply after sending
+        $this->dispatch('messageSent', [$this->conversation, $newMessage]);
         $this->dispatch('scrollToBottom');
         // broadcast(new MessageReadEvent($newMessage , Auth::id()))->toOthers();
 
     }
-    public function loadMessages(){
-     $this->messages = $this->conversation
-        ->messages()
-        ->latest()
-        ->take(10)
-        ->get()->reverse();
+    public function loadMessages()
+    {
+        $this->messages = $this->conversation
+            ->messages()
+            ->latest()
+            ->take(10)
+            ->get()->reverse();
 
         $this->dispatch('scrollToBottom');
 
@@ -89,7 +98,8 @@ class Chatbox extends Component
 
 
 
-    public function handleTypingEvent($event){
+    public function handleTypingEvent($event)
+    {
         $this->typingIndicator = true;
         $this->dispatch('hideTypingAfterDelay');
     }
@@ -113,17 +123,17 @@ class Chatbox extends Component
 
 
             $this->dispatch('messageReadRefresh');
-
         }
     }
 
-    public function updateLastMessage($event){
-    // Create a new Message model from the array
-    $newMessage = Message::find($event['message']['id']);
+    public function updateLastMessage($event)
+    {
+        // Create a new Message model from the array
+        $newMessage = Message::find($event['message']['id']);
 
-    // Add the new message to the messages array
-    $this->messages[] = $newMessage;
-    $this->dispatch('scrollToBottom');
+        // Add the new message to the messages array
+        $this->messages[] = $newMessage;
+        $this->dispatch('scrollToBottom');
     }
     /**
      * Mark the last message as seen.
@@ -133,17 +143,19 @@ class Chatbox extends Component
      */
     public function markLastMessageAsSeen($messageId)
     {
-        $message= Message::find($messageId);
-        if($message && $message->sender_id !== Auth::id()){
+        $message = Message::find($messageId);
+        if ($message && $message->sender_id !== Auth::id()) {
             broadcast(new MessageReadEvent($message, Auth::id()))->toOthers();
         }
     }
 
-    public function startTyping(){
+    public function startTyping()
+    {
 
-        broadcast(new TypingEvent($this->conversation ))->toOthers();
+        broadcast(new TypingEvent($this->conversation))->toOthers();
     }
-    public function stopTyping(){
+    public function stopTyping()
+    {
 
         $this->typingIndicator =  false;
     }
@@ -167,7 +179,7 @@ class Chatbox extends Component
 
 
     // #[On('messageDeleted')]
-  public function handleMessageDeleted($event)
+    public function handleMessageDeleted($event)
     {
         $messageId = $event['message']['id'] ?? null;
 
@@ -176,8 +188,8 @@ class Chatbox extends Component
         }
 
 
-       $this->messages
-            ->filter(fn ($msg) => $msg->id !== $messageId)
+        $this->messages
+            ->filter(fn($msg) => $msg->id !== $messageId)
             ->values();
 
 
@@ -192,8 +204,8 @@ class Chatbox extends Component
         }
 
         $this->messages
-        ->filter(fn ($msg) => $msg->id !== $messageId)
-        ->values();
+            ->filter(fn($msg) => $msg->id !== $messageId)
+            ->values();
     }
 
     public function editMessage($messageId)
@@ -207,7 +219,6 @@ class Chatbox extends Component
             'edited_at' => now(),
 
         ]);
-
     }
 
 
@@ -242,37 +253,55 @@ class Chatbox extends Component
             $this->messages->push($message);
         }
     }
-        public function getListeners()
-{
+        public function setReplyTo($messageId)
+    {
+       if (!$messageId) {
+        $this->replyTo = null;
+        return;
+    }
+    $this->replyBox = true;
+
+        $this->replyTo = Message::find($messageId)->id;
+        }
+
+    public function cancelReply()
+    {
+        $this->replyBox = false;
+        $this->replyTo = null;
+    }
+
+    public function getListeners()
+    {
         $userId = Auth::id();
-    return [
-        // New message sent in this conversation
-        "echo-private:chat.{$this->conversation->id},MessageSentEvent"        => 'updateLastMessage',
+        return [
+            // New message sent in this conversation
+            "echo-private:chat.{$this->conversation->id},MessageSentEvent"        => 'updateLastMessage',
 
-        // Someone read a message in this conversation
-        "echo-private:read.{$this->conversation->id},MessageReadEvent"        => 'handleMessageRead',
+            // Someone read a message in this conversation
+            "echo-private:read.{$this->conversation->id},MessageReadEvent"        => 'handleMessageRead',
 
-        // Typing indicator in this conversation
-        "echo-private:typing.{$this->conversation->id},TypingEvent"             => 'handleTypingEvent',
+            // Typing indicator in this conversation
+            "echo-private:typing.{$this->conversation->id},TypingEvent"             => 'handleTypingEvent',
 
-        // A message was deleted in this conversation
-        "echo-private:message,MessageDeletedEvent"     => 'handleMessageDeleted',
+            // A message was deleted in this conversation
+            "echo-private:message,MessageDeletedEvent"     => 'handleMessageDeleted',
 
-        // A message was edited in this conversation
-        "echo-private:chat.{$this->conversation->id},MessageEditedEvent"      => 'handleMessageEdited',
+            // A message was edited in this conversation
+            "echo-private:chat.{$this->conversation->id},MessageEditedEvent"      => 'handleMessageEdited',
 
-        // Forwarded messages arrive on *your* user channel
-        "echo-private:message,MessageForwardedEvent"         => 'onMessageForwarded',
+            // Forwarded messages arrive on *your* user channel
+            "echo-private:message,MessageForwardedEvent"         => 'onMessageForwarded',
 
-        // Livewire-dispatched events (e.g. from modal)
-        'messageDeleted'                                                     => 'messageDeleted',
-        'editMessage'                                                        => 'editMessage',
+            // Livewire-dispatched events (e.g. from modal)
+            'messageDeleted'                                                     => 'messageDeleted',
+            'editMessage'                                                        => 'editMessage',
 
-        // Presence (online users) — adjust channel name if yours differs
-        'echo-presence:user-status,here'                                     => 'userListUpdated',
-        'echo-presence:user-status,joining'                                  => 'userJoined',
-        'echo-presence:user-status,leaving'                                  => 'userLeft',
-    ];
-}
-
+            // Presence (online users) — adjust channel name if yours differs
+            'echo-presence:user-status,here'                                     => 'userListUpdated',
+            'echo-presence:user-status,joining'                                  => 'userJoined',
+            'echo-presence:user-status,leaving'                                  => 'userLeft',
+            'replyMessage'                                                       => 'setReplyTo',
+            'cancelReply'                                                       => 'cancelReply',
+        ];
+    }
 }

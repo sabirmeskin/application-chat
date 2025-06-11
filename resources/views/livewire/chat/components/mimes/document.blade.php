@@ -1,5 +1,6 @@
 <div
     class="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-300 dark:border-gray-100  rounded-e-xl rounded-es-xl ">
+
     <div class="flex items-start rounded-xl p-2 bg-gray-600  dark:bg-gray-400">
         <div class="me-2">
             <span class="flex items-center gap-2 text-sm font-medium  dark:text-white text-white pb-2">

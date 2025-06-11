@@ -13,7 +13,8 @@
                     <flux:avatar circle size="xs" class="max-sm:size-8" name="{{ $user->name }}" color="auto" badge
                         badge:color="{{ $user->is_online ? 'green' : 'gray' }}" badge:circle badge:position="top left"
                         badge:variant="xs" />
-                 {{-- <livewire:Chat.Components.group-status :user="$user" /> --}}
+                    {{--
+                    <livewire:Chat.Components.group-status :user="$user" /> --}}
                 </flux:tooltip>
 
                 @endforeach
@@ -35,7 +36,7 @@
             <flux:heading size="lg">{{$conversation->ConversationName()}}</flux:heading>
         </div>
 
-            @if ($conversation->isGroup() && $conversation->ConversationAdmin()->id == Auth::id() )
+        @if ($conversation->isGroup() && $conversation->ConversationAdmin()->id == Auth::id() )
 
         <flux:dropdown>
             <flux:button icon="circle-chevron-down" variant="ghost" class="ml-auto mr-2" />
@@ -57,7 +58,7 @@
         <div>
             @foreach ($messages as $index => $message)
             @if ($loop->last)
-                <div x-data="{ observer: null, messageId : {{ $message->id }} }" x-init="
+            <div x-data="{ observer: null, messageId : {{ $message->id }} }" x-init="
                             observer = new IntersectionObserver((entries) => {
                                 entries.forEach(entry => {
                                     if (entry.isIntersecting) {
@@ -68,7 +69,7 @@
                             observer.observe($el);
                         " x-destroy="if (observer) observer.disconnect()">
 
-                </div>
+            </div>
             @endif
 
             @if ($message->type === 'media')
@@ -77,39 +78,31 @@
 
             <livewire:chat.components.media-message
                 :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
-                 :message="$message"
-                :wire:key="'message-'.$message->id"
- />
+                :message="$message" :wire:key="'message-'.$message->id" />
 
             @else
-{{--
+            {{--
             <livewire:chat.components.message-bubble
                 :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
-                 :message="$message"
-                :wire:key="'message-'.$message->id"
- /> --}}
+                :message="$message" :wire:key="'message-'.$message->id" /> --}}
             {{-- <livewire:chat.components.message-bubble
-            :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
-            :message="$message"
-            :wire:key="'message-'.$message->id"
-            @class(['hidden' => !is_null($message->deleted_at)])
-        /> --}}
-        {{-- <livewire:chat.components.message-bubble
-            :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
-            :message="$message"
-            :style="!is_null($message->deleted_at) ? 'visibility: hidden;' : ''"
-            :wire:key="'message-'.$message->id"
-        /> --}}
-        @unless($message->deleted_at)
-            <livewire:chat.components.message-bubble
                 :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
-                :message="$message"
-                :wire:key="'message-'.$message->id"
-            />
-        @endunless
-            @endif
+                :message="$message" :wire:key="'message-'.$message->id" @class(['hidden'=>
+                !is_null($message->deleted_at)])
+                /> --}}
+                {{--
+                <livewire:chat.components.message-bubble
+                    :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
+                    :message="$message" :style="!is_null($message->deleted_at) ? 'visibility: hidden;' : ''"
+                    :wire:key="'message-'.$message->id" /> --}}
+                @unless($message->deleted_at)
+                <livewire:chat.components.message-bubble
+                    :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
+                    :message="$message" :wire:key="'message-'.$message->id" />
+                @endunless
+                @endif
 
-            @endforeach
+                @endforeach
         </div>
 
     </div>
@@ -151,11 +144,15 @@
                 accept="image/*,application/pdf,application/msword,.doc,.docx" />
         </div>
         <div class="flex flex-col w-full relative">
-            <div class="my-2 w-1/2">
-                <livewire:chat.components.features.reply />
+
+            <div class="my-2 w-1/2 flex items-center flex-row" wire:key='replyBox-{{ $replyTo }}'>
+            @if ($replyTo)
+                <livewire:chat.components.features.reply wire:key='reply-{{ $replyTo }}' :message_id="$replyTo" />
+            @endif
             </div>
-        <flux:input placeholder="Taper votre message" icon-trailing="send" clearable wire:model="message"
-            autocomplete="off"  wire:keyup.debounce.1000ms="startTyping" />
+
+            <flux:input placeholder="Taper votre message" icon-trailing="send" clearable wire:model="message"
+                autocomplete="off" wire:keyup.debounce.1000ms="startTyping" />
         </div>
         <flux:button type="submit" variant="primary">
             Envoyer
@@ -197,11 +194,11 @@ fetch('/broadcast-offline', {
 
 
     <livewire:chat.modals.edit-group-modal :conversation="$conversation" :key="$conversation->id">
-    <livewire:chat.modals.confirm-delete />
-    <livewire:chat.modals.edit-message />
-    <livewire:chat.modals.copied-message-modal />
-    <livewire:chat.modals.forward-message-modal />
-    <livewire:chat.modals.reply-message-modal />
+        <livewire:chat.modals.confirm-delete />
+        <livewire:chat.modals.edit-message />
+        <livewire:chat.modals.copied-message-modal />
+        <livewire:chat.modals.forward-message-modal />
+        <livewire:chat.modals.reply-message-modal />
 
 
-    </div>
+</div>

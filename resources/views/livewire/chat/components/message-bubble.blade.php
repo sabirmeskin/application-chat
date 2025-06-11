@@ -90,7 +90,7 @@
             <div class="flex items-center space-x-2 rtl:space-x-reverse">
                 <span class="text-sm font-semibold text-gray-900 dark:text-white {{ !$avatarOn ? 'hidden' : '' }}">{{$message->sender->name}}</span>
             </div>
-            <livewire:chat.components.features.reply  />
+
             <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{$message->body}}</p>
             <div class="w-full flex justify-between">
                 <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">{{$message->timestamp()}}</span>

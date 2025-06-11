@@ -35,14 +35,14 @@ class MessageService
      * @param string $body
      * @return Message
      */
-    public function sendTextMessage(User $sender, Conversation $conversation, Message $parent = null , string $body):Message
+    public function sendTextMessage(User $sender, Conversation $conversation, ?int $parent , string $body):Message
     {
-        
+
         $message = Message::create([
             'conversation_id' => $conversation->id,
             'sender_id' => $sender->id,
             'receiver_id' => $conversation->receiver()->id,
-            'parent_id' => $parent ? $parent->id : null,
+            'parent_id' => $parent ? $parent : null,
             'type' => 'text',
             'body' => $body,
         ]);
@@ -50,13 +50,13 @@ class MessageService
         return $message;
     }
 
-    public function sendMediaMessage(User $sender, Conversation $conversation, Message $parent = null ):Message
+    public function sendMediaMessage(User $sender, Conversation $conversation, ?int $parent  ):Message
     {
         $message = Message::create([
             'conversation_id' => $conversation->id,
             'sender_id' => $sender->id,
             'receiver_id' => $conversation->receiver()->id,
-            'parent_id' => $parent ? $parent->id : null,
+            'parent_id' => $parent ? $parent : null,
             'type' => 'media',
             'body' => '',
 
