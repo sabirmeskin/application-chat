@@ -41,15 +41,7 @@ class Conversation extends Model
         return $this->hasOne(Message::class)->latest()->with('sender');
     }
 
-    public function archive()
-    {
-        $this->update(['archived_at' => now()]);
-    }
 
-    public function unarchive()
-    {
-        $this->update(['archived_at' => null]);
-    }
 
     public function isParticipant(User $user){
         return $this->participants->contains($user);
@@ -70,10 +62,7 @@ class Conversation extends Model
     public function sender(){
         return $this->participants()->where('user_id', Auth::id())->first();
     }
-    public function isArchived()
-    {
-        return $this->archived_at !== null;
-    }
+
 
     public function ConversationName(){
         if ($this->isGroup()) {
@@ -83,4 +72,31 @@ class Conversation extends Model
             return $receiver ? $receiver->name : 'Unknown';
         }
     }
+    public function archivedBy()
+{
+    return $this->belongsToMany(User::class, 'archived_conversations');
+}
+public function archivedConversations()
+{
+    return $this->belongsToMany(Conversation::class, 'archived_conversations');
+}
+
+public function archive($userId = null)
+{
+    $userId = $userId ?? Auth::id();
+    $this->archivedBy()->syncWithoutDetaching([$userId]);
+}
+
+public function unarchive($userId = null)
+{
+    $userId = $userId ?? Auth::id();
+    $this->archivedBy()->detach($userId);
+}
+
+public function isArchived($userId = null): bool
+{
+    $userId = $userId ?? Auth::id();
+    return $this->archivedBy()->where('user_id', $userId)->exists();
+}
+
 }
