@@ -145,11 +145,12 @@
         </div>
         <div class="flex flex-col w-full relative">
 
-            <div class="my-2 w-1/2 flex items-center flex-row" wire:key='replyBox-{{ $replyTo }}'>
             @if ($replyTo)
+            <div class="my-2 w-1/2 flex items-center flex-row" wire:key='replyBox-{{ $replyTo }}'>
                 <livewire:chat.components.features.reply wire:key='reply-{{ $replyTo }}' :message_id="$replyTo" />
-            @endif
+                <flux:button icon="x" variant="ghost" class="ml-2" wire:click="$dispatch('cancelReply')" />
             </div>
+            @endif
 
             <flux:input placeholder="Taper votre message" icon-trailing="send" clearable wire:model="message"
                 autocomplete="off" wire:keyup.debounce.1000ms="startTyping" />
@@ -189,6 +190,11 @@ fetch('/broadcast-offline', {
   window.location.href = '/login';
 });
 
+$wire.on('closeReply', () => {
+    setTimeout(() => {
+        $wire.set('replyTo', null);
+    }, 3000);
+});
     </script>
     @endscript
 

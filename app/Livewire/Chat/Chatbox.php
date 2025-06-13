@@ -51,8 +51,13 @@ class Chatbox extends Component
             ->toMediaCollection('attachments');
 
         $this->reset('file');
-        $this->replyTo = null; // Reset reply after sending
+        // $this->replyTo = null; // Reset reply after sending
         $this->replyBox = false; // Hide reply box after sending
+        if ($this->replyTo) {
+            $this->dispatch('cancelReply');
+        }
+
+
         $this->dispatch('messageSent', [$this->conversation, $message]);
         $this->dispatch('scrollToBottom');
     }
@@ -66,17 +71,17 @@ class Chatbox extends Component
         if (trim($messageText) === '') {
             return;
         }
-
+        $parentMessageId = $this->replyTo; // Get the ID of the message being replied to
         $newMessage =  $messageService->sendTextMessage(
             Auth::user(),
             $this->conversation,
-            $this->replyTo,
+            $parentMessageId,
             $messageText
         );
         // $this->messages[] = $newMessage;
         $this->replyBox = false; // Hide reply box after sending
-        $this->message = ''; // Clear the message input
-        $this->replyTo = null; // Reset reply after sending
+        // $this->replyTo = null; // Reset reply after sending
+
         $this->dispatch('messageSent', [$this->conversation, $newMessage]);
         $this->dispatch('scrollToBottom');
         // broadcast(new MessageReadEvent($newMessage , Auth::id()))->toOthers();
@@ -134,6 +139,9 @@ class Chatbox extends Component
         // Add the new message to the messages array
         $this->messages[] = $newMessage;
         $this->dispatch('scrollToBottom');
+        if ($this->replyTo) {
+            $this->dispatch('cancelReply');
+        }
     }
     /**
      * Mark the last message as seen.
@@ -253,16 +261,16 @@ class Chatbox extends Component
             $this->messages->push($message);
         }
     }
-        public function setReplyTo($messageId)
+    public function setReplyTo($messageId)
     {
-       if (!$messageId) {
-        $this->replyTo = null;
-        return;
-    }
-    $this->replyBox = true;
+        if (!$messageId) {
+            $this->replyTo = null;
+            return;
+        }
+        $this->replyBox = true;
 
         $this->replyTo = Message::find($messageId)->id;
-        }
+    }
 
     public function cancelReply()
     {

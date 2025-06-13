@@ -1,9 +1,9 @@
-<div class="w-100">
+<div class="min-w-50 mb-2">
     <div class="box">
-        <div class="flex items-center bg-gray-100 dark:bg-gray-800 rounded p-2 justify-between border-l-4 border-purple-300">
+        <div class="flex items-center bg-gray-300 dark:bg-gray-700 rounded p-2 justify-between border-l-4 border-purple-500">
             {{-- Left: Name and mime type --}}
             <div class="flex flex-col justify-start flex-1 min-w-0">
-                <span class="text-sm font-bold text-gray-800 dark:text-gray-600">{{ $message->sender->name }}</span>
+                <span class=" font-bold text-gray-800 dark:text-gray-100 text-xs">{{ $message->sender->name }}</span>
                 @if ($message->hasMedia('attachments'))
                     @php
                         $media = $message->getFirstMedia('attachments');
@@ -11,7 +11,7 @@
                     @endphp
                     <span class="text-xs text-gray-400 dark:text-gray-500">{{ $mimeType }}</span>
                 @else
-                    <div class="text-gray-700 dark:text-gray-300 text-sm">
+                    <div class="text-gray-700 dark:text-gray-300 text-xs">
                         {{ Str::limit($message->body, 30) }}
                     </div>
                 @endif

@@ -7,11 +7,13 @@
 
         <div
             class="felx flex-col  min-w-[100px] max-w-[420px] leading-1.5 px-4 py-2 border-gray-100 bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-gray-800">
+            @if ($message->parent)
+            <livewire:chat.components.features.reply :message_id="$message->parent->id" />
+            @endif
             <div class="flex items-center space-x-2 rtl:space-x-reverse">
                 <span class="text-sm font-semibold text-gray-900 dark:text-white {{ !$avatarOn ? 'hidden' : '' }}">{{$message->sender->name}}</span>
             </div>
 
-            {{-- <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{$message->body}}</p> --}}
             <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{$message->body}}</p>
             <div class="w-full flex space-x-2 justify-end">
                 <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">{{$message->timestamp()}}</span>
@@ -87,7 +89,12 @@
         </flux:dropdown>
         <div
             class="felx flex-col min-w-[100px]  max-w-[420px] leading-1.5 p-4 border-gray-200 bg-gray-200 rounded-s-xl rounded-es-xl rounded-br-xl dark:bg-gray-600">
+            @if ($message->parent)
+            <livewire:chat.components.features.reply :message_id="$message->parent->id" />
+            @endif
+
             <div class="flex items-center space-x-2 rtl:space-x-reverse">
+
                 <span class="text-sm font-semibold text-gray-900 dark:text-white {{ !$avatarOn ? 'hidden' : '' }}">{{$message->sender->name}}</span>
             </div>
 
@@ -105,7 +112,7 @@
 
             </div>
         </div>
-        <flux:avatar name="{{$message->sender->name}}" color="auto" class="ml-2 {{ !$avatarOn ? 'opacity-0' : '' }}" circle  />
+        {{-- <flux:avatar name="{{$message->sender->name}}" color="auto" class="ml-2 {{ !$avatarOn ? 'opacity-0' : '' }}" circle  /> --}}
 
     </div>
     @endif
