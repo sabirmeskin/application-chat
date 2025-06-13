@@ -2,39 +2,17 @@
 
 namespace App\Livewire\Chat\Components\Features;
 
-use App\Events\MessageReplyEvent;
 use App\Models\Message;
-use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Reply extends Component
 {
-
- public $message = null;  
- public $reply= false; 
- public $url= null; 
-
-    public string $content = ''; 
-
-    #[On('replyMessage')]
-    public function replyMessage(int $messageId): void
+    public Message $message;
+    public $message_id;
+    public function mount($message_id)
     {
-        $this->reply = true; 
-        $this->message = Message::find($messageId);
-        if($this->message->type =='media'){
-            $this->url = $this->message->getFirstMediaUrl('attachments');
-        }
-        $this->dispatch('replyToMessage', $messageId);
-        $this->dispatch('scrollToBottom');
+        $this->message = Message::find($message_id);
     }
-    #[On('sendReply')]
-    public function sendReply(): void
-    {
-        $this->reply =! $this->reply;
-    }
-    
-    
 
     public function render()
     {

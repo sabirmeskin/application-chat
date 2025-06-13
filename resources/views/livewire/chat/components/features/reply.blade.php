@@ -1,18 +1,40 @@
-<div class="{{$reply ==false ? 'hidden' :''}}" >
+<div class="min-w-50 mb-2">
     <div class="box">
-        <div class="flex items-center bg-gray-100 dark:bg-gray-800 rounded p-2">
-            <div class="border-l-4 border-purple-500 pl-2 mr-2">
-                <span class="text-sm font-semibold text-gray-800 dark:text-gray-200"> {{$message->sender->name ?? '' }} </span>
-                @if ($url)
-                <img src="{{$url}}" alt="Thumbnail" class="w-10 h-10 rounded mr-2 ">
+        <div class="flex items-center bg-gray-300 dark:bg-gray-700 rounded p-2 justify-between border-l-4 border-purple-500">
+            {{-- Left: Name and mime type --}}
+            <div class="flex flex-col justify-start flex-1 min-w-0">
+                <span class=" font-bold text-gray-800 dark:text-gray-100 text-xs">{{ $message->sender->name }}</span>
+                @if ($message->hasMedia('attachments'))
+                    @php
+                        $media = $message->getFirstMedia('attachments');
+                        $mimeType = $media ? $media->mime_type : null;
+                    @endphp
+                    <span class="text-xs text-gray-400 dark:text-gray-500">{{ $mimeType }}</span>
                 @else
-                    <div class="text-gray-700 dark:text-gray-300 text-sm">
-                    {{-- {{ Str::limit('Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt, rerum?', 30) }} --}}
-                    
-                    {{ Str::limit($message->body ?? '' , 30) }}
+                    <div class="text-gray-700 dark:text-gray-300 text-xs">
+                        {{ Str::limit($message->body, 30) }}
                     </div>
                 @endif
             </div>
+
+            {{-- Right: Attachment preview --}}
+            @if ($message->hasMedia('attachments') && $media)
+                <div class="flex items-center space-x-2 ml-4">
+                    @if(Str::startsWith($mimeType, 'image/'))
+                        <img src="{{ $media->getUrl() }}" alt="Thumbnail" class="w-10 h-10 rounded">
+                    @elseif(Str::startsWith($mimeType, 'application/') || Str::startsWith($mimeType, 'text/'))
+                        <div  class="flex items-center space-x-2 ">
+                            <flux:icon.file size="8" class="text-gray-500 dark:text-gray-400" />
+                            <span class="truncate max-w-xs">
+                                {{ $media->file_name }}
+                            </span>
+                        </div>
+                    @endif
+                </div>
+            @endif
+
+            {{-- Flux (close) button --}}
+            {{-- <flux:button icon="x" variant="ghost" class="ml-2" wire:click="$dispatch('cancelReply')" ></flux:button> --}}
         </div>
     </div>
 </div>

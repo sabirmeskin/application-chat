@@ -50,20 +50,6 @@ class ReplyMessageModal extends Component
     //     $this->modal('reply-message-modal')->close();
     // }
 
-    // /** Called when user clicks “Reply” on an existing message */
-    // #[On('replyMessage')]
-    // public function replyMessage(int $messageId): void
-    // {
-    //     $this->message = Message::find($messageId);
-
-    //     // Optional: guard against missing or soft-deleted messages
-    //     if (! $this->message) {
-    //         $this->addError('message', 'Original message not found.');
-    //         return;
-    //     }
-
-    //     $this->modal('reply-message-modal')->show();
-    // }
 
     public function render()
     {

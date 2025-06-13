@@ -45,7 +45,7 @@ class Message extends Model implements HasMedia
     public function conversation(){
         return $this->belongsTo(Conversation::class);
     }
-
+//replies
     public function parent(){
         return $this->belongsTo(Message::class, 'parent_id');
     }
