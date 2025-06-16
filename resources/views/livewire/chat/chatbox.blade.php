@@ -141,6 +141,7 @@
         <div x-data="{ triggerFileInput() { $refs.fileInput.click(); } }" class="relative">
             <flux:button icon="paperclip" variant="primary" class="px-2" x-on:click="triggerFileInput()" />
             <input type="file" x-ref="fileInput" wire:model="file" class="hidden"
+
                 accept="image/*,application/pdf,application/msword,.doc,.docx" />
         </div>
         <div class="flex flex-col w-full relative">
@@ -152,7 +153,7 @@
             </div>
             @endif
 
-            <flux:input placeholder="Taper votre message" icon-trailing="send" clearable wire:model="message"
+            <flux:input placeholder="Taper votre message" icon-trailing="send" clearable wire:model="message"  id="messageInput"
                 autocomplete="off" wire:keyup.debounce.1000ms="startTyping" />
         </div>
         <flux:button type="submit" variant="primary">
@@ -161,6 +162,21 @@
     </form>
 
     @script
+    <script>
+        $wire.on('replyMessage', () => {
+            const messageInput = document.getElementById('messageInput');
+            if (messageInput) {
+                messageInput.focus();
+            }
+        });
+
+        $wire.on('editMessage', () => {
+            const messageInput = document.getElementById('messageInput');
+            if (messageInput) {
+                messageInput.focus();
+            }
+        });
+    </script>
     <script>
         $wire.on('scrollToBottom', () => {
             const scrollArea = document.querySelector('#scrollArea');
@@ -190,18 +206,14 @@ fetch('/broadcast-offline', {
   window.location.href = '/login';
 });
 
-$wire.on('closeReply', () => {
-    setTimeout(() => {
-        $wire.set('replyTo', null);
-    }, 3000);
-});
+
     </script>
     @endscript
 
 
     <livewire:chat.modals.edit-group-modal :conversation="$conversation" :key="$conversation->id">
         <livewire:chat.modals.confirm-delete />
-        <livewire:chat.modals.edit-message />
+        {{-- <livewire:chat.modals.edit-message /> --}}
         <livewire:chat.modals.copied-message-modal />
         <livewire:chat.modals.forward-message-modal />
         <livewire:chat.modals.reply-message-modal />

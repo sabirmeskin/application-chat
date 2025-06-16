@@ -79,7 +79,9 @@ class Chatbox extends Component
             $messageText
         );
         // $this->messages[] = $newMessage;
-        $this->replyBox = false; // Hide reply box after sending
+        if ($this->replyTo) {
+            $this->dispatch('cancelReply');
+        }
         // $this->replyTo = null; // Reset reply after sending
 
         $this->dispatch('messageSent', [$this->conversation, $newMessage]);
