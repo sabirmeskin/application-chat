@@ -78,15 +78,13 @@ class Chatbox extends Component
             $parentMessageId,
             $messageText
         );
+        $this->dispatch('messageSent', [$this->conversation, $newMessage]);
+        $this->dispatch('scrollToBottom');
         // $this->messages[] = $newMessage;
         if ($this->replyTo) {
             $this->dispatch('cancelReply');
         }
-        // $this->replyTo = null; // Reset reply after sending
 
-        $this->dispatch('messageSent', [$this->conversation, $newMessage]);
-        $this->dispatch('scrollToBottom');
-        // broadcast(new MessageReadEvent($newMessage , Auth::id()))->toOthers();
 
     }
     public function loadMessages()
@@ -120,15 +118,9 @@ class Chatbox extends Component
         $index = $this->messages->search(fn($m) => $m->id == $messageId);
 
         if ($index !== false) {
-            // If the message is found, mark it as read
-            // and update the message in the array
-
 
             $message = Message::find($messageId);
-
             $message->markAsRead(User::find($userId)); // Make sure you're passing the right user
-
-
             $this->dispatch('messageReadRefresh');
         }
     }
@@ -273,10 +265,15 @@ class Chatbox extends Component
 
         $this->replyTo = Message::find($messageId)->id;
     }
-
+    /**
+     * Cancel the reply to a message.
+     *
+     * This method resets the replyTo property to null,
+     * effectively canceling any ongoing reply action.
+     */
     public function cancelReply()
     {
-        $this->replyBox = false;
+
         $this->replyTo = null;
     }
 
@@ -291,27 +288,27 @@ class Chatbox extends Component
             "echo-private:read.{$this->conversation->id},MessageReadEvent"        => 'handleMessageRead',
 
             // Typing indicator in this conversation
-            "echo-private:typing.{$this->conversation->id},TypingEvent"             => 'handleTypingEvent',
+            "echo-private:typing.{$this->conversation->id},TypingEvent"           => 'handleTypingEvent',
 
             // A message was deleted in this conversation
-            "echo-private:message,MessageDeletedEvent"     => 'handleMessageDeleted',
+            "echo-private:message,MessageDeletedEvent"                            => 'handleMessageDeleted',
 
             // A message was edited in this conversation
             "echo-private:chat.{$this->conversation->id},MessageEditedEvent"      => 'handleMessageEdited',
 
             // Forwarded messages arrive on *your* user channel
-            "echo-private:message,MessageForwardedEvent"         => 'onMessageForwarded',
+            "echo-private:message,MessageForwardedEvent"                          => 'onMessageForwarded',
 
             // Livewire-dispatched events (e.g. from modal)
-            'messageDeleted'                                                     => 'messageDeleted',
-            'editMessage'                                                        => 'editMessage',
+            'messageDeleted'                                                      => 'messageDeleted',
+            'editMessage'                                                         => 'editMessage',
 
             // Presence (online users) — adjust channel name if yours differs
-            'echo-presence:user-status,here'                                     => 'userListUpdated',
-            'echo-presence:user-status,joining'                                  => 'userJoined',
-            'echo-presence:user-status,leaving'                                  => 'userLeft',
-            'replyMessage'                                                       => 'setReplyTo',
-            'cancelReply'                                                       => 'cancelReply',
+            'echo-presence:user-status,here'                                      => 'userListUpdated',
+            'echo-presence:user-status,joining'                                   => 'userJoined',
+            'echo-presence:user-status,leaving'                                   => 'userLeft',
+            'replyMessage'                                                        => 'setReplyTo',
+            'cancelReply'                                                         => 'cancelReply',
         ];
     }
 }

@@ -147,7 +147,7 @@
         <div class="flex flex-col w-full relative">
 
             @if ($replyTo)
-            <div class="my-2 w-1/2 flex items-center flex-row" wire:key='replyBox-{{ $replyTo }}'>
+            <div class="my-2 w-1/2 flex items-center flex-row" wire:key='replyBox-{{ $replyTo }}' id="replyBox">
                 <livewire:chat.components.features.reply wire:key='reply-{{ $replyTo }}' :message_id="$replyTo" />
                 <flux:button icon="x" variant="ghost" class="ml-2" wire:click="$dispatch('cancelReply')" />
             </div>
@@ -176,22 +176,30 @@
                 messageInput.focus();
             }
         });
-    </script>
-    <script>
-        $wire.on('scrollToBottom', () => {
+        $wire.on('cancelReply', () => {
+            setTimeout(() => {
+                const replyBox = document.getElementById('replyBox');
+                if (replyBox) {
+                    replyBox.remove();
+                }
+            }, 1000);
+        });
+               $wire.on('scrollToBottom', () => {
             const scrollArea = document.querySelector('#scrollArea');
+            // Ensure the scrollArea exists before trying to scroll
+
             if (scrollArea) {
                 setTimeout(() => {
                     scrollArea.scrollTo({
                     top: scrollArea.scrollHeight,
                     behavior: 'smooth'
                 });
-                }, 100);
+                }, 200);
             }
         });
 
-
     </script>
+
     <script>
         // When session expires detected (e.g., 419)
 window.Echo.leave('user-status'); // Leave the presence channel
