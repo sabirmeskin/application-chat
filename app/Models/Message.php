@@ -80,5 +80,8 @@ class Message extends Model implements HasMedia
         return $this->created_at->format('h:i');
     }
 
-
+    public function hasParent()
+    {
+        return !is_null($this->parent_id);
+    }
 }

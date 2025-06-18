@@ -3,7 +3,7 @@
 namespace App\Livewire\Chat;
 
 use App\Events\MessageReadEvent;
-
+use App\Events\MessageReplyEvent;
 use App\Events\TypingEvent;
 
 use App\Models\Message;
@@ -68,6 +68,7 @@ class Chatbox extends Component
         $messageText = $this->message;
         $this->message = '';
         $this->stopTyping();
+
         if (trim($messageText) === '') {
             return;
         }
@@ -78,6 +79,11 @@ class Chatbox extends Component
             $parentMessageId,
             $messageText
         );
+        // dd($newMessage);
+        // $this->messages[] = $newMessage;
+        $this->replyBox = false; // Hide reply box after sending
+        // $this->replyTo = null; // Reset reply after sending
+
         $this->dispatch('messageSent', [$this->conversation, $newMessage]);
         $this->dispatch('scrollToBottom');
         // $this->messages[] = $newMessage;
@@ -96,7 +102,7 @@ class Chatbox extends Component
             ->get()->reverse();
 
         $this->dispatch('scrollToBottom');
-
+        // dd($this->messages);
         // broadcast(new MessageReadEvent($lastmessage , Auth::id()))->toOthers();
 
     }

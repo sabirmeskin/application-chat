@@ -33,7 +33,7 @@ class UserStatusEvent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('user-status.' . $this->user->id),
+            // new PrivateChannel('user-status.' . $this->user->id),
             new PresenceChannel('user-status'),
 
         ];

@@ -27,8 +27,49 @@
             @endif
 
 
-            <div class="w-full flex space-x-2 justify-end">
-                <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">{{$message->timestamp()}}</span>
+                <div
+                    class="felx flex-col  min-w-[100px] max-w-[420px] leading-1.5 px-4 py-2 border-gray-100 bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-gray-800">
+                    <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                        <span
+                            class="text-sm font-semibold text-gray-900 dark:text-white {{ !$avatarOn ? 'hidden' : '' }}">{{$message->sender->name}}</span>
+                    </div>
+                    {{-- <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{$message->body}}</p> --}}
+                    @php
+                    $mime = $message->getFirstMedia('attachments')?->mime_type;
+                    @endphp
+
+                    @if(Str::startsWith($mime, 'image/'))
+                    <livewire:chat.components.mimes.image :message="$message" />
+                    @else
+                    <livewire:chat.components.mimes.document :message="$message" />
+                    @endif
+
+
+                    <div class="w-full flex space-x-2 justify-end">
+                        <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">{{$message->timestamp()}}</span>
+                    </div>
+
+                </div>
+
+                <flux:dropdown style="display: flex; align-items: center;" class="my-auto">
+                    <flux:button icon="ellipsis-vertical" variant="ghost" class="ml-auto mr-2" />
+                    <flux:menu>
+                        <flux:menu.item
+                        icon="forward"
+                        x-data="{ messageId: {{ $message->id }} }"
+                        x-on:click="$wire.dispatch('forwardMessage', [messageId])"
+                        >Transférer</flux:menu.item>
+                        <flux:menu.item icon="pencil">Modifier</flux:menu.item>
+                        <flux:menu.item icon="reply"
+                        x-data="{ messageId: {{ $message->id }} }"
+                            x-on:click="$wire.dispatch('replyMessage', [messageId])"
+                            >Répondre</flux:menu.item>
+                        <flux:menu.item icon="copy">Copier</flux:menu.item>
+                        {{-- <flux:modal.trigger name="delete-profile">
+                        <flux:menu.item variant="danger" icon="trash">Supprimer</flux:menu.item>
+                        </flux:modal.trigger> --}}
+                    </flux:menu>
+                </flux:dropdown>
             </div>
 
         </div>
@@ -55,6 +96,11 @@
     </div>
 
     @else
+       @if ($message->hasParent())
+                <flux:avatar name="{{$message->sender->name}}" color="auto" class="ml-2 {{ !$avatarOn ? 'opacity-0' : '' }}"
+                    circle />
+                <livewire:chat.components.features.replied-message :message="$message" />
+            @else
     <div class="flex justify-end gap-2 px-4 py-2 ">
         <flux:dropdown style="display: flex; align-items: center;">
             <flux:button icon="ellipsis-vertical" variant="ghost" class="ml-auto mr-2" />
@@ -111,6 +157,7 @@
             circle />
 
     </div>
+        @endif
     @endif
 
 
