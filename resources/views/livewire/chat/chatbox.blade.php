@@ -224,7 +224,6 @@ fetch('/broadcast-offline', {
         {{-- <livewire:chat.modals.edit-message /> --}}
         <livewire:chat.modals.copied-message-modal />
         <livewire:chat.modals.forward-message-modal />
-        <livewire:chat.modals.reply-message-modal />
 
 
 </div>
