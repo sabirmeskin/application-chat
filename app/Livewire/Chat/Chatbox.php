@@ -53,9 +53,7 @@ class Chatbox extends Component
         $this->reset('file');
         // $this->replyTo = null; // Reset reply after sending
         $this->replyBox = false; // Hide reply box after sending
-        if ($this->replyTo) {
-            $this->dispatch('cancelReply');
-        }
+
 
 
         $this->dispatch('messageSent', [$this->conversation, $message]);

@@ -75,11 +75,11 @@
             @if ($message->type === 'media')
 
 
-
+            @unless($message->deleted_at)
             <livewire:chat.components.media-message
                 :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
                 :message="$message" :wire:key="'message-'.$message->id" />
-
+            @endunless
             @else
             {{--
             <livewire:chat.components.message-bubble
@@ -204,7 +204,7 @@ $wire.on('closeReply', () => {
         <livewire:chat.modals.edit-message />
         <livewire:chat.modals.copied-message-modal />
         <livewire:chat.modals.forward-message-modal />
-        <livewire:chat.modals.reply-message-modal />
+        {{-- <livewire:chat.modals.reply-message-modal /> --}}
 
 
 </div>

@@ -9,7 +9,7 @@
                         $media = $message->getFirstMedia('attachments');
                         $mimeType = $media ? $media->mime_type : null;
                     @endphp
-                    <span class="text-xs text-gray-400 dark:text-gray-500">{{ $mimeType }}</span>
+                    <span class="text-xs text-gray-400 dark:text-gray-500">{{ Str::limit($mimeType, 15) }}</span>
                 @else
                     <div class="text-gray-700 dark:text-gray-300 text-xs">
                         {{ Str::limit($message->body, 30) }}
@@ -25,7 +25,7 @@
                     @elseif(Str::startsWith($mimeType, 'application/') || Str::startsWith($mimeType, 'text/'))
                         <div  class="flex items-center space-x-2 ">
                             <flux:icon.file size="8" class="text-gray-500 dark:text-gray-400" />
-                            <span class="truncate max-w-xs">
+                            <span class="text-xs text-gray-700 dark:text-gray-300">
                                 {{ $media->file_name }}
                             </span>
                         </div>
