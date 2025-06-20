@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Conversation;
+use App\Models\Message;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Broadcast;
 
@@ -65,3 +66,11 @@ Broadcast::channel('message', function ($user) {
     return $user->id === Auth::id();
 });
 
+
+
+Broadcast::channel('EditMessage.{conversationId}',function($user , $conversationId) {
+    return $user->conversations()->whereHas('participants', function ($q) use ($conversationId) {
+        $q->where('conversation_id', $conversationId);
+    })->exists();
+
+});

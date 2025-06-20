@@ -17,6 +17,12 @@
             <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{$message->body}}</p>
                     <div class="w-full flex space-x-2 justify-end">
                 <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">{{$message->timestamp()}}</span>
+                                        @if ($message->edited_at)
+                                            <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">
+                                                Édité le : {{ \Carbon\Carbon::parse($message->edited_at)->format('H:i') }}
+                                            </span>
+                                        @endif
+
                     </div>
 
                 </div>
@@ -99,8 +105,13 @@
                     </div>
 
             <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{$message->body}}</p>
-                    <div class="w-full flex justify-between">
+                    <div class="w-full flex justify-between space-x-1.5">
                 <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">{{$message->timestamp()}}</span>
+                          @if ($message->edited_at)
+                                            <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ">
+                                                Édité le : {{ \Carbon\Carbon::parse($message->edited_at)->format('H:i') }}
+                                            </span>
+                             @endif
                         @if (!$message->conversation->isGroup())
                             @if ($message->status == 'read')
                                 <flux:icon icon="check-check" variant="micro" />
