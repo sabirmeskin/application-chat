@@ -216,4 +216,24 @@ class ConversationService
         return $conversation;
     }
 
+    public function deleteconversationForUser(User $user, Conversation $conversation): bool
+    {
+        // Check if the user is a participant in the conversation
+        $participant = ConversationParticipant::where('conversation_id', $conversation->id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$participant) {
+            return false; // User is not a participant, cannot delete
+        }
+
+        // Delete the conversation and its participants
+        DB::transaction(function () use ($conversation) {
+            $conversation->messages()->delete();
+            $conversation->participants()->delete();
+            $conversation->delete();
+        });
+
+        return true;
+    }
 }

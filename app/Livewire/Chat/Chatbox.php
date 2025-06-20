@@ -79,14 +79,10 @@ class Chatbox extends Component
             $parentMessageId,
             $messageText
         );
-        // dd($newMessage);
-        // $this->messages[] = $newMessage;
         $this->replyBox = false; // Hide reply box after sending
-        // $this->replyTo = null; // Reset reply after sending
-
         $this->dispatch('messageSent', [$this->conversation, $newMessage]);
         $this->dispatch('scrollToBottom');
-        // broadcast(new MessageReadEvent($newMessage , Auth::id()))->toOthers();
+
 
     }
     public function loadMessages()
@@ -98,9 +94,7 @@ class Chatbox extends Component
             ->get()->reverse();
 
         $this->dispatch('scrollToBottom');
-        // dd($this->messages);
-        // broadcast(new MessageReadEvent($lastmessage , Auth::id()))->toOthers();
-
+     
     }
 
 

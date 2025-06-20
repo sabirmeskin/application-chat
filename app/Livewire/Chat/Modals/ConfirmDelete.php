@@ -17,6 +17,10 @@ class ConfirmDelete extends Component
         if (!$this->message) {
             return;
         }
+        if ($this->message->hasMedia()) {
+           dd('This message has media attached. Please delete the media first.');
+            return;
+        }
         $this->message->delete();
         $this->dispatch('messageDeleted', $this->message);
         broadcast(new MessageDeletedEvent($this->message))->toOthers();
