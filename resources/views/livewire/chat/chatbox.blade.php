@@ -46,11 +46,17 @@
                 <flux:menu.separator />
                 <flux:menu.item wire:click="test" icon="user-x">Quitter la Conversation</flux:menu.item>
                 <flux:menu.separator />
-                <flux:menu.item variant="danger" icon="trash">Delete</flux:menu.item>
+                <flux:menu.item variant="danger" icon="trash">Supprimer</flux:menu.item>
             </flux:menu>
         </flux:dropdown>
         @else
+        <flux:dropdown>
         <flux:button icon="circle-chevron-down" variant="ghost" class="ml-auto mr-2" />
+        <flux:menu>
+
+            <flux:menu.item variant="danger" icon="trash">Supprimer</flux:menu.item>
+        </flux:menu>
+        </flux:dropdown>
         @endif
 
     </flux:header>
