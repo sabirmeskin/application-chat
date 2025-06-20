@@ -49,7 +49,8 @@
                 <flux:menu.item variant="danger" icon="trash">Delete</flux:menu.item>
             </flux:menu>
         </flux:dropdown>
-
+        @else
+        <flux:button icon="circle-chevron-down" variant="ghost" class="ml-auto mr-2" />
         @endif
 
     </flux:header>
@@ -81,20 +82,7 @@
                 :message="$message" :wire:key="'message-'.$message->id" />
             @endunless
             @else
-            {{--
-            <livewire:chat.components.message-bubble
-                :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
-                :message="$message" :wire:key="'message-'.$message->id" /> --}}
-            {{-- <livewire:chat.components.message-bubble
-                :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
-                :message="$message" :wire:key="'message-'.$message->id" @class(['hidden'=>
-                !is_null($message->deleted_at)])
-                /> --}}
-                {{--
-                <livewire:chat.components.message-bubble
-                    :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
-                    :message="$message" :style="!is_null($message->deleted_at) ? 'visibility: hidden;' : ''"
-                    :wire:key="'message-'.$message->id" /> --}}
+
                 @unless($message->deleted_at)
                 <livewire:chat.components.message-bubble
                     :avatarOn="$index === 0 || (!empty($messages[$index - 1]) && $messages[$index - 1]->sender_id !== $message->sender_id)"
@@ -152,7 +140,7 @@
             </div>
             @endif
 
-            <flux:input placeholder="Taper votre message" icon-trailing="send" clearable wire:model="message"
+            <flux:input placeholder="Taper votre message" icon-trailing="send" clearable wire:model="message" id="messageInput"
                 autocomplete="off" wire:keyup.debounce.1000ms="startTyping" />
         </div>
         <flux:button type="submit" variant="primary">
@@ -171,6 +159,18 @@
                     behavior: 'smooth'
                 });
                 }, 100);
+            }
+        });
+        $wire.on('replyMessage', () => {
+            const messageInput = document.querySelector('#messageInput');
+            if (messageInput) {
+                messageInput.focus();
+            }
+        })
+        $wire.on('editMessage', (messageId) => {
+            const messageInput = document.querySelector('#messageInput');
+            if (messageInput) {
+                messageInput.focus();
             }
         });
 
@@ -201,10 +201,10 @@ $wire.on('closeReply', () => {
 
     <livewire:chat.modals.edit-group-modal :conversation="$conversation" :key="$conversation->id">
         <livewire:chat.modals.confirm-delete />
-        <livewire:chat.modals.edit-message />
+        {{-- <livewire:chat.modals.edit-message /> --}}
         <livewire:chat.modals.copied-message-modal />
         <livewire:chat.modals.forward-message-modal />
-        {{-- <livewire:chat.modals.reply-message-modal /> --}}
+
 
 
 </div>
