@@ -56,7 +56,14 @@ class MessageBubble extends Component
     #[On('messageReadRefresh')]
     public function handleMessageReadRefresh()
     {
-
        $this->message -> refresh();
     }
+
+    #[On('messageEdited')]
+    public function handleMessageEdited()
+    {
+        // This method is triggered when a message is edited
+        $this->message->refresh();
+    }
+
 }

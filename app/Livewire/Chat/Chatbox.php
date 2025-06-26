@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Chat;
 
+use App\Events\MessageEditedEvent;
 use App\Events\MessageReadEvent;
 use App\Events\MessageReplyEvent;
 use App\Events\TypingEvent;
@@ -30,7 +31,8 @@ class Chatbox extends Component
     public $onlineUsers = [];
     public $replyBox = false;
     public $replyTo;
-
+    public $editMode = false;
+    public $editMessageId = null;
 
     public function updatedFile()
     {
@@ -216,14 +218,64 @@ class Chatbox extends Component
             return;
         }
         $message = Message::find($messageId);
+        if (! $message) {
+            return;
+        }
+        $this->editMessageId = $messageId;
         $this->message = $message->body;
-        $message->update([
-            'edited_at' => now(),
+        $this->editMode = true;
+    }
+    public function cancelEdit()
+    {
+        $this->message = '';
+        $this->editMode = false;
 
-        ]);
+        $this->replyTo = null; // Reset reply after canceling edit
     }
 
+    public function updateMessage($messageId)
+    {
 
+        if (!$messageId || !$this->message) {
+            return;
+        }
+        if (trim($this->message) === '') {
+            return;
+        }
+        $message = Message::find($messageId);
+        if (!$message) {
+            return;
+        }
+        $this->messageService = MessageService::getInstance();
+        $message = $this->messageService->editMessage($message, $this->message);
+        // Update the message in the messages array
+        $this->dispatch('messageEdited', $message);
+        broadcast(new MessageEditedEvent($message))->toOthers();
+        $this->message = '';
+        $this->editMessageId = null;
+        $this->editMode = false;
+        $this->replyTo = null;
+
+    }
+
+    public function handleMessageEdited($event)
+    {
+        $message = $event['message'];
+        $messageId = $message['id'] ?? null;
+
+        if (!$messageId) {
+            return;
+        }
+
+        // Find the message in the current messages array
+        $index = $this->messages->search(fn($m) => $m->id == $messageId);
+
+        if ($index !== false) {
+            // If the message is found, update it
+            $this->messages[$index] = Message::find($messageId);
+            $this->dispatch('messageEdited', $this->messages[$index]);
+        }
+    }
 
     public function userListUpdated(array $users)
     {
@@ -283,16 +335,16 @@ class Chatbox extends Component
             "echo-private:read.{$this->conversation->id},MessageReadEvent"        => 'handleMessageRead',
 
             // Typing indicator in this conversation
-            "echo-private:typing.{$this->conversation->id},TypingEvent"             => 'handleTypingEvent',
+            "echo-private:typing.{$this->conversation->id},TypingEvent"           => 'handleTypingEvent',
 
             // A message was deleted in this conversation
-            "echo-private:message,MessageDeletedEvent"     => 'handleMessageDeleted',
+            "echo-private:message,MessageDeletedEvent"                            => 'handleMessageDeleted',
 
             // A message was edited in this conversation
-            "echo-private:chat.{$this->conversation->id},MessageEditedEvent"      => 'handleMessageEdited',
+            "echo-private:EditMessage.{$this->conversation->id},MessageEditedEvent"      => 'handleMessageEdited',
 
             // Forwarded messages arrive on *your* user channel
-            "echo-private:message,MessageForwardedEvent"         => 'onMessageForwarded',
+            "echo-private:message,MessageForwardedEvent"                         => 'onMessageForwarded',
 
             // Livewire-dispatched events (e.g. from modal)
             'messageDeleted'                                                     => 'messageDeleted',
@@ -303,7 +355,7 @@ class Chatbox extends Component
             'echo-presence:user-status,joining'                                  => 'userJoined',
             'echo-presence:user-status,leaving'                                  => 'userLeft',
             'replyMessage'                                                       => 'setReplyTo',
-            'cancelReply'                                                       => 'cancelReply',
+            'cancelReply'                                                        => 'cancelReply',
         ];
     }
 }

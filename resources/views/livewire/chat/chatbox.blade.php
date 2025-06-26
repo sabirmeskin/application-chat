@@ -46,11 +46,17 @@
                 <flux:menu.separator />
                 <flux:menu.item wire:click="test" icon="user-x">Quitter la Conversation</flux:menu.item>
                 <flux:menu.separator />
-                <flux:menu.item variant="danger" icon="trash">Delete</flux:menu.item>
+                <flux:menu.item variant="danger" icon="trash">Supprimer</flux:menu.item>
             </flux:menu>
         </flux:dropdown>
         @else
+        <flux:dropdown>
         <flux:button icon="circle-chevron-down" variant="ghost" class="ml-auto mr-2" />
+        <flux:menu>
+
+            <flux:menu.item variant="danger" icon="trash">Supprimer</flux:menu.item>
+        </flux:menu>
+        </flux:dropdown>
         @endif
 
     </flux:header>
@@ -122,31 +128,45 @@
 
 
 
-    <form wire:submit.prevent="sendMessage" x-on:submit.debounce.500ms
-        class="flex w-full items-center justify-center justify-between px-4 py-4 shadow-lg border-t border-zinc-800/5 dark:border-white/10 gap-5">
-        {{--
-        <flux:button icon="paperclip" variant="primary" class="px-2" /> --}}
-        <div x-data="{ triggerFileInput() { $refs.fileInput.click(); } }" class="relative">
-            <flux:button icon="paperclip" variant="primary" class="px-2" x-on:click="triggerFileInput()" />
-            <input type="file" x-ref="fileInput" wire:model="file" class="hidden"
-                accept="image/*,application/pdf,application/msword,.doc,.docx" />
-        </div>
-        <div class="flex flex-col w-full relative">
-
-            @if ($replyTo)
-            <div class="my-2 w-1/2 flex items-center flex-row" wire:key='replyBox-{{ $replyTo }}'>
-                <livewire:chat.components.features.reply wire:key='reply-{{ $replyTo }}' :message_id="$replyTo" />
-                <flux:button icon="x" variant="ghost" class="ml-2" wire:click="$dispatch('cancelReply')" />
+    @if ($editMode)
+        <form wire:submit.prevent="updateMessage({{ $editMessageId }})" x-on:submit.debounce.500ms
+            class="flex w-full items-center justify-center justify-between px-4 py-4 shadow-lg border-t border-zinc-800/5 dark:border-white/10 gap-5">
+            <div class="flex flex-col w-full relative">
+            <flux:input placeholder="Modifier votre message" icon-trailing="pencil" clearable wire:model="message" id="messageEdit"
+                autocomplete="off" />
             </div>
-            @endif
+            <flux:button type="submit" variant="primary">
+            Modifier
+            </flux:button>
+            <flux:button type="button" variant="filled" class="ml-2" wire:click="cancelEdit">
+            Annuler
+            </flux:button>
+        </form>
+    @else
+        <form wire:submit.prevent="sendMessage" x-on:submit.debounce.500ms
+            class="flex w-full items-center justify-center justify-between px-4 py-4 shadow-lg border-t border-zinc-800/5 dark:border-white/10 gap-5">
+            <div x-data="{ triggerFileInput() { $refs.fileInput.click(); } }" class="relative">
+                <flux:button icon="paperclip" variant="primary" class="px-2" x-on:click="triggerFileInput()" />
+                <input type="file" x-ref="fileInput" wire:model="file" class="hidden"
+                    accept="image/*,application/pdf,application/msword,.doc,.docx" />
+            </div>
+            <div class="flex flex-col w-full relative">
 
-            <flux:input placeholder="Taper votre message" icon-trailing="send" clearable wire:model="message" id="messageInput"
-                autocomplete="off" wire:keyup.debounce.1000ms="startTyping" />
-        </div>
-        <flux:button type="submit" variant="primary">
-            Envoyer
-        </flux:button>
-    </form>
+                @if ($replyTo)
+                <div class="my-2 w-1/2 flex items-center flex-row" wire:key='replyBox-{{ $replyTo }}'>
+                    <livewire:chat.components.features.reply wire:key='reply-{{ $replyTo }}' :message_id="$replyTo" />
+                    <flux:button icon="x" variant="ghost" class="ml-2" wire:click="$dispatch('cancelReply')" />
+                </div>
+                @endif
+
+                <flux:input placeholder="Taper votre message" icon-trailing="send" clearable wire:model="message" id="messageInput"
+                    autocomplete="off" wire:keyup.debounce.1000ms="startTyping" />
+            </div>
+            <flux:button type="submit" variant="primary">
+                Envoyer
+            </flux:button>
+        </form>
+    @endif
 
     @script
     <script>
@@ -168,10 +188,12 @@
             }
         })
         $wire.on('editMessage', (messageId) => {
-            const messageInput = document.querySelector('#messageInput');
-            if (messageInput) {
-                messageInput.focus();
-            }
+            setTimeout(() => {
+                const messageInput = document.querySelector('#messageEdit');
+                if (messageInput) {
+                    messageInput.focus();
+                }
+            }, 500);
         });
 
 

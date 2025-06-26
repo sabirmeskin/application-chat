@@ -69,6 +69,7 @@ class MessageService
     {
         $message->update([
             'body' => $body,
+            'edited_at' => now(),
         ]);
         return $message;
     }
