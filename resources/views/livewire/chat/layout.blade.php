@@ -1,7 +1,7 @@
 <div x-data="{
     sidebarOpen: window.innerWidth >= 768,
     loading: true
-}"
+        }"
      x-init="setTimeout(() => loading = false, 1000)"
      class="h-full">
 
@@ -14,6 +14,7 @@
             </div>
          </div>
     </div>
+
     <!-- Main Content (displayed after loading) -->
     <div x-show="!loading" class="flex h-full relative " >
         <!-- Sidebar - hidden on small screens (md:), visible on medium+ -->
@@ -55,6 +56,9 @@
                     </div>
                 @endif
             </div>
+            
         </div>
+
     </div>
+    
 </div>

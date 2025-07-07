@@ -71,6 +71,43 @@ class ConversationService
         return $conversation;
 
     }
+    
+    public function findOrCreateConversation(User $sender, User $receiver): Conversation
+    {
+        // First, check if a soft-deleted conversation exists between these users
+        $existing = Conversation::whereHas('participants', function ($q) use ($sender) {
+                $q->where('user_id', $sender->id);
+            })
+            ->whereHas('participants', function ($q) use ($receiver) {
+                $q->where('user_id', $receiver->id);
+            })
+            ->where('is_group', false)
+            ->first();
+
+        if ($existing) {
+            // Restore soft-deleted pivot if needed
+            foreach ([$sender, $receiver] as $user) {
+                $existing->participants()->updateExistingPivot($user->id, [
+                    'deleted_at' => null
+                ]);
+            }
+
+            return $existing;
+        }
+
+        // Else, create new conversation
+        $conversation = Conversation::create([
+            'is_group' => false,
+            'created_by' => $sender->id,
+        ]);
+
+        $conversation->participants()->attach([
+            $sender->id => ['deleted_at' => null],
+            $receiver->id => ['deleted_at' => null],
+        ]);
+
+        return $conversation;
+    }
 
     public function createGroupConversation($name,User $admin, array $users,$encrypted = false):Conversation
     {
@@ -112,34 +149,22 @@ class ConversationService
 
         return $conversation;
     }
-    public function getConversationsForUser(User $user, $includeArchived = false): Collection
+    public function getConversationsForUser(User $user, bool $includeDeleted = false)
     {
-        $query = Conversation::query()
-            ->whereHas('participants', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            });
+        return Conversation::whereHas('participants', function ($q) use ($user, $includeDeleted) {
+            $q->where('user_id', $user->id);
 
-        if ($includeArchived) {
-            $query->orWhereHas('archivedConversations', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            });
-        }
-
-        $conversations = $query->with(['participants', 'messages'])
-            ->leftJoinSub(
-                Message::query()
-                    ->select('conversation_id', DB::raw('MAX(created_at) as last_message_at'))
-                    ->groupBy('conversation_id'),
-                'latest_messages',
-                'conversations.id',
-                '=',
-                'latest_messages.conversation_id'
-            )
-            ->orderByDesc('last_message_at')
-            ->get();
-
-        return $conversations;
+            if (! $includeDeleted) {
+                $q->whereNull('deleted_at'); // 💥 filter out deleted conversations
+            }
+        })
+        ->with(['participants' => function ($q) {
+            $q->whereNull('deleted_at'); // Optional: exclude deleted participants from the participant list
+        }, 'lastMessage'])
+        ->latest('updated_at')
+        ->get();
     }
+
     public function getConversationWithMessages(Conversation $conversation,$int):Conversation
     {
         $conversation = Conversation::with(['messages' => function ($query) use ($int) {
@@ -216,24 +241,38 @@ class ConversationService
         return $conversation;
     }
 
-    public function deleteconversationForUser(User $user, Conversation $conversation): bool
-    {
-        // Check if the user is a participant in the conversation
-        $participant = ConversationParticipant::where('conversation_id', $conversation->id)
-            ->where('user_id', $user->id)
-            ->first();
+    // public function deleteconversationForUser(User $user, Conversation $conversation): bool
+    // {
+    //     // Check if the user is a participant in the conversation
+    //     $participant = ConversationParticipant::where('conversation_id', $conversation->id)
+    //         ->where('user_id', $user->id)
+    //         ->first();
 
-        if (!$participant) {
-            return false; // User is not a participant, cannot delete
-        }
+    //     if (!$participant) {
+    //         return false; // User is not a participant, cannot delete
+    //     }
 
-        // Delete the conversation and its participants
-        DB::transaction(function () use ($conversation) {
-            $conversation->messages()->delete();
-            $conversation->participants()->delete();
-            $conversation->delete();
-        });
+    //     // Delete the conversation and its participants
+    //     DB::transaction(function () use ($conversation) {
+    //         $conversation->messages()->delete();
+    //         $conversation->participants()->delete();
+    //         $conversation->delete();
+    //     });
 
-        return true;
+    //     return true;
+    // }
+    public function deleteConversationForUser(User $user, Conversation $conversation): bool
+{
+    $participant = ConversationParticipant::where('conversation_id', $conversation->id)
+        ->where('user_id', $user->id)
+        ->first();
+
+    if (!$participant) {
+        return false; // not a participant
     }
+
+    $participant->deleted_at = now();
+    return $participant->save();
+}
+
 }

@@ -38,11 +38,27 @@ class Sidebar extends Component
 
     }
 
+    public function removeConversation($conversationId)
+    {
+        $this->conversations = collect($this->conversations)
+            ->reject(fn($c) => $c->id == $conversationId)
+            ->values();
+    }
+    
+    public function refreshConversations()
+    {
+        dd('refreshConversations');
+        $this->loadConversations();
+    }
+
     public function getListeners()
     {
         $userId =  Auth::id();
        return [
         'echo:private-conversation,ConversationCreatedEvent' => 'updateConversations',
+        'conversationDeleted' => 'removeConversation',
+        "echo-private:chat-sidebar.{$userId},UserRejoinedConversationEvent" => 'refreshConversations',
+
        ];
     }
    
@@ -59,16 +75,64 @@ class Sidebar extends Component
 
     }
 
+    // public function updateConversations($event)
+    // {
+
+    //     $newConversation = Conversation::find($event['conversation']['id']);
+    //     dd($newConversation->participants);
+    //     if ($newConversation->isParticipant(Auth::user()) &&
+    //         !collect($this->conversations)->contains('id', $newConversation->id)) {
+    //         $this->conversations[] = $newConversation;
+
+    //     }
+    // }
     public function updateConversations($event)
-    {
+{
+    $conversationId = $event['conversation']['id'] ?? null;
 
-        $newConversation = Conversation::find($event['conversation']['id']);
-        if ($newConversation->isParticipant(Auth::user()) &&
-            !collect($this->conversations)->contains('id', $newConversation->id)) {
-            $this->conversations[] = $newConversation;
-
-        }
+    if (! $conversationId) {
+        return;
     }
+
+    $conversation = Conversation::with('participants')->find($conversationId);
+    if (! $conversation) {
+        return;
+    }
+
+    $user = Auth::user();
+
+    // Check if the user is a participant (even if soft-deleted)
+    $participant = $conversation->participants()
+        ->where('user_id', $user->id)
+        ->withPivot('deleted_at')
+        ->first();
+
+    if (! $participant) {
+        return; // User is not part of the conversation
+    }
+
+    // If user was soft-deleted from conversation, restore them
+    if ($participant->pivot->deleted_at !== null) {
+        $conversation->participants()->updateExistingPivot($user->id, [
+            'deleted_at' => null,
+        ]);
+
+        \App\Models\ConversationUserLog::create([
+            'conversation_id' => $conversation->id,
+            'user_id' => $user->id,
+            'action' => 'rejoined',
+            'action_at' => now(),
+            'note' => 'Rejoined via ConversationCreatedEvent',
+        ]);
+    }
+
+    // Add to local conversation list if it's not already included
+    if (! collect($this->conversations)->contains('id', $conversation->id)) {
+        $this->conversations[] = $conversation;
+    }
+}
+
+
 
 
     public function render()

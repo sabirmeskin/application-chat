@@ -1,5 +1,5 @@
 <div class="h-screen w-full flex flex-col" wire.loading.class="opacity-50">
-
+    @if (! $conversation->isDeletedForUser())
     <flux:header
         class="flex w-full items-center justify-between px-4 py-4 shadow-lg m-0 sticky border-b border-zinc-800/5 dark:border-white/10">
         <div class=" ml-5 flex items-center justify-between gap-5">
@@ -29,7 +29,9 @@
 
             @else
 
-            <livewire:Chat.Components.status :conversation="$conversation" />
+
+                 <livewire:Chat.Components.status :conversation="$conversation" />
+
 
             @endif
 
@@ -54,7 +56,10 @@
         <flux:button icon="circle-chevron-down" variant="ghost" class="ml-auto mr-2" />
         <flux:menu>
 
-            <flux:menu.item variant="danger" icon="trash">Supprimer</flux:menu.item>
+            <flux:menu.item variant="danger" icon="trash"
+              x-data="{ conversationId: {{ $conversation->id }} }"
+              x-on:click="$wire.dispatch('deleteConversation', [conversationId])" 
+              >Supprimer *</flux:menu.item>
         </flux:menu>
         </flux:dropdown>
         @endif
@@ -123,6 +128,8 @@
                     class="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-lg animate-bounce [animation-delay:400ms]"></span>
             </div>
         </template>
+    @endif
+
     </div>
 
 

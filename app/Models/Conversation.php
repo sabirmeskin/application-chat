@@ -98,5 +98,14 @@ public function isArchived($userId = null): bool
     $userId = $userId ?? Auth::id();
     return $this->archivedBy()->where('user_id', $userId)->exists();
 }
+public function isDeletedForUser($userId = null)
+{
+    $userId = $userId ?? auth()->id();
+
+    return $this->participants()
+        ->where('user_id', $userId)
+        ->whereNotNull('deleted_at')
+        ->exists();
+}
 
 }
