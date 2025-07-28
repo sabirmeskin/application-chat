@@ -1,17 +1,18 @@
 <div class="h-screen">
-    <flux:sidebar
-        class="border-r h-screen border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 w-90">
+    <flux:sidebar class="border-r h-screen border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 w-90">
         {{-- <flux:sidebar.toggle class="lg:hidden" icon="x-mark" /> --}}
         <div class=" flex items-center space-x-2 rtl:space-x-reverse flex-row" wire:navigate>
             <x-app-logo />
             <flux:dropdown position="bottom" align="end">
                 <flux:button size="sm" icon="ellipsis-vertical" variant="ghost" />
                 <flux:menu class="w-[220px]">
-                    <flux:menu.item icon="user" class="cursor-pointer" x-on:click="$flux.modal('contact-modal').show()">
+                    <flux:menu.item icon="user" class="cursor-pointer"
+                        x-on:click="$flux.modal('contact-modal').show()">
                         {{ __('Créer une nouvelle conversation') }}
                     </flux:menu.item>
                     <flux:menu.separator />
-                    <flux:menu.item icon="users" class="cursor-pointer" x-on:click="$flux.modal('groups-modal').show()">
+                    <flux:menu.item icon="users" class="cursor-pointer"
+                        x-on:click="$flux.modal('groups-modal').show()">
                         {{ __('Créer Un Groupe') }}</flux:menu.item>
                 </flux:menu>
             </flux:dropdown>
@@ -22,12 +23,13 @@
             <flux:navlist.group :heading="__('Conversations Actifs')" class="grid overflow-y-auto overflow-x-hidden"
                 style="scrollbar-width: thin;" x-data="chatSidebar({{ $conversations->pluck('id') }})" x-init="init()">
                 @foreach ($conversations as $conversation)
-                @if (!$conversation->isArchived())
-                <flux:navlist.item class="cursor-pointer" wire:click="toggleActive({{ $conversation->id }})"
-                    :current="$activeId == $conversation->id" :key="'convo'.$conversation->id">
-                    <livewire:chat.components.convo :conversation="$conversation" :key="'convo-'.$conversation->id" />
-                </flux:navlist.item>
-                @endif
+                    @if (!$conversation->isArchived())
+                        <flux:navlist.item class="cursor-pointer" wire:click="toggleActive({{ $conversation->id }})"
+                            :current="$activeId == $conversation->id"
+                            :key="'convo-'.$conversation->id.'-'.now()->timestamp">
+                            <livewire:chat.components.convo :conversation="$conversation" :key="'convo-' . $conversation->id" />
+                        </flux:navlist.item>
+                    @endif
                 @endforeach
             </flux:navlist.group>
         </flux:navlist>
@@ -35,16 +37,15 @@
         <flux:separator />
         <flux:navlist variant="outline" class="overflow-y-auto ">
             <flux:navlist.group expandable :expanded="false" :heading="__('Conversations Archivées')"
-                class="grid overflow-y-auto  overflow-x-hidden" style="scrollbar-width: thin;"
-               >
+                class="grid overflow-y-auto  overflow-x-hidden" style="scrollbar-width: thin;">
                 @foreach ($conversations as $conversation)
-                @if ($conversation->isArchived())
-                <flux:navlist.item class="cursor-pointer" :current="false" class="cursor-pointer"
-                    wire:click="toggleActive({{ $conversation->id }})" :current="$activeId == $conversation->id"
-                    :key="'convo'.$conversation->id">
-                    <livewire:chat.components.convo :conversation="$conversation" :key="'convo-'.$conversation->id" />
-                </flux:navlist.item>
-                @endif
+                    @if ($conversation->isArchived())
+                        <flux:navlist.item class="cursor-pointer" :current="false" class="cursor-pointer"
+                            wire:click="toggleActive({{ $conversation->id }})" :current="$activeId == $conversation->id"
+                            :key="'convo-'.$conversation->id.'-'.now()->timestamp">
+                            <livewire:chat.components.convo :conversation="$conversation" :key="'convo-' . $conversation->id" />
+                        </flux:navlist.item>
+                    @endif
                 @endforeach
             </flux:navlist.group>
         </flux:navlist>
@@ -140,23 +141,28 @@
 
     <script>
         function chatSidebar(conversationIds) {
-    return {
-        init() {
-            conversationIds.forEach(id => {
-                Echo.private(`chat.${id}`)
-                    .listen('MessageSentEvent', (e) => {
-                        Livewire.dispatch('refreshConvo', [id, e.message]);
+            return {
+                init() {
+                    conversationIds.forEach(id => {
+                        Echo.private(`chat.${id}`)
+                            .listen('MessageSentEvent', (e) => {
+                                Livewire.dispatch('refreshConvo', [id, e.message]);
+                            });
                     });
-            });
-            conversationIds.forEach(id => {
-                Echo.private(`conversation.${id}`)
-                    .listen('ConversationUpdatedEvent', (e) => {
-                        Livewire.dispatch('UpdateConvo',[id]);
+                    conversationIds.forEach(id => {
+                        Echo.private(`conversation.${id}`)
+                            .listen('ConversationUpdatedEvent', (e) => {
+                                Livewire.dispatch('UpdateConvo', [id]);
+                            });
                     });
-            });
 
+                }
+            }
         }
-    }
-}
+    </script>
+    <script>
+        window.addEventListener('refresh', () => {
+            window.location.reload();
+        });
     </script>
 </div>

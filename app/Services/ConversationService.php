@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use App\Events\ConversationCreatedEvent;
 use App\Events\ConversationUpdatedEvent;
+use App\Events\UserRejoinedConversationEvent;
 use App\Models\Message;
 use Illuminate\Support\Facades\DB;
 
@@ -30,54 +31,109 @@ class ConversationService
         // Initialize any dependencies or properties here
     }
 
-    public function createPrivateConversation(User $sender,User $receiver,$encrypted = false):Conversation
+    // public function createPrivateConversation(User $sender,User $receiver,$encrypted = false):Conversation
+    // {
+    //     // Check if a private conversation already exists between the sender and receiver
+    //     $existingConversation = Conversation::where('type', 'private')
+    //         ->whereHas('participants', function ($query) use ($sender) {
+    //         $query->where('user_id', $sender->id);
+    //         })
+    //         ->whereHas('participants', function ($query) use ($receiver) {
+    //         $query->where('user_id', $receiver->id);
+    //         })
+    //         ->first();
+
+    //     if ($existingConversation) {
+    //         broadcast(new ConversationCreatedEvent($existingConversation));
+
+    //         return $existingConversation;
+    //     }
+
+    //     $conversation =  Conversation::create([
+    //         'name' => $sender->name . ' & ' . $receiver->name,
+    //         'type' => 'private',
+    //         'encrypted' => $encrypted,
+    //     ]);
+    //     ConversationParticipant::create([
+    //         'conversation_id' => $conversation->id,
+    //         'user_id' => $sender->id,
+
+
+    //     ]);
+    //     ConversationParticipant::create([
+    //         'conversation_id' => $conversation->id,
+    //         'user_id' => $receiver->id,
+
+
+    //     ]);
+
+    //     broadcast(new ConversationCreatedEvent($conversation));
+
+    //     return $conversation;
+
+    // }
+
+    public function createPrivateConversation(User $sender, User $receiver, $encrypted = false): Conversation
     {
         // Check if a private conversation already exists between the sender and receiver
         $existingConversation = Conversation::where('type', 'private')
             ->whereHas('participants', function ($query) use ($sender) {
-            $query->where('user_id', $sender->id);
+                $query->where('user_id', $sender->id);
             })
             ->whereHas('participants', function ($query) use ($receiver) {
-            $query->where('user_id', $receiver->id);
+                $query->where('user_id', $receiver->id);
             })
             ->first();
 
-        if ($existingConversation) {
-            broadcast(new ConversationCreatedEvent($existingConversation));
+        switch (true) {
+            case $existingConversation &&
+                $existingConversation->participants()
+                ->where('user_id', $sender->id)
+                ->whereNotNull('deleted_at')
+                ->exists():
 
-            return $existingConversation;
+                foreach ([$sender, $receiver] as $user) {
+                    $existingConversation->participants()->updateExistingPivot($user->id, [
+                        'deleted_at' => null
+                    ]);
+                }
+
+                broadcast(new UserRejoinedConversationEvent($existingConversation, $sender->id));
+                return $existingConversation;
+
+            case $existingConversation:
+                broadcast(new ConversationCreatedEvent($existingConversation));
+                return $existingConversation;
+
+            default:
+                $conversation = Conversation::create([
+                    'name' => $sender->name . ' & ' . $receiver->name,
+                    'type' => 'private',
+                    'encrypted' => $encrypted,
+                ]);
+
+                ConversationParticipant::create([
+                    'conversation_id' => $conversation->id,
+                    'user_id' => $sender->id,
+                ]);
+
+                ConversationParticipant::create([
+                    'conversation_id' => $conversation->id,
+                    'user_id' => $receiver->id,
+                ]);
+
+                broadcast(new ConversationCreatedEvent($conversation));
+                return $conversation;
         }
-
-        $conversation =  Conversation::create([
-            'name' => $sender->name . ' & ' . $receiver->name,
-            'type' => 'private',
-            'encrypted' => $encrypted,
-        ]);
-        ConversationParticipant::create([
-            'conversation_id' => $conversation->id,
-            'user_id' => $sender->id,
-
-
-        ]);
-        ConversationParticipant::create([
-            'conversation_id' => $conversation->id,
-            'user_id' => $receiver->id,
-
-
-        ]);
-
-        broadcast(new ConversationCreatedEvent($conversation));
-
-        return $conversation;
-
     }
-    
+
+
     public function findOrCreateConversation(User $sender, User $receiver): Conversation
     {
         // First, check if a soft-deleted conversation exists between these users
         $existing = Conversation::whereHas('participants', function ($q) use ($sender) {
-                $q->where('user_id', $sender->id);
-            })
+            $q->where('user_id', $sender->id);
+        })
             ->whereHas('participants', function ($q) use ($receiver) {
                 $q->where('user_id', $receiver->id);
             })
@@ -109,7 +165,7 @@ class ConversationService
         return $conversation;
     }
 
-    public function createGroupConversation($name,User $admin, array $users,$encrypted = false):Conversation
+    public function createGroupConversation($name, User $admin, array $users, $encrypted = false): Conversation
     {
 
 
@@ -158,14 +214,14 @@ class ConversationService
                 $q->whereNull('deleted_at'); // 💥 filter out deleted conversations
             }
         })
-        ->with(['participants' => function ($q) {
-            $q->whereNull('deleted_at'); // Optional: exclude deleted participants from the participant list
-        }, 'lastMessage'])
-        ->latest('updated_at')
-        ->get();
+            ->with(['participants' => function ($q) {
+                $q->whereNull('deleted_at'); // Optional: exclude deleted participants from the participant list
+            }, 'lastMessage'])
+            ->latest('updated_at')
+            ->get();
     }
 
-    public function getConversationWithMessages(Conversation $conversation,$int):Conversation
+    public function getConversationWithMessages(Conversation $conversation, $int): Conversation
     {
         $conversation = Conversation::with(['messages' => function ($query) use ($int) {
             $query->orderBy('created_at', 'desc')->take($int);
@@ -173,7 +229,7 @@ class ConversationService
 
         return $conversation;
     }
-    public function archiveConversation(User $user,Conversation $conversation):Conversation
+    public function archiveConversation(User $user, Conversation $conversation): Conversation
     {
         $conversation->archive();
         ConversationParticipant::where('conversation_id', $conversation->id)
@@ -182,7 +238,7 @@ class ConversationService
 
         return $conversation;
     }
-    public function unarchiveConversation(User $user,Conversation $conversation):Conversation
+    public function unarchiveConversation(User $user, Conversation $conversation): Conversation
     {
         $conversation->unarchive();
         ConversationParticipant::where('conversation_id', $conversation->id)
@@ -191,7 +247,7 @@ class ConversationService
 
         return $conversation;
     }
-    public function getPrivateConversationBetween(User $sender,User $receiver):Conversation
+    public function getPrivateConversationBetween(User $sender, User $receiver): Conversation
     {
         $conversation = Conversation::where('type', 'private')
             ->whereHas('participants', function ($query) use ($sender, $receiver) {
@@ -220,7 +276,7 @@ class ConversationService
             ->with(['participants', 'messages'])
             ->get();
     }
-    public function updateGroupConversation(Conversation $conversation,string $name, array $newParticipants): Conversation
+    public function updateGroupConversation(Conversation $conversation, string $name, array $newParticipants): Conversation
     {
         // Check if the conversation is a group conversation
         if ($conversation->type !== 'group') {
@@ -262,17 +318,16 @@ class ConversationService
     //     return true;
     // }
     public function deleteConversationForUser(User $user, Conversation $conversation): bool
-{
-    $participant = ConversationParticipant::where('conversation_id', $conversation->id)
-        ->where('user_id', $user->id)
-        ->first();
+    {
+        $participant = ConversationParticipant::where('conversation_id', $conversation->id)
+            ->where('user_id', $user->id)
+            ->first();
 
-    if (!$participant) {
-        return false; // not a participant
+        if (!$participant) {
+            return false; // not a participant
+        }
+
+        $participant->deleted_at = now();
+        return $participant->save();
     }
-
-    $participant->deleted_at = now();
-    return $participant->save();
-}
-
 }

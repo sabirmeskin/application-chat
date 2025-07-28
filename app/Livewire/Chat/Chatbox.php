@@ -102,94 +102,93 @@ class Chatbox extends Component
 
     // }
     public function sendMessage(MessageService $messageService)
-{
-    $messageText = $this->message;
-    $this->message = '';
-    $this->stopTyping();
+    {
+        $messageText = $this->message;
+        $this->message = '';
+        $this->stopTyping();
 
-    if (trim($messageText) === '') {
-        return;
+        if (trim($messageText) === '') {
+            return;
+        }
+
+        $participants = $this->conversation
+            ->participants()
+            ->withPivot('deleted_at')
+            ->get();
+
+        foreach ($participants as $participant) {
+            if ($participant->pivot->deleted_at !== null) {
+                // dd("Participant {$participant->id} is soft-deleted, restoring...");
+                $this->conversation->participants()->updateExistingPivot($participant->id, [
+                    'deleted_at' => null,
+                ]);
+
+                ConversationUserLog::create([
+                    'conversation_id' => $this->conversation->id,
+                    'user_id' => $participant->id,
+                    'action' => 'rejoined',
+                    'action_at' => now(),
+                    'note' => 'Automatically rejoined upon receiving new message',
+                ]);
+                broadcast(new UserRejoinedConversationEvent($this->conversation, $participant->id))->toOthers();
+            }
+        }
+
+
+        $parentMessageId = $this->replyTo;
+
+        $newMessage = $messageService->sendTextMessage(
+            Auth::user(),
+            $this->conversation,
+            $parentMessageId,
+            $messageText
+        );
+
+        $this->replyBox = false;
+        $this->dispatch('messageSent', [$this->conversation, $newMessage]);
+        $this->dispatch('scrollToBottom');
     }
+    //    public function loadMessages()
+    // {
+    //     $participant = $this->conversation->participants()
+    //         ->where('user_id', Auth::id())
+    //         ->whereNull('deleted_at')
+    //         ->first();
 
-    $participants = $this->conversation
-    ->participants()
-    ->withPivot('deleted_at')
-    ->get();
+    //     if (! $participant) {
+    //         $this->messages = collect(); // Return an empty collection
+    //         return;
+    //     }
 
-    foreach ($participants as $participant) {
-    if ($participant->pivot->deleted_at !== null) {
-        // dd("Participant {$participant->id} is soft-deleted, restoring...");
-        $this->conversation->participants()->updateExistingPivot($participant->id, [
-            'deleted_at' => null,
-        ]);
+    //     $this->messages = $this->conversation
+    //         ->messages()
+    //         ->latest()
+    //         ->take(10)
+    //         ->get()
+    //         ->reverse();
 
-        ConversationUserLog::create([
-            'conversation_id' => $this->conversation->id,
-            'user_id' => $participant->id,
-            'action' => 'rejoined',
-            'action_at' => now(),
-            'note' => 'Automatically rejoined upon receiving new message',
-        ]);
-        broadcast(new UserRejoinedConversationEvent($this->conversation, $participant->id))->toOthers();
+    //     $this->dispatch('scrollToBottom');
+    // }
 
+    public function loadMessages()
+    {
+        $user = Auth::user();
+
+        $lastAction = \App\Models\ConversationUserLog::where('conversation_id', $this->conversation->id)
+            ->where('user_id', $user->id)
+            ->whereIn('action', ['deleted', 'rejoined'])
+            ->latest('action_at')
+            ->first();
+
+        $startTime = $lastAction?->action_at;
+
+        $this->messages = $this->conversation->messages()
+            ->when($startTime, fn($q) => $q->where('created_at', '>=', $startTime))
+            ->latest('created_at')
+            ->take(50)
+            ->get()
+            ->reverse();
     }
-}
-
-
-    $parentMessageId = $this->replyTo;
-
-    $newMessage = $messageService->sendTextMessage(
-        Auth::user(),
-        $this->conversation,
-        $parentMessageId,
-        $messageText
-    );
-
-    $this->replyBox = false;
-    $this->dispatch('messageSent', [$this->conversation, $newMessage]);
-    $this->dispatch('scrollToBottom');
-}
-//    public function loadMessages()
-// {
-//     $participant = $this->conversation->participants()
-//         ->where('user_id', Auth::id())
-//         ->whereNull('deleted_at')
-//         ->first();
-
-//     if (! $participant) {
-//         $this->messages = collect(); // Return an empty collection
-//         return;
-//     }
-
-//     $this->messages = $this->conversation
-//         ->messages()
-//         ->latest()
-//         ->take(10)
-//         ->get()
-//         ->reverse();
-
-//     $this->dispatch('scrollToBottom');
-// }
-
-public function loadMessages()
-{
-    $user = Auth::user();
-
-    $lastAction = \App\Models\ConversationUserLog::where('conversation_id', $this->conversation->id)
-        ->where('user_id', $user->id)
-        ->whereIn('action', ['deleted', 'rejoined'])
-        ->latest('action_at')
-        ->first();
-
-    $startTime = $lastAction?->action_at;
-
-    $this->messages = $this->conversation->messages()
-        ->when($startTime, fn($q) => $q->where('created_at', '>=', $startTime))
-        ->latest('created_at')
-        ->take(50)
-        ->get()
-        ->reverse();
-}
 
 
 
@@ -262,17 +261,17 @@ public function loadMessages()
     {
         $user = Auth::user();
 
-    $participant = $conversation->participants()
-        ->where('user_id', $user->id)
-        ->whereNull('deleted_at')
-        ->first();
+        $participant = $conversation->participants()
+            ->where('user_id', $user->id)
+            ->whereNull('deleted_at')
+            ->first();
 
-    if (! $participant) {
-        abort(403, 'Unauthorized or conversation deleted.');
-    }
+        if (! $participant) {
+            abort(403, 'Unauthorized or conversation deleted.');
+        }
 
-    $this->conversation = $conversation;
-    $this->loadMessages();
+        $this->conversation = $conversation;
+        $this->loadMessages();
     }
 
     public function render()
@@ -292,17 +291,12 @@ public function loadMessages()
     public function handleMessageDeleted($event)
     {
         $messageId = $event['message']['id'] ?? null;
-
         if (! $messageId) {
             return;
         }
-
-
         $this->messages
             ->filter(fn($msg) => $msg->id !== $messageId)
             ->values();
-
-
         $this->dispatch('messageDeleted', $messageId);
     }
 
@@ -312,7 +306,6 @@ public function loadMessages()
         if (! $messageId) {
             return;
         }
-
         $this->messages
             ->filter(fn($msg) => $msg->id !== $messageId)
             ->values();
@@ -361,7 +354,6 @@ public function loadMessages()
         $this->editMessageId = null;
         $this->editMode = false;
         $this->replyTo = null;
-
     }
 
     public function handleMessageEdited($event)
@@ -429,58 +421,57 @@ public function loadMessages()
         $this->replyBox = false;
         $this->replyTo = null;
     }
-     #[On('deleteConversation')]
-     public function deleteConversation($conversationId)
-{
-    $user = Auth::user();
-    $conversation = Conversation::find($conversationId);
-    if (!$conversation) return;
+    #[On('deleteConversation')]
+    public function deleteConversation($conversationId)
+    {
+        $user = Auth::user();
+        $conversation = Conversation::find($conversationId);
+        if (!$conversation) return;
 
-    $participant = ConversationParticipant::where('conversation_id', $conversation->id)
-        ->where('user_id', $user->id)
-        ->first();
+        $participant = ConversationParticipant::where('conversation_id', $conversation->id)
+            ->where('user_id', $user->id)
+            ->first();
 
-    if ($participant) {
-        $participant->deleted_at = now();
-        $participant->save();
+        if ($participant) {
+            $participant->deleted_at = now();
+            $participant->save();
 
-        // Log the delete action
-        ConversationUserLog::create([
-            'conversation_id' => $conversation->id,
-            'user_id' => $user->id,
-            'action' => 'deleted',
-            'action_at' => now(),
-            'note' => 'User deleted the conversation manually',
-        ]);
+            // Log the delete action
+            ConversationUserLog::create([
+                'conversation_id' => $conversation->id,
+                'user_id' => $user->id,
+                'action' => 'deleted',
+                'action_at' => now(),
+                'note' => 'User deleted the conversation manually',
+            ]);
+        }
+
+        $this->dispatch('conversationDeleted', $conversationId);
     }
 
-    $this->dispatch('conversationDeleted', $conversationId);
-    $this->dispatch('redirect-to-sidebar');
-}
 
 
 
+    //     public function deleteConversation($conversationId)
+    // {
+    //     $user = Auth::user();
+    //     $conversation = Conversation::find($conversationId);
+    //     if (!$conversation) return;
 
-//     public function deleteConversation($conversationId)
-// {
-//     $user = Auth::user();
-//     $conversation = Conversation::find($conversationId);
-//     if (!$conversation) return;
+    //     $participant = ConversationParticipant::where('conversation_id', $conversation->id)
+    //         ->where('user_id', $user->id)
+    //         ->first();
 
-//     $participant = ConversationParticipant::where('conversation_id', $conversation->id)
-//         ->where('user_id', $user->id)
-//         ->first();
+    //     if ($participant) {
+    //         $participant->deleted_at = now();
+    //         $participant->save();
+    //     }
 
-//     if ($participant) {
-//         $participant->deleted_at = now();
-//         $participant->save();
-//     }
-    
 
-//     $this->dispatch('conversationDeleted', $conversationId); // optional frontend action
-//     $this->dispatch('redirect-to-sidebar');
+    //     $this->dispatch('conversationDeleted', $conversationId); // optional frontend action
+    //     $this->dispatch('redirect-to-sidebar');
 
-// }
+    // }
     public function getListeners()
     {
         $userId = Auth::id();
