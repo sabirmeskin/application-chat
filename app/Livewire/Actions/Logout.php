@@ -22,10 +22,10 @@ class Logout
                 'is_online' => false,
                 'last_seen_at' => now(),
             ]);
-            broadcast(new UserStatusEvent($user, 'offline'))->toOthers();
         }
         Auth::guard('web')->logout();
-        
+        broadcast(new UserStatusEvent($user, 'offline'))->toOthers();
+
         Session::invalidate();
 
         Session::regenerateToken();
